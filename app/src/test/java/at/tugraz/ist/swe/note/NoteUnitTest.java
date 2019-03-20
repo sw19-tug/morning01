@@ -1,5 +1,6 @@
 package at.tugraz.ist.swe.note;
 
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -8,21 +9,15 @@ import java.util.Date;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 public class NoteUnitTest {
 
     Note note;
     Date today;
 
-    @Test
+    @Before
     public void setUp() {
         note = new Note();
         today = new Date();
-        System.out.print(today);
     }
 
     @Test
