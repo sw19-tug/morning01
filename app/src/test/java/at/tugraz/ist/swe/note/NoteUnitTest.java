@@ -11,13 +11,14 @@ import static org.junit.Assert.assertEquals;
 
 public class NoteUnitTest {
 
-    Note note;
+    Note note, notewithparams;
     Date today;
 
     @Before
     public void setUp() {
         note = new Note();
         today = new Date();
+        notewithparams = new Note("School", "Lorum Ipsum", 0);
     }
 
     @Test
@@ -30,4 +31,17 @@ public class NoteUnitTest {
         assertEquals(false, note.isRemoved());
         assertEquals(today, note.getChangedDate());
     }
+
+    @Test
+    public void testInitialStatewithparams(){
+        assertNotNull(notewithparams);
+        assertEquals("School", notewithparams.getTitle());
+        assertEquals("Lorum Ipsum", notewithparams.getContent());
+        assertEquals(today, notewithparams.getDate());
+        assertEquals(0, notewithparams.isPinned());
+        assertEquals(false, notewithparams.isRemoved());
+        assertEquals(today, notewithparams.getChangedDate());
+
+    }
+
 }
