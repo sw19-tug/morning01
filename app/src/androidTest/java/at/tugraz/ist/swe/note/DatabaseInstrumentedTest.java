@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
