@@ -1,6 +1,6 @@
 package at.tugraz.ist.swe.note;
 
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -18,17 +18,23 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class DatabaseInstrumentedTest {
-    private SqlDatabaseHelper database;
+    private DatabaseHelper databaseHelper;
 
     @Before
     public void setUp() {
-        database = new SqlDatabaseHelper(InstrumentationRegistry.getTargetContext());
+        databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
     }
 
     @Test
     public void testConnection() {
-        assertEquals(database.getDatabaseName(), "note");
-        assertNotNull(database.getReadableDatabase());
-        assertNotNull(database.getWritableDatabase());
+        assertEquals(databaseHelper.getDatabaseName(), "note");
+        assertNotNull(databaseHelper.getReadableDatabase());
+        assertNotNull(databaseHelper.getWritableDatabase());
+    }
+
+    @Test
+    public void testNoteTable() {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        database.query("note", null, null, new String[]{}, null, null, null);
     }
 }
