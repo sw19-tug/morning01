@@ -45,7 +45,7 @@ public class DatabaseInstrumentedTest {
     @Test
     public void testNoteInsert() {
         Note note = new Note("title1", "content1", 1);
-        note.save();
+        note.save(InstrumentationRegistry.getTargetContext());
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
         String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
