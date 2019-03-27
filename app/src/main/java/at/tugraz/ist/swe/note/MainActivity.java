@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FloatingActionButton addNoteButton = findViewById(R.id.add_note);
+        FloatingActionButton addNoteButton = findViewById(R.id.createNoteButton);
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 "Note 6", "Note 7", "Note 8", "Note 9", "Note 10", "Note 11", "Note 12"};
 
         ArrayAdapter<String> noteListViewAdapter = new ArrayAdapter<>(this, R.layout.note_list_item, noteTitles);
-        ListView noteListView = findViewById(R.id.note_list_view);
+        ListView noteListView = findViewById(R.id.notesList);
         noteListView.setAdapter(noteListViewAdapter);
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -40,10 +40,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-    }
-
-    private void displayNoteItems(String[] noteTitles){
 
     }
 }

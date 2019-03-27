@@ -1,5 +1,6 @@
 package at.tugraz.ist.swe.note;
 
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.Button;
 import android.app.Activity;
@@ -30,23 +31,22 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
+    @Rule
+    public ActivityTestRule<MainActivity> activityActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
     @Test
     public void checkCreateNoteButtonVisibility() {
-        //onView(withId(R.id.createNoteButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.createNoteButton)).check(matches(isDisplayed()));
     }
 
     @Test
     public void checkIfCreateButtonIsClickable() {
-        //onView(withId(R.id.createNoteButton)).check(matches(isClickable()));
+        onView(withId(R.id.createNoteButton)).check(matches(isClickable()));
     }
 
     @Test
     public void checkNotesListViewVisibility() {
-        //onView(withId(R.id.notesList)).check(matches(isDisplayed()));
+        onView(withId(R.id.notesList)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void checkIfNotesAreClickable() {
-        //onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).check(isClickable());
-    }
 }
