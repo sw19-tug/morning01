@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +45,9 @@ public class DatabaseInstrumentedTest {
 
     @Test
     public void testNoteInsert() {
-        Note note = new Note("title1", "content1", 1);
+        NoteStorage test = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Note note = new Note("title", "content1", 1);
+        assertTrue(test.save(note));
         note.save(InstrumentationRegistry.getTargetContext());
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
@@ -65,3 +68,4 @@ public class DatabaseInstrumentedTest {
         assertTrue(cursor.getCount() > 0);
     }
 }
+
