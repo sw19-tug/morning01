@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -67,7 +68,7 @@ public class DatabaseInstrumentedTest {
         assertTrue(cursor.getCount() > 0);
     }
     @Test
-    public void testFindNoteById() {
+    public void testFindNoteById() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
         assertTrue(storage.save(note));
@@ -75,6 +76,5 @@ public class DatabaseInstrumentedTest {
         assertEquals(foundNote.getTitle(),"title1");
         assertEquals(foundNote.getContent(),"content1");
         assertEquals(foundNote.isPinned(),1);
-
     }
 }
