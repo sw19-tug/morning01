@@ -45,10 +45,9 @@ public class DatabaseInstrumentedTest {
 
     @Test
     public void testNoteInsert() {
-        NoteStorage test = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note("title", "content1", 1);
-        assertTrue(test.save(note));
-        note.save(InstrumentationRegistry.getTargetContext());
+        assertTrue(storage.save(note));
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
         String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
@@ -68,4 +67,3 @@ public class DatabaseInstrumentedTest {
         assertTrue(cursor.getCount() > 0);
     }
 }
-
