@@ -82,18 +82,17 @@ public class DatabaseInstrumentedTest {
 
 
     @Test
-    public  void testNoteUpdade() throws NotFoundException{
+    public  void testNoteUpdate() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
         assertTrue(storage.save(note));
         note.setTitle("title2");
         note.setContent("content2");
         note.setPinned(0);
-        assertFalse(storage.update(note));
+        assertFalse(storage.save(note));
         Note foundNote = storage.findById(note.getId());
         assertEquals(foundNote.getTitle(),"title2");
         assertEquals(foundNote.getContent(),"content2");
         assertEquals(foundNote.isPinned(),0);
-
     }
 }

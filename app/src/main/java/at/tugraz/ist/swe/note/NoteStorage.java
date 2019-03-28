@@ -36,7 +36,7 @@ public class NoteStorage {
      */
     public boolean save(Note note) {
         if(note.exists()) {
-            //update(note); // TODO
+            update(note);
             return false;
         } else {
             insert(note);
@@ -81,5 +81,13 @@ public class NoteStorage {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         long id = database.insert(DatabaseHelper.NOTE_TABLE_NAME, null, getContentValues(note));
         note.setId(id);
+    }
+
+    private void update(Note note) {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(note.getId())};
+        note.setChangedDate(new Date());
+        database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs);
     }
 }
