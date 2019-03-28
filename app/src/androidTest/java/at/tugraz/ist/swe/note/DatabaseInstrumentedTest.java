@@ -77,7 +77,7 @@ public class DatabaseInstrumentedTest {
         Note foundNote = storage.findById(note.getId());
         assertEquals(foundNote.getTitle(),"title1");
         assertEquals(foundNote.getContent(),"content1");
-        assertEquals(foundNote.isPinned(),1);
+        assertEquals(foundNote.getPinned(),1);
     }
 
 
@@ -93,6 +93,6 @@ public class DatabaseInstrumentedTest {
         Note foundNote = storage.findById(note.getId());
         assertEquals(foundNote.getTitle(),"title2");
         assertEquals(foundNote.getContent(),"content2");
-        assertEquals(foundNote.isPinned(),0);
+        assertEquals(foundNote.getPinned(),0);
     }
 }

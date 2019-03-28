@@ -45,13 +45,13 @@ public class Note {
     public String getContent(){
         return content;
     }
-    public Date getDate(){
+    public Date getCreatedDate(){
         return createdDate;
     }
-    public  boolean isRemoved(){
+    public boolean isRemoved(){
         return removed;
     }
-    public int isPinned(){
+    public int getPinned(){
         return pinned;
     }
     public Date getChangedDate(){

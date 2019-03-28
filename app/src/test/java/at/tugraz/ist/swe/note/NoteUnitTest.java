@@ -26,8 +26,8 @@ public class NoteUnitTest {
         assertNotNull(note);
         assertEquals("", note.getTitle());
         assertEquals("", note.getContent());
-        assertEquals(today, note.getDate());
-        assertEquals(0, note.isPinned());
+        assertEquals(today, note.getCreatedDate());
+        assertEquals(0, note.getPinned());
         assertEquals(false, note.isRemoved());
         assertEquals(today, note.getChangedDate());
     }
@@ -37,8 +37,8 @@ public class NoteUnitTest {
         assertNotNull(notewithparams);
         assertEquals("School", notewithparams.getTitle());
         assertEquals("Lorum Ipsum", notewithparams.getContent());
-        assertEquals(today, notewithparams.getDate());
-        assertEquals(0, notewithparams.isPinned());
+        assertEquals(today, notewithparams.getCreatedDate());
+        assertEquals(0, notewithparams.getPinned());
         assertEquals(false, notewithparams.isRemoved());
         assertEquals(today, notewithparams.getChangedDate());
 

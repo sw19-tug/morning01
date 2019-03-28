@@ -70,8 +70,8 @@ public class NoteStorage {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.NOTE_COLUMN_TITLE, note.getTitle());
         values.put(DatabaseHelper.NOTE_COLUMN_CONTENT, note.getContent());
-        values.put(DatabaseHelper.NOTE_COLUMN_PINNED, note.isPinned());
-        values.put(DatabaseHelper.NOTE_COLUMN_CREATED_DATE, convertDateToString(note.getDate()));
+        values.put(DatabaseHelper.NOTE_COLUMN_PINNED, note.getPinned());
+        values.put(DatabaseHelper.NOTE_COLUMN_CREATED_DATE, convertDateToString(note.getCreatedDate()));
         values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, convertDateToString(note.getChangedDate()));
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, note.isRemoved());
         return values;
