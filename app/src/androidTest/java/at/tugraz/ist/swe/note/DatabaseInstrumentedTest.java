@@ -29,6 +29,7 @@ public class DatabaseInstrumentedTest {
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }
 
     @Test
@@ -47,7 +48,7 @@ public class DatabaseInstrumentedTest {
     @Test
     public void testNoteInsert() {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        Note note = new Note("title", "content1", 1);
+        Note note = new Note("title1", "content1", 1);
         assertTrue(storage.save(note));
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
@@ -66,6 +67,7 @@ public class DatabaseInstrumentedTest {
         );
 
         assertTrue(cursor.getCount() > 0);
+        cursor.close();
     }
     @Test
     public void testFindNoteById() throws NotFoundException {
