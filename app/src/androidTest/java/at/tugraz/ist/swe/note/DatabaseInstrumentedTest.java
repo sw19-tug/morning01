@@ -80,7 +80,7 @@ public class DatabaseInstrumentedTest {
 
 
     @Test
-    public  void testNoteUpdade() {
+    public  void testNoteUpdade() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
         assertTrue(storage.save(note));
