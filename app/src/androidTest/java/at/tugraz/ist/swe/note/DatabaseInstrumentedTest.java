@@ -66,4 +66,15 @@ public class DatabaseInstrumentedTest {
 
         assertTrue(cursor.getCount() > 0);
     }
+    @Test
+    public void testFindNoteById() {
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Note note = new Note ("title1", "content1", 1);
+        assertTrue(storage.save(note));
+        Note foundNote = storage.findById(note.getId());
+        assertEquals(foundNote.getTitle(),"title1");
+        assertEquals(foundNote.getContent(),"content1");
+        assertEquals(foundNote.isPinned(),1);
+
+    }
 }
