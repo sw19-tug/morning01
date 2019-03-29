@@ -3,9 +3,9 @@ package at.tugraz.ist.swe.note;
 import java.util.Date;
 
 public class Note {
-    public static long NOT_INSERTED_YET = -1;
+    public static long ILLEGAL_ID = -1;
 
-    private long id = NOT_INSERTED_YET;
+    private long id = ILLEGAL_ID;
     private String title = "";
     private String content = "";
     private Date createdDate = null;
@@ -22,9 +22,6 @@ public class Note {
         this.pinned = pinned;
     }
 
-    public boolean wasInserted() {
-        return id != NOT_INSERTED_YET;
-    }
     public long getId() {
         return id;
     }
