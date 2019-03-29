@@ -10,7 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +29,7 @@ public class DatabaseInstrumentedTest {
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }
 
     @Test
@@ -44,8 +47,13 @@ public class DatabaseInstrumentedTest {
 
     @Test
     public void testNoteInsert() {
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note("title1", "content1", 1);
-        note.save(InstrumentationRegistry.getTargetContext());
+        assertNull(note.getCreatedDate());
+        assertNull(note.getChangedDate());
+        storage.insert(note);
+        assertNotNull(note.getCreatedDate());
+        assertNotNull(note.getChangedDate());
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
         String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
@@ -63,5 +71,32 @@ public class DatabaseInstrumentedTest {
         );
 
         assertTrue(cursor.getCount() > 0);
+        cursor.close();
+    }
+    @Test
+    public void testFindNoteById() throws NotFoundException {
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Note note = new Note ("title1", "content1", 1);
+        storage.insert(note);
+        Note foundNote = storage.findById(note.getId());
+        assertEquals(foundNote.getTitle(),"title1");
+        assertEquals(foundNote.getContent(),"content1");
+        assertEquals(foundNote.getPinned(),1);
+    }
+
+
+    @Test
+    public  void testNoteUpdate() throws NotFoundException{
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Note note = new Note ("title1", "content1", 1);
+        storage.insert(note);
+        note.setTitle("title2");
+        note.setContent("content2");
+        note.setPinned(0);
+        storage.update(note);
+        Note foundNote = storage.findById(note.getId());
+        assertEquals(foundNote.getTitle(),"title2");
+        assertEquals(foundNote.getContent(),"content2");
+        assertEquals(foundNote.getPinned(),0);
     }
 }
