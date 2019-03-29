@@ -35,7 +35,7 @@ public class NoteStorage {
      * @return Returns true if note was inserted, false otherwise.
      */
     public boolean save(Note note) {
-        if(note.exists()) {
+        if(note.wasInserted()) {
             update(note);
             return false;
         } else {

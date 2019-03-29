@@ -3,7 +3,7 @@ package at.tugraz.ist.swe.note;
 import java.util.Date;
 
 public class Note {
-    public static long NOT_CREATED_YET = -1;
+    public static long NOT_INSERTED_YET = -1;
 
     private long id;
     private String title;
@@ -14,7 +14,7 @@ public class Note {
     private Date changedDate;
 
     public Note(){
-        this.id = NOT_CREATED_YET;
+        this.id = NOT_INSERTED_YET;
         this.title = "";
         this.content = "";
         this.createdDate = new Date();
@@ -24,7 +24,7 @@ public class Note {
     }
 
     public Note(String title, String content, int pinned){
-        this.id = NOT_CREATED_YET;
+        this.id = NOT_INSERTED_YET;
         this.title = title;
         this.content = content;
         this.createdDate = new Date();
@@ -33,8 +33,8 @@ public class Note {
         this.changedDate = new Date();
     }
 
-    public boolean exists() {
-        return id != NOT_CREATED_YET;
+    public boolean wasInserted() {
+        return id != NOT_INSERTED_YET;
     }
     public long getId() {
         return id;
