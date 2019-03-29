@@ -31,22 +31,7 @@ public class NoteStorage {
         }
     }
 
-    /**
-     * @return Returns true if note was inserted, false otherwise.
-     */
-    public boolean save(Note note) {
-        if(note.wasInserted()) {
-            update(note);
-            return false;
-        } else {
-            insert(note);
-            return true;
-
-        }
-    }
-
-    private Note getNote(Cursor cursor) {
-        Note note = new Note();
+    private void setValues(Note note, Cursor cursor) {
         note.setId(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_ID)));
         note.setTitle(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_TITLE)));
         note.setContent(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_CONTENT)));
@@ -54,19 +39,23 @@ public class NoteStorage {
         note.setChangedDate(convertStringToDate(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE))));
         note.setPinned(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)));
         note.setRemoved(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_REMOVED)) > 0);
-        return note;
     }
 
-    public Note findById(long id) throws NotFoundException {
+    private Cursor getCursor(long id) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String selection = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        Cursor cursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+        return database.query(DatabaseHelper.NOTE_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+    }
+
+    public Note findById(long id) throws NotFoundException {
+        Cursor cursor = getCursor(id);
         if(cursor.getCount() != 1) {
             throw new NotFoundException(id);
         }
         cursor.moveToFirst();
-        Note note = getNote(cursor);
+        Note note = new Note();
+        setValues(note, cursor);
         cursor.close();
         return note;
     }
@@ -76,23 +65,30 @@ public class NoteStorage {
         values.put(DatabaseHelper.NOTE_COLUMN_TITLE, note.getTitle());
         values.put(DatabaseHelper.NOTE_COLUMN_CONTENT, note.getContent());
         values.put(DatabaseHelper.NOTE_COLUMN_PINNED, note.getPinned());
-        values.put(DatabaseHelper.NOTE_COLUMN_CREATED_DATE, convertDateToString(note.getCreatedDate()));
-        values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, convertDateToString(note.getChangedDate()));
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, note.isRemoved());
         return values;
     }
 
-    private void insert(Note note) {
+    public void insert(Note note) {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         long id = database.insert(DatabaseHelper.NOTE_TABLE_NAME, null, getContentValues(note));
-        note.setId(id);
+        Cursor cursor = getCursor(id);
+        cursor.moveToNext();
+        setValues(note, cursor);
+        cursor.close();
     }
 
-    private void update(Note note) {
+    public void update(Note note) {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        long id = note.getId();
         String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
-        String[] whereArgs = {String.valueOf(note.getId())};
-        note.setChangedDate(new Date());
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = getContentValues(note);
+        values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, (String)null); // Forces the database to recalculate changed date.
         database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs);
+        Cursor cursor = getCursor(id);
+        cursor.moveToNext();
+        setValues(note, cursor);
+        cursor.close();
     }
 }

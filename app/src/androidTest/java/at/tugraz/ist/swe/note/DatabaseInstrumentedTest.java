@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +49,11 @@ public class DatabaseInstrumentedTest {
     public void testNoteInsert() {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note("title1", "content1", 1);
-        assertTrue(storage.save(note));
+        assertNull(note.getCreatedDate());
+        assertNull(note.getChangedDate());
+        storage.insert(note);
+        assertNotNull(note.getCreatedDate());
+        assertNotNull(note.getChangedDate());
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
         String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
@@ -73,7 +77,7 @@ public class DatabaseInstrumentedTest {
     public void testFindNoteById() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
-        assertTrue(storage.save(note));
+        storage.insert(note);
         Note foundNote = storage.findById(note.getId());
         assertEquals(foundNote.getTitle(),"title1");
         assertEquals(foundNote.getContent(),"content1");
@@ -85,11 +89,11 @@ public class DatabaseInstrumentedTest {
     public  void testNoteUpdate() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
-        assertTrue(storage.save(note));
+        storage.insert(note);
         note.setTitle("title2");
         note.setContent("content2");
         note.setPinned(0);
-        assertFalse(storage.save(note));
+        storage.update(note);
         Note foundNote = storage.findById(note.getId());
         assertEquals(foundNote.getTitle(),"title2");
         assertEquals(foundNote.getContent(),"content2");

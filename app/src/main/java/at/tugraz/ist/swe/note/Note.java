@@ -5,32 +5,21 @@ import java.util.Date;
 public class Note {
     public static long NOT_INSERTED_YET = -1;
 
-    private long id;
-    private String title;
-    private String content;
-    private Date createdDate;
-    private  boolean removed;
-    private int pinned;
-    private Date changedDate;
+    private long id = NOT_INSERTED_YET;
+    private String title = "";
+    private String content = "";
+    private Date createdDate = null;
+    private boolean removed = false;
+    private int pinned = 0;
+    private Date changedDate = null;
 
     public Note(){
-        this.id = NOT_INSERTED_YET;
-        this.title = "";
-        this.content = "";
-        this.createdDate = new Date();
-        this.removed = false;
-        this.pinned = 0;
-        this.changedDate = new Date();
     }
 
     public Note(String title, String content, int pinned){
-        this.id = NOT_INSERTED_YET;
         this.title = title;
         this.content = content;
-        this.createdDate = new Date();
-        this.removed = false;
         this.pinned = pinned;
-        this.changedDate = new Date();
     }
 
     public boolean wasInserted() {
