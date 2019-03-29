@@ -8,27 +8,37 @@ import android.view.View;
 
 public class AddNewNote extends AppCompatActivity {
 
+    private Menu _menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_note);
 
-        // Create Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.add_new_note_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Create Note");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        createToolbar();
+    }
+
+    private  void  createToolbar(){
+        setSupportActionBar((Toolbar) findViewById(R.id.add_new_note_toolbar));
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.text_new_note);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+    }
+
+    private  void enableRemoveButton(boolean enabled){
+        _menu.findItem(R.id.action_add).setVisible(!enabled);
+        _menu.findItem(R.id.action_remove).setVisible(enabled);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
+        _menu = menu;
+        enableRemoveButton(false);
         return true;
     }
 
-    // Back arrow click event to go to the parent Activity
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
