@@ -46,6 +46,15 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
+    public  void testGetNewPinningNumber() throws NotFoundException{
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        assertEquals(1, storage.getNewPinningNumber());
+        Note note = new Note ("title1", "content1", 3);
+        storage.insert(note);
+        assertEquals(4, storage.getNewPinningNumber());
+    }
+
+    @Test
     public void testNoteInsert() {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note("title1", "content1", 1);

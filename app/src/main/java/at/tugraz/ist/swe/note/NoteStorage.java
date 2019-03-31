@@ -91,4 +91,17 @@ public class NoteStorage {
         setValues(note, cursor);
         cursor.close();
     }
+
+    public int getNewPinningNumber(){
+        int pinningNumber = 1;
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        String selection = DatabaseHelper.NOTE_COLUMN_PINNED +"=(SELECT MAX("+DatabaseHelper.NOTE_COLUMN_PINNED+") FROM  "+DatabaseHelper.NOTE_TABLE_NAME+")" ;
+
+        Cursor cursor =  database.query(DatabaseHelper.NOTE_TABLE_NAME, null, selection, null, null, null, null);
+        if(cursor.getCount() == 0) {
+            return pinningNumber;
+        }
+        cursor.moveToNext();
+        return cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)) + 1;
+    }
 }
