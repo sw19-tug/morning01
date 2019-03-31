@@ -18,6 +18,7 @@ import java.util.Calendar;
 public class AddNewNote extends AppCompatActivity {
 
     private Menu _menu;
+    private Note _note;
     EditText tfTitle;
     EditText tfContent;
 
@@ -47,18 +48,25 @@ public class AddNewNote extends AppCompatActivity {
         _menu.findItem(R.id.action_remove).setVisible(enabled);
     }
 
+    private  void enableUnpinningButton(boolean enabled){
+        _menu.findItem(R.id.action_pinning).setVisible(!enabled);
+        _menu.findItem(R.id.action_unpinning).setVisible(enabled);
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
         _menu = menu;
         enableRemoveButton(false);
+        enableUnpinningButton(false);
 
         MenuItem addButton = _menu.findItem(R.id.action_add);
         addButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.readInputFields();
+                AddNewNote.this.saveNote();
                 return true;
             }
         });
@@ -73,12 +81,32 @@ public class AddNewNote extends AppCompatActivity {
             }
         });
 
-        MenuItem settingsButton = _menu.findItem(R.id.action_settings);
-        settingsButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        MenuItem pinningButton = _menu.findItem(R.id.action_pinning);
+        pinningButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.callSettings();
+                AddNewNote.this.pinningNote();
+                return true;
+            }
+        });
+
+        MenuItem unpinningButton = _menu.findItem(R.id.action_unpinning);
+        unpinningButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AddNewNote.this.unpinningNote();
+                return true;
+            }
+        });
+
+        MenuItem shareButton = _menu.findItem(R.id.action_share);
+        shareButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AddNewNote.this.callShare();
                 return true;
             }
         });
@@ -87,25 +115,49 @@ public class AddNewNote extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        saveNote();
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
 
+    //remove this
     public void readInputFields(){
         Toast.makeText(getApplicationContext(),"add clicked",Toast.LENGTH_SHORT).show();
         String title = tfTitle.getText().toString();
         String content = tfContent.getText().toString();
 
         Note note = new Note(title,content,0);
-        note.setCreatedDate(Calendar.getInstance().getTime());
+    }
+
+    public void saveNote(){
+        Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
+        enableRemoveButton(true);
+        //NoteController.save(_note);
     }
 
     public void deleteNote(){
         Toast.makeText(getApplicationContext(),"delete clicked",Toast.LENGTH_SHORT).show();
+        //todo add dialog
+        enableRemoveButton(false);
     }
 
-    public void callSettings(){
-        Toast.makeText(getApplicationContext(),"settings clicked",Toast.LENGTH_SHORT).show();
+    public void pinningNote(){
+        Toast.makeText(getApplicationContext(),"pinning clicked",Toast.LENGTH_SHORT).show();
+        enableUnpinningButton(true);
+    }
+
+    public void unpinningNote(){
+        Toast.makeText(getApplicationContext(),"unpinning clicked",Toast.LENGTH_SHORT).show();
+        enableUnpinningButton(false);
+    }
+
+    public void callShare(){
+        Toast.makeText(getApplicationContext(),"share clicked",Toast.LENGTH_SHORT).show();
     }
 }
