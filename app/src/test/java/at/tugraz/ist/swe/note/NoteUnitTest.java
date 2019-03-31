@@ -3,8 +3,10 @@ package at.tugraz.ist.swe.note;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class NoteUnitTest {
 
@@ -22,10 +24,10 @@ public class NoteUnitTest {
         assertNotNull(note);
         assertEquals("", note.getTitle());
         assertEquals("", note.getContent());
-        assertEquals(null, note.getCreatedDate());
+        assertNull(note.getCreatedDate());
         assertEquals(0, note.getPinned());
-        assertEquals(false, note.isRemoved());
-        assertEquals(null, note.getChangedDate());
+        assertFalse(note.isRemoved());
+        assertNull(note.getChangedDate());
     }
 
     @Test
@@ -33,9 +35,9 @@ public class NoteUnitTest {
         assertNotNull(noteWithParams);
         assertEquals("School", noteWithParams.getTitle());
         assertEquals("Lorum Ipsum", noteWithParams.getContent());
-        assertEquals(null, noteWithParams.getCreatedDate());
+        assertNull(noteWithParams.getCreatedDate());
         assertEquals(0, noteWithParams.getPinned());
-        assertEquals(false, noteWithParams.isRemoved());
-        assertEquals(null, noteWithParams.getChangedDate());
+        assertFalse(noteWithParams.isRemoved());
+        assertNull(noteWithParams.getChangedDate());
     }
 }

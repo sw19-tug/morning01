@@ -1,5 +1,6 @@
 package at.tugraz.ist.swe.note;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "load the create_note view and remove this box!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(view.getContext(), NoteActivity.class);
+                view.getContext().startActivity(intent);
             }
         });
     }
