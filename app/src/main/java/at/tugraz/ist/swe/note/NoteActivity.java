@@ -1,21 +1,13 @@
 package at.tugraz.ist.swe.note;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.w3c.dom.Node;
-
-import java.util.Calendar;
-
-public class AddNewNote extends AppCompatActivity {
+public class NoteActivity extends AppCompatActivity {
 
     private Menu _menu;
     private Note _note;
@@ -26,7 +18,7 @@ public class AddNewNote extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_note);
+        setContentView(R.layout.activity_note);
 
         tfTitle = (EditText)findViewById(R.id.tfTitle);
         tfContent = (EditText)findViewById(R.id.tfContent);
@@ -66,7 +58,7 @@ public class AddNewNote extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.saveNote();
+                NoteActivity.this.saveNote();
                 return true;
             }
         });
@@ -76,7 +68,7 @@ public class AddNewNote extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.deleteNote();
+                NoteActivity.this.deleteNote();
                 return true;
             }
         });
@@ -86,7 +78,7 @@ public class AddNewNote extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.pinningNote();
+                NoteActivity.this.pinningNote();
                 return true;
             }
         });
@@ -96,7 +88,7 @@ public class AddNewNote extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.unpinningNote();
+                NoteActivity.this.unpinningNote();
                 return true;
             }
         });
@@ -106,7 +98,7 @@ public class AddNewNote extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AddNewNote.this.callShare();
+                NoteActivity.this.callShare();
                 return true;
             }
         });
