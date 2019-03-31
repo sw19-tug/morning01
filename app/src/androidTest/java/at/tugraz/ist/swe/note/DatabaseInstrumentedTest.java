@@ -86,7 +86,7 @@ public class DatabaseInstrumentedTest {
 
 
     @Test
-    public  void testNoteUpdate() throws NotFoundException{
+    public void testNoteUpdate() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
         storage.insert(note);
@@ -99,4 +99,29 @@ public class DatabaseInstrumentedTest {
         assertEquals(foundNote.getContent(),"content2");
         assertEquals(foundNote.getPinned(),0);
     }
+
+    @Test
+    public void testGetAllNotes() {
+        Note[] notes = {
+                new Note("note1", "blabla1", 0),
+                new Note("note2", "blabla2", 0),
+                new Note("note3", "blabla3", 0)
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+
+        for (int i = 0; i < notes.length; ++i){
+            noteStorage.insert(notes[i]);
+        }
+
+        Note[] allStoredNotes = noteStorage.getAll();
+
+        assertEquals(3, allStoredNotes.length);
+        for (int i = 0; i < notes.length; ++i){
+            assertTrue(notes[i].equals(allStoredNotes[i]));
+        }
+
+    }
+
+
 }

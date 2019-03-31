@@ -71,4 +71,21 @@ public class Note {
     public void setChangedDate(Date changedDate) {
         this.changedDate = changedDate;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Note)) {
+            return false;
+        }
+
+        Note otherNote = (Note)o;
+
+        return this.title.equals(otherNote.title) && this.content.equals(otherNote.content) &&
+                (this.pinned == otherNote.pinned);
+    }
+
 }
