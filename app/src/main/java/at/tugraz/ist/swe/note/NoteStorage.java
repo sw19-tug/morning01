@@ -91,4 +91,43 @@ public class NoteStorage {
         setValues(note, cursor);
         cursor.close();
     }
+
+    public Note[] getAll() {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, null, null, null ,null, null);
+
+        Note[] allNotes = new Note[allNotesCursor.getCount()];
+        int arrayIndex = 0;
+
+        try {
+            while (allNotesCursor.moveToNext()) {
+                allNotes[arrayIndex++] = convertNoteCursorToNote(allNotesCursor);
+            }
+        } finally {
+            allNotesCursor.close();
+        }
+
+
+        return allNotes;
+    }
+
+    private Note convertNoteCursorToNote(Cursor noteCursor){
+        int idIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_ID);
+        int titleIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_TITLE);
+        int contentIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CONTENT);
+        int createDateIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CREATED_DATE);
+        int removedIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_REMOVED);
+        int pinnedIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_PINNED);
+        int changedDateIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE);
+
+        long id = noteCursor.getLong(idIndex);
+        String title = noteCursor.getString(titleIndex);
+        String content = noteCursor.getString(contentIndex);
+        Date createDate = NoteStorage.convertStringToDate(noteCursor.getString(createDateIndex));
+        boolean removed = noteCursor.getInt(removedIndex) == 1;
+        int pinned = noteCursor.getInt(pinnedIndex);
+        Date changedDate = NoteStorage.convertStringToDate(noteCursor.getString(changedDateIndex));
+
+        return new Note(id, title, content, createDate, removed, pinned, changedDate);
+    }
 }

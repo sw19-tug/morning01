@@ -22,6 +22,18 @@ public class Note {
         this.pinned = pinned;
     }
 
+    public Note(long id, String title, String content, Date createdDate, boolean removed, int pinned, Date changedDate){
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.createdDate = createdDate;
+        this.removed = removed;
+        this.pinned = pinned;
+        this.changedDate = changedDate;
+    }
+
+
+
     public long getId() {
         return id;
     }

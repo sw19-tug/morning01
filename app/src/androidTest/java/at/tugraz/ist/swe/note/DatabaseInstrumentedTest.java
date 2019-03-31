@@ -103,9 +103,9 @@ public class DatabaseInstrumentedTest {
     @Test
     public void testGetAllNotes() {
         Note[] notes = {
-                new Note("note1", "blabla1", 0),
-                new Note("note2", "blabla2", 0),
-                new Note("note3", "blabla3", 0)
+                new Note("note1", "blabla1", 1),
+                new Note("note2", "blabla2", 2),
+                new Note("note3", "blabla3", 3)
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
