@@ -104,4 +104,12 @@ public class NoteStorage {
         cursor.moveToNext();
         return cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)) + 1;
     }
+
+    public boolean delete(long id){
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        int numDeleted = database.delete(DatabaseHelper.NOTE_TABLE_NAME, whereClause, whereArgs);
+        return numDeleted == 1;
+    }
 }
