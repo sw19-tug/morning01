@@ -82,6 +82,24 @@ public class DatabaseInstrumentedTest {
         assertTrue(cursor.getCount() > 0);
         cursor.close();
     }
+
+    @Test
+    public void testDeleteNote() throws NotFoundException  {
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext());
+        Note note = new Note ("some title", "some content", 1);
+        storage.insert(note);
+        storage.delete(note.getId());
+        boolean idNotFound = false;
+        try {
+            storage.findById(note.getId());
+        }
+        catch (NotFoundException ex) {
+            idNotFound = true;
+        }
+        assertTrue(idNotFound);
+    }
+
+
     @Test
     public void testFindNoteById() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
