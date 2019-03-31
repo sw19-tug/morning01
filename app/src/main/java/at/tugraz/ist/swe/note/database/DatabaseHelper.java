@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -20,6 +21,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, NOTE_DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @VisibleForTesting
+    public DatabaseHelper(Context context, String name) {
+        super(context, name, null, DATABASE_VERSION);
     }
 
     @Override
