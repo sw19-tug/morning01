@@ -78,20 +78,6 @@ public class NoteStorage {
         cursor.close();
     }
 
-    public void update(Note note) {
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-        long id = note.getId();
-        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
-        String[] whereArgs = {String.valueOf(id)};
-        ContentValues values = getContentValues(note);
-        values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, (String)null); // Forces the database to recalculate changed date.
-        database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs);
-        Cursor cursor = getCursor(id);
-        cursor.moveToNext();
-        setValues(note, cursor);
-        cursor.close();
-    }
-
     public Note[] getAll() {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, null, null, null ,null, null);
@@ -129,5 +115,19 @@ public class NoteStorage {
         Date changedDate = NoteStorage.convertStringToDate(noteCursor.getString(changedDateIndex));
 
         return new Note(id, title, content, createDate, removed, pinned, changedDate);
+    }
+
+    public void update(Note note) {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        long id = note.getId();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = getContentValues(note);
+        values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, (String)null); // Forces the database to recalculate changed date.
+        database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs);
+        Cursor cursor = getCursor(id);
+        cursor.moveToNext();
+        setValues(note, cursor);
+        cursor.close();
     }
 }
