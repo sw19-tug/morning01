@@ -19,9 +19,10 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout"
-        android:layout_width="395dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="84dp"
         app:hintAnimationEnabled="false"
         app:hintEnabled="false"
@@ -40,20 +41,28 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:layout_width="395dp"
-        android:layout_height="307dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="140dp"
         app:hintEnabled="false"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/tfContent"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/text_content"
-            android:inputType="textMultiLine" />
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tfContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_content"
+                android:gravity="top"
+                android:inputType="textMultiLine" />
+        </ScrollView>
+
     </android.support.design.widget.TextInputLayout>
+
 
 </android.support.constraint.ConstraintLayout>
