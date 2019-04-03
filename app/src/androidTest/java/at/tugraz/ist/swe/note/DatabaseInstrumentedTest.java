@@ -132,28 +132,126 @@ public class DatabaseInstrumentedTest {
         assertEquals(foundNote.getPinned(),0);
     }
 
+    public void assertNoteArrayEquals(int lengthOfArray, Note[] allStoredNotes, Note[] expectedArray){
+
+        assertEquals(lengthOfArray, allStoredNotes.length);
+        for (int i = 0; i < allStoredNotes.length; ++i){
+            assertTrue(expectedArray[i].equals(allStoredNotes[i]));
+        }
+
+    }
+    public void fillNoteStorage(Note[] notes, NoteStorage noteStorage) {
+        for (int i = 0; i < notes.length; ++i) {
+            noteStorage.insert(notes[i]);
+        }
+    }
+
+
     @Test
-    public void testGetAllNotes() {
+    public void testGetAllNotesSortedByTitle() {
+
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        boolean sortByCreatedDate = false;
         Note[] notes = {
-                new Note("note1", "blabla1", 1),
-                new Note("note2", "blabla2", 2),
-                new Note("note3", "blabla3", 3)
+                note1,
+                note3,
+                note2
+        };
+        Note[] expectedNoteArray = {
+                note1,
+                note2,
+                note3
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
 
-        for (int i = 0; i < notes.length; ++i){
-            noteStorage.insert(notes[i]);
-        }
+        fillNoteStorage(notes, noteStorage);
 
-        Note[] allStoredNotes = noteStorage.getAll();
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertEquals(3, allStoredNotes.length);
-        for (int i = 0; i < notes.length; ++i){
-            assertTrue(notes[i].equals(allStoredNotes[i]));
-        }
-
+        assertNoteArrayEquals(3, allStoredNotes, expectedNoteArray);
     }
+
+    @Test
+    public void testGetAllNotesSortedByDate() {
+
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        boolean sortByCreatedDate = true;
+        Note[] notes = {
+                note1,
+                note3,
+                note2
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+
+        fillNoteStorage(notes, noteStorage);
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
+
+        assertNoteArrayEquals(3, allStoredNotes, notes);
+    }
+
+    @Test
+    public void testGetAllRemovedNotesSortedByDate() throws NotFoundException {
+
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        boolean sortByCreatedDate = true;
+        boolean removedOnly = false;
+        Note[] notes = {
+                note1,
+                note3,
+                note2
+        };
+        Note[] expecterArray = {
+                note1,
+                note2,
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        fillNoteStorage(notes, noteStorage);
+        noteStorage.softDelete(note1.getId());
+        noteStorage.softDelete(note2.getId());
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
+
+        assertNoteArrayEquals(2, allStoredNotes, expecterArray);
+    }
+
+    @Test
+    public void testGetAllRemovedNotesSortedByTitle() throws NotFoundException {
+
+        Note note1 = new Note("B_Test_title", "blabla1", 1);
+        Note note2 = new Note("A_Test_title", "blabla2", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        boolean sortByCreatedDate = false;
+        boolean removedOnly = false;
+        Note[] notes = {
+                note1,
+                note3,
+                note2
+        };
+        Note[] expecterArray = {
+                note2,
+                note1,
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        fillNoteStorage(notes, noteStorage);
+        noteStorage.softDelete(note1.getId());
+        noteStorage.softDelete(note2.getId());
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
+
+        assertNoteArrayEquals(2, allStoredNotes, expecterArray);
+    }
+
 
     @Test
     public void testSoftDeleteNote() throws NotFoundException {
