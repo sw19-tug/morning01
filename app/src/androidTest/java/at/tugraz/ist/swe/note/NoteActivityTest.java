@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
 
@@ -27,7 +28,9 @@ public class NoteActivityTest {
     private DatabaseHelper databaseHelper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }
 
     @After
@@ -84,7 +87,7 @@ public class NoteActivityTest {
     }
 
     @Test
-    public void testNoteInsert() {
+    public void checkNoteSaveButton() {
         onView(withId(R.id.tfTitle)).perform(typeText("Test Title"));
         onView(withId(R.id.tfContent)).perform(typeText("some Content"));
 

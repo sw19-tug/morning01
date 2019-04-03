@@ -2,9 +2,16 @@ package at.tugraz.ist.swe.note;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
+
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
+
 
 public class NoteActivity extends AppCompatActivity {
 
@@ -114,9 +121,23 @@ public class NoteActivity extends AppCompatActivity {
 
 
     private void saveNote(){
-        Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
         enableRemoveButton(true);
-        //NoteController.save(_note);
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+
+        if (mNote == null) {
+            TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
+            TextView tfContent = (TextView)findViewById(R.id.tfContent);
+            String title = tfTitle.getText().toString();
+            String content = tfContent.getText().toString();
+
+            //TODO: pinning
+            mNote = new Note(title, content, 0);
+            storage.insert(mNote);
+
+        } else {
+            //TODO: storage.update(mNote);
+        }
     }
 
     private void deleteNote(){
