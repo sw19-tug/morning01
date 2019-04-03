@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -84,13 +85,13 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void testDeleteNote(){
+    public void testDeleteNote() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
         Note note = new Note ("some title", "some content", 1);
         storage.insert(note);
 
-        assertTrue(storage.delete(note.getId()));
+        storage.delete(note.getId());
 
         boolean idNotFound = false;
         try {
@@ -154,5 +155,14 @@ public class DatabaseInstrumentedTest {
 
     }
 
+    @Test
+    public void testSoftDeleteNote() throws NotFoundException {
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
+        Note note = new Note ("some title", "some content", 1);
+        storage.insert(note);
+        storage.softDelete(note.getId());
+        note = storage.findById(note.getId());
+        assertTrue(note.isRemoved());
+    }
 }

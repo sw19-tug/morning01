@@ -31,6 +31,12 @@ public class NoteStorage {
         }
     }
 
+    static private void assertOneAffectedRow(int affectedRow, long id) throws NotFoundException {
+        if(affectedRow != 1)  {
+            throw new NotFoundException(id);
+        }
+    }
+
     private void setValues(Note note, Cursor cursor) {
         note.setId(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_ID)));
         note.setTitle(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_TITLE)));
@@ -98,33 +104,19 @@ public class NoteStorage {
     }
 
     private Note convertNoteCursorToNote(Cursor noteCursor){
-        int idIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_ID);
-        int titleIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_TITLE);
-        int contentIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CONTENT);
-        int createDateIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CREATED_DATE);
-        int removedIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_REMOVED);
-        int pinnedIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_PINNED);
-        int changedDateIndex = noteCursor.getColumnIndexOrThrow(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE);
-
-        long id = noteCursor.getLong(idIndex);
-        String title = noteCursor.getString(titleIndex);
-        String content = noteCursor.getString(contentIndex);
-        Date createDate = NoteStorage.convertStringToDate(noteCursor.getString(createDateIndex));
-        boolean removed = noteCursor.getInt(removedIndex) == 1;
-        int pinned = noteCursor.getInt(pinnedIndex);
-        Date changedDate = NoteStorage.convertStringToDate(noteCursor.getString(changedDateIndex));
-
-        return new Note(id, title, content, createDate, removed, pinned, changedDate);
+        Note note = new Note();
+        setValues(note, noteCursor);
+        return note;
     }
 
-    public void update(Note note) {
+    public void update(Note note) throws NotFoundException {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         long id = note.getId();
         String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
         String[] whereArgs = {String.valueOf(id)};
         ContentValues values = getContentValues(note);
         values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, (String)null); // Forces the database to recalculate changed date.
-        database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs);
+        assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, getContentValues(note), whereClause, whereArgs), id);
         Cursor cursor = getCursor(id);
         cursor.moveToNext();
         setValues(note, cursor);
@@ -144,11 +136,19 @@ public class NoteStorage {
         return cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)) + 1;
     }
 
-    public boolean delete(long id){
+    public void delete(long id) throws NotFoundException {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
         String[] whereArgs = {String.valueOf(id)};
-        int numDeleted = database.delete(DatabaseHelper.NOTE_TABLE_NAME, whereClause, whereArgs);
-        return numDeleted == 1;
+        assertOneAffectedRow(database.delete(DatabaseHelper.NOTE_TABLE_NAME, whereClause, whereArgs), id);
+    }
+
+    public void softDelete(long id) throws NotFoundException {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, true);
+        assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
     }
 }
