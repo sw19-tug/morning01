@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
+
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
@@ -26,6 +28,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class DatabaseInstrumentedTest {
     private DatabaseHelper databaseHelper;
+    private long timestampInMilliseconds = 0;
+
+    private Date makeNextDate() {
+        Date date = new Date(timestampInMilliseconds);
+        timestampInMilliseconds += 1000;
+        return date;
+    }
 
     @Before
     public void setUp() {
@@ -132,9 +141,9 @@ public class DatabaseInstrumentedTest {
         assertEquals(foundNote.getPinned(),0);
     }
 
-    public void assertNoteArrayEquals(int lengthOfArray, Note[] allStoredNotes, Note[] expectedArray){
+    public void assertNoteArrayEquals(Note[] allStoredNotes, Note[] expectedArray){
 
-        assertEquals(lengthOfArray, allStoredNotes.length);
+        assertEquals(expectedArray.length, allStoredNotes.length);
         for (int i = 0; i < allStoredNotes.length; ++i){
             assertTrue(expectedArray[i].equals(allStoredNotes[i]));
         }
@@ -142,7 +151,9 @@ public class DatabaseInstrumentedTest {
     }
     public void fillNoteStorage(Note[] notes, NoteStorage noteStorage) {
         for (int i = 0; i < notes.length; ++i) {
-            noteStorage.insert(notes[i]);
+            Note note = notes[i];
+            note.setCreatedDate(makeNextDate());
+            noteStorage.insert(note);
         }
     }
 
@@ -151,18 +162,21 @@ public class DatabaseInstrumentedTest {
     public void testGetAllNotesSortedByTitle() {
 
         Note note1 = new Note("A_Test_title", "blabla1", 1);
-        Note note2 = new Note("B_Test_title", "blabla2", 2);
-        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 2);
         boolean sortByCreatedDate = false;
         Note[] notes = {
                 note1,
                 note3,
-                note2
+                note4,
+                note2,
         };
         Note[] expectedNoteArray = {
+                note4,
                 note1,
                 note2,
-                note3
+                note3,
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
@@ -171,20 +185,28 @@ public class DatabaseInstrumentedTest {
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertNoteArrayEquals(3, allStoredNotes, expectedNoteArray);
+        assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
     }
 
     @Test
     public void testGetAllNotesSortedByDate() {
 
         Note note1 = new Note("A_Test_title", "blabla1", 1);
-        Note note2 = new Note("B_Test_title", "blabla2", 2);
-        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 2);
         boolean sortByCreatedDate = true;
         Note[] notes = {
-                note1,
                 note3,
-                note2
+                note2,
+                note4,
+                note1,
+        };
+        Note[] expectedNoteArray = {
+                note4,
+                note1,
+                note2,
+                note3,
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
@@ -193,25 +215,25 @@ public class DatabaseInstrumentedTest {
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertNoteArrayEquals(3, allStoredNotes, notes);
+        assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
     }
 
     @Test
     public void testGetAllRemovedNotesSortedByDate() throws NotFoundException {
 
         Note note1 = new Note("A_Test_title", "blabla1", 1);
-        Note note2 = new Note("B_Test_title", "blabla2", 2);
-        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
         boolean sortByCreatedDate = true;
-        boolean removedOnly = false;
+        boolean removedOnly = true;
         Note[] notes = {
                 note1,
                 note3,
-                note2
-        };
-        Note[] expecterArray = {
-                note1,
                 note2,
+        };
+        Note[] expectedArray = {
+                note2,
+                note1,
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
@@ -221,17 +243,17 @@ public class DatabaseInstrumentedTest {
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
 
-        assertNoteArrayEquals(2, allStoredNotes, expecterArray);
+        assertNoteArrayEquals(allStoredNotes, expectedArray);
     }
 
     @Test
     public void testGetAllRemovedNotesSortedByTitle() throws NotFoundException {
 
         Note note1 = new Note("B_Test_title", "blabla1", 1);
-        Note note2 = new Note("A_Test_title", "blabla2", 2);
-        Note note3 = new Note("C_Test_title", "blabla3", 3);
+        Note note2 = new Note("A_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
         boolean sortByCreatedDate = false;
-        boolean removedOnly = false;
+        boolean removedOnly = true;
         Note[] notes = {
                 note1,
                 note3,
@@ -249,7 +271,7 @@ public class DatabaseInstrumentedTest {
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
 
-        assertNoteArrayEquals(2, allStoredNotes, expecterArray);
+        assertNoteArrayEquals(allStoredNotes, expecterArray);
     }
 
 

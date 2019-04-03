@@ -10,8 +10,8 @@ import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class NoteStorage {
-    public static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault());
+    public static String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_TIME_PATTERN, Locale.getDefault());
 
     private DatabaseHelper databaseHelper;
 
@@ -20,6 +20,9 @@ public class NoteStorage {
     }
 
     static private String convertDateToString(Date date) {
+        if(date == null) {
+            return null;
+        }
         return DATE_FORMAT.format(date);
     }
 
@@ -69,6 +72,8 @@ public class NoteStorage {
     private ContentValues getContentValues(Note note) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.NOTE_COLUMN_TITLE, note.getTitle());
+        values.put(DatabaseHelper.NOTE_COLUMN_CREATED_DATE, convertDateToString(note.getCreatedDate()));
+        values.put(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE, convertDateToString(note.getChangedDate()));
         values.put(DatabaseHelper.NOTE_COLUMN_CONTENT, note.getContent());
         values.put(DatabaseHelper.NOTE_COLUMN_PINNED, note.getPinned());
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, note.isRemoved());
@@ -85,8 +90,28 @@ public class NoteStorage {
     }
 
     public Note[] getAll() {
+        return getAll(false);
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate) {
+        return getAll(sortByCreatedDate, false);
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, null, null, null ,null, null);
+        String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
+        if(sortByCreatedDate) {
+            orderBy += DatabaseHelper.NOTE_COLUMN_CREATED_DATE + " DESC";
+        } else {
+            orderBy += DatabaseHelper.NOTE_COLUMN_TITLE + " ASC";
+        }
+        String whereClause = "";
+        if(removedOnly) {
+            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
+        } else {
+            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
+        }
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, null, null ,null, orderBy);
 
         Note[] allNotes = new Note[allNotesCursor.getCount()];
         int arrayIndex = 0;
