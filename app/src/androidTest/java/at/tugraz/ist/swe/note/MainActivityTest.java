@@ -3,10 +3,14 @@ package at.tugraz.ist.swe.note;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
@@ -15,6 +19,8 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -39,7 +45,22 @@ public class MainActivityTest {
                 new Note("note2", "blabla2", 2),
                 new Note("note3", "blabla3", 3)
         };
-        activityActivityTestRule.getActivity().
+
+        ArrayList<Note> newNotes = new ArrayList<Note>();
+        newNotes.add(notes[0]);
+        newNotes.add(notes[1]);
+        newNotes.add(notes[2]);
+
+
+        activityActivityTestRule.getActivity().setNoteList(newNotes);
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+
+
+        assertEquals(3, noteListView.getAdapter().getCount());
+        for (int i = 0; i < notes.length; ++i){
+            assertTrue(notes[i].equals(noteListView.getAdapter().getItem(i)));
+        }
     }
 
     @Test
