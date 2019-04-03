@@ -85,13 +85,13 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void testDeleteNote(){
+    public void testDeleteNote() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
         Note note = new Note ("some title", "some content", 1);
         storage.insert(note);
 
-        assertTrue(storage.delete(note.getId()));
+        storage.delete(note.getId());
 
         boolean idNotFound = false;
         try {
