@@ -46,13 +46,7 @@ public class MainActivityTest {
                 new Note("note3", "blabla3", 3)
         };
 
-        ArrayList<Note> newNotes = new ArrayList<Note>();
-        newNotes.add(notes[0]);
-        newNotes.add(notes[1]);
-        newNotes.add(notes[2]);
-
-
-        activityActivityTestRule.getActivity().setNoteList(newNotes);
+        activityActivityTestRule.getActivity().setNoteList(notes);
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 

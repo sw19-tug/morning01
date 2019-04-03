@@ -12,6 +12,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Note> noteList = new ArrayList<>();
@@ -24,14 +26,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initAddNoteButton();
+
         initNoteView();
         showNotes();
 
     }
 
-    public void setNoteList(ArrayList<Note> newNotes){
+    public void setNoteList(Note[] newNotes){
         noteList.clear();
-        for(Note n:newNotes){
+        for(Note n: newNotes){
             noteList.add(n);
         }
     }
@@ -48,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNoteView(){
-        noteList.add(new Note("Best title ever 1","Best content ever 1",1));
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(this));
+        Note[] allNotes = noteStorage.getAll();
+
+        setNoteList(allNotes);
+
         customNoteAdapter = new NoteAdapter(this, noteList);
         noteListView = findViewById(R.id.notesList);
         noteListView.setAdapter(customNoteAdapter);
-        noteList.add(new Note("Best title ever 2","Best content ever 2",1));
     }
 
     private void showNotes(){
