@@ -1,11 +1,14 @@
 package at.tugraz.ist.swe.note;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -27,6 +30,16 @@ public class MainActivityTest {
     @Test
     public void checkIfCreateButtonIsClickable() {
         onView(withId(R.id.createNoteButton)).check(matches(isClickable()));
+    }
+
+    @Test
+    public void checkIfNotesAreDisplayedInOverview(){
+        Note[] notes = {
+                new Note("note1", "blabla1", 1),
+                new Note("note2", "blabla2", 2),
+                new Note("note3", "blabla3", 3)
+        };
+        activityActivityTestRule.getActivity().
     }
 
     @Test

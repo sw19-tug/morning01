@@ -10,7 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<Note> noteList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initAddNoteButton();
-        initNotesList();
+        showNotes();
 
     }
 
@@ -33,14 +37,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initNotesList(){
+    private void showNotes(){
         //noteTitles should contain title of notes. Need to be dynamically loaded.
         //This could for example be just <Note i> for i in [0 ... length of notes list]
         //or maybe the first few words of the corresponding note.
-        String[] noteTitles = new String[]{"Note 1", "Note 2", "Note 3", "Note 4", "Note 5",
-                "Note 6", "Note 7", "Note 8", "Note 9", "Note 10", "Note 11", "Note 12"};
+        noteList.add(new Note("title1", "content1", 1));
 
-        ArrayAdapter<String> noteListViewAdapter = new ArrayAdapter<>(this, R.layout.note_list_item, noteTitles);
+        ArrayAdapter<String> noteListViewAdapter = new ArrayAdapter<>(this, R.layout.note_list_item, getArrayOfTitles());
         ListView noteListView = findViewById(R.id.notesList);
         noteListView.setAdapter(noteListViewAdapter);
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -50,4 +53,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private String[] getArrayOfTitles(){
+        String[] titles = new String[noteList.size()];
+        for (int i = 0; i < noteList.size(); ++i){
+            titles[i] = noteList.get(i).getTitle();
+        }
+        return titles;
+    }
+
 }

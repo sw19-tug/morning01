@@ -93,7 +93,6 @@ public class NoteStorage {
             allNotesCursor.close();
         }
 
-
         return allNotes;
     }
 
