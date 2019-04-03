@@ -152,7 +152,6 @@ public class DatabaseInstrumentedTest {
         for (int i = 0; i < notes.length; ++i){
             assertTrue(notes[i].equals(allStoredNotes[i]));
         }
-
     }
 
     @Test

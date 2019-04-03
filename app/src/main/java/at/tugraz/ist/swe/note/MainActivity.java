@@ -10,7 +10,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<Note> noteList = new ArrayList<>();
+    NoteAdapter customNoteAdapter;
+    ListView noteListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +26,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initAddNoteButton();
-        initNotesList();
 
+        initNoteView();
+        showNotes();
+
+    }
+
+    public void setNoteList(Note[] newNotes){
+        noteList.clear();
+        for(Note n: newNotes){
+            noteList.add(n);
+        }
     }
 
     public void initAddNoteButton(){
@@ -33,16 +50,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initNotesList(){
+    private void initNoteView(){
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(this));
+        Note[] allNotes = noteStorage.getAll();
+
+        setNoteList(allNotes);
+
+        customNoteAdapter = new NoteAdapter(this, noteList);
+        noteListView = findViewById(R.id.notesList);
+        noteListView.setAdapter(customNoteAdapter);
+    }
+
+    private void showNotes(){
         //noteTitles should contain title of notes. Need to be dynamically loaded.
         //This could for example be just <Note i> for i in [0 ... length of notes list]
         //or maybe the first few words of the corresponding note.
-        String[] noteTitles = new String[]{"Note 1", "Note 2", "Note 3", "Note 4", "Note 5",
-                "Note 6", "Note 7", "Note 8", "Note 9", "Note 10", "Note 11", "Note 12"};
 
-        ArrayAdapter<String> noteListViewAdapter = new ArrayAdapter<>(this, R.layout.note_list_item, noteTitles);
-        ListView noteListView = findViewById(R.id.notesList);
-        noteListView.setAdapter(noteListViewAdapter);
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(view, "load the note view and remove this box!", Snackbar.LENGTH_LONG)
@@ -50,4 +73,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private String[] getArrayOfTitles(){
+        String[] titles = new String[noteList.size()];
+        for (int i = 0; i < noteList.size(); ++i){
+            titles[i] = noteList.get(i).getTitle();
+        }
+        return titles;
+    }
+
 }
