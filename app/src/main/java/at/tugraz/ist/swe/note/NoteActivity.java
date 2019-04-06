@@ -1,8 +1,8 @@
 package at.tugraz.ist.swe.note;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -110,6 +110,10 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         saveNote();
+        Intent noteIntent = new Intent();
+        noteIntent.putExtra("note", mNote);
+        setResult(RESULT_OK, noteIntent);
+        finish();
         super.onBackPressed();
     }
 
@@ -123,8 +127,6 @@ public class NoteActivity extends AppCompatActivity {
     private void saveNote(){
         //Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
         enableRemoveButton(true);
-        NoteStorage storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
-
         if (mNote == null) {
             TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
             TextView tfContent = (TextView)findViewById(R.id.tfContent);
@@ -133,7 +135,6 @@ public class NoteActivity extends AppCompatActivity {
 
             //TODO: pinning
             mNote = new Note(title, content, 0);
-            storage.insert(mNote);
 
         } else {
             //TODO: storage.update(mNote);

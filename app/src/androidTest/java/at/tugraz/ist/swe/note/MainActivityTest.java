@@ -1,18 +1,12 @@
 package at.tugraz.ist.swe.note;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.ArrayList;
-
-import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -46,7 +40,7 @@ public class MainActivityTest {
                 new Note("note3", "blabla3", 3)
         };
 
-        activityActivityTestRule.getActivity().setNoteList(notes);
+        activityActivityTestRule.getActivity().setmNoteList(notes);
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
@@ -62,4 +56,5 @@ public class MainActivityTest {
         onView(withId(R.id.notesList)).check(matches(isDisplayed()));
     }
 
+    
 }

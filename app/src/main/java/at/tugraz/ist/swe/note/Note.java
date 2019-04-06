@@ -1,8 +1,9 @@
 package at.tugraz.ist.swe.note;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Note {
+public class Note implements Serializable {
     public static long ILLEGAL_ID = -1;
 
     private long id = ILLEGAL_ID;
