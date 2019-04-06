@@ -85,32 +85,4 @@ public class NoteActivityTest {
         onView(withContentDescription(R.string.abc_action_bar_up_description)).check(matches(isClickable()));
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
     }
-
-    @Test
-    public void checkNoteSaveButton() {
-        onView(withId(R.id.tfTitle)).perform(typeText("Test Title"));
-        onView(withId(R.id.tfContent)).perform(typeText("some Content"));
-
-        onView(withId(R.id.action_add)).perform(click());
-
-        SQLiteDatabase database = databaseHelper.getReadableDatabase();
-
-        String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
-
-        String[] selectionArgs = {"Test Title", "some Content", "0"};
-
-        Cursor cursor = database.query(
-                DatabaseHelper.NOTE_TABLE_NAME,
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-        assertTrue(cursor.getCount() > 0);
-        cursor.close();
-    }
-
-
 }
