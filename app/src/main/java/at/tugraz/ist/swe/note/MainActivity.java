@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -16,15 +15,18 @@ import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<Note> noteList = new ArrayList<>();
-    NoteAdapter customNoteAdapter;
-    ListView noteListView;
+    ArrayList<Note> mNoteList = new ArrayList<>();
+    NoteAdapter mCustomNoteAdapter;
+    ListView mNoteListView;
+    NoteStorage mNoteStorage;
+
+    private static int NOTE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mNoteStorage = new NoteStorage(new DatabaseHelper(this));
         initAddNoteButton();
 
         initNoteView();
@@ -32,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setNoteList(Note[] newNotes){
-        noteList.clear();
+    public void setmNoteList(Note[] newNotes){
+        mNoteList.clear();
         for(Note n: newNotes){
-            noteList.add(n);
+            mNoteList.add(n);
         }
     }
 
@@ -45,20 +47,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
-                view.getContext().startActivity(intent);
+                startActivityForResult(intent, NOTE_REQUEST_CODE);
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == NOTE_REQUEST_CODE) {
+            if(resultCode == RESULT_OK){
+                Note note = (Note) data.getSerializableExtra("note");
+                mNoteList.add(note);
+                mNoteStorage.insert(note);
+            }
+            if (resultCode == RESULT_CANCELED) {
+               //TODO handle error
+            }
+        }
+    }
+
     private void initNoteView(){
-        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(this));
-        Note[] allNotes = noteStorage.getAll();
+        Note[] allNotes = mNoteStorage.getAll();
 
-        setNoteList(allNotes);
+        setmNoteList(allNotes);
 
-        customNoteAdapter = new NoteAdapter(this, noteList);
-        noteListView = findViewById(R.id.notesList);
-        noteListView.setAdapter(customNoteAdapter);
+        mCustomNoteAdapter = new NoteAdapter(this, mNoteList);
+        mNoteListView = findViewById(R.id.notesList);
+        mNoteListView.setAdapter(mCustomNoteAdapter);
     }
 
     private void showNotes(){
@@ -66,20 +81,12 @@ public class MainActivity extends AppCompatActivity {
         //This could for example be just <Note i> for i in [0 ... length of notes list]
         //or maybe the first few words of the corresponding note.
 
-        noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mNoteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(view, "load the note view and remove this box!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
-    }
-
-    private String[] getArrayOfTitles(){
-        String[] titles = new String[noteList.size()];
-        for (int i = 0; i < noteList.size(); ++i){
-            titles[i] = noteList.get(i).getTitle();
-        }
-        return titles;
     }
 
 }
