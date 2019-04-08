@@ -64,7 +64,7 @@ public class MainActivityTest {
 
         onView(withId(R.id.tfTitle)).perform(typeText(randomTitle));
         onView(withId(R.id.tfContent)).perform(typeText(randomContent));
-        onView(withContentDescription("Navigate up")).perform(click());
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
         Note note = new Note(randomTitle, randomContent, 1);
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
@@ -87,6 +87,11 @@ public class MainActivityTest {
 
     @Test
     public void checkNotesListViewVisibility() {
+        Note[] notes = {
+                new Note("note1", "blabla1", 1)
+        };
+
+        activityActivityTestRule.getActivity().setmNoteList(notes);
         onView(withId(R.id.notesList)).check(matches(isDisplayed()));
     }
 }
