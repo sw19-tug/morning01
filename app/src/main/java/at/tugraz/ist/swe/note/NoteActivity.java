@@ -19,7 +19,8 @@ public class NoteActivity extends AppCompatActivity {
 
     private Menu mMenu;
     private Note mNote;
-    private NoteStorage mStorage;
+    boolean editFlag = false;
+    NoteStorage mStorage;
 
 
     @Override
@@ -27,7 +28,8 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-        mStorage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+         mStorage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+
         mNote =  (Note) getIntent().getSerializableExtra("note");
         if(mNote == null){
             mNote = new Note();
@@ -156,6 +158,8 @@ public class NoteActivity extends AppCompatActivity {
         saveNote();
         Intent noteIntent = new Intent();
         noteIntent.putExtra("note", mNote);
+        noteIntent.putExtra("editFlag",editFlag);
+        Log.d("anna",editFlag+" editflag note");
         setResult(RESULT_OK, noteIntent);
         finish();
         super.onBackPressed();
@@ -169,23 +173,24 @@ public class NoteActivity extends AppCompatActivity {
 
 
     private void saveNote(){
-        //Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
         enableRemoveButton(true);
+        TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
+        TextView tfContent = (TextView)findViewById(R.id.tfContent);
+        String title = tfTitle.getText().toString();
+        String content = tfContent.getText().toString();
 
         if (mNote.getId() == Note.ILLEGAL_ID) {
-            Log.d("NoteActivity", "insert");
-            mStorage.insert(mNote);
+            editFlag = false;
+
+            //TODO: pinning
+            mNote = new Note(title, content, 0);
         } else {
+                editFlag = true;
+                mNote.setContent(content);
+                mNote.setTitle(title);
 
-            try {
-                mStorage.update(mNote);
-                Log.d("NoteActivity", "update");
-            }
-            catch (NotFoundException e) {
 
-            }
         }
-        this.finish();
     }
 
     private void deleteNote(){
