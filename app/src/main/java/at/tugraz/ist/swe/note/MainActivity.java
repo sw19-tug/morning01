@@ -83,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
 
         mNoteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(view, "load the note view and remove this box!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(view.getContext(), NoteActivity.class);
+                intent.putExtra("note",  mNoteList.get(position) );
+                view.getContext().startActivity(intent);
             }
         });
     }

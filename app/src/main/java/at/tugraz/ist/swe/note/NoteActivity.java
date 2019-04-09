@@ -3,20 +3,23 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
-
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 
 public class NoteActivity extends AppCompatActivity {
 
     private Menu mMenu;
     private Note mNote;
+    private NoteStorage mStorage;
 
 
     @Override
@@ -24,13 +27,54 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
+        mStorage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+        mNote =  (Note) getIntent().getSerializableExtra("note");
+        if(mNote == null){
+            mNote = new Note();
+        }
+
+        TextView tfTitle = findViewById(R.id.tfTitle);
+        tfTitle.setText(mNote.getTitle());
+        tfTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                enableRemoveButton(false);
+                mNote.setTitle(s.toString());
+            }
+        });
+
+        TextView tfContent = findViewById(R.id.tfContent);
+        tfContent.setText(mNote.getContent());
+        tfContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                enableRemoveButton(false);
+                mNote.setContent(s.toString());
+            }
+        });
+
         createToolbar();
     }
 
     private  void  createToolbar(){
         setSupportActionBar((Toolbar) findViewById(R.id.add_new_note_toolbar));
         if(getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.text_new_note);
+            if(mNote.getTitle().equals(""))
+                getSupportActionBar().setTitle(R.string.text_new_note);
+            else
+                getSupportActionBar().setTitle(mNote.getTitle());
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -127,18 +171,21 @@ public class NoteActivity extends AppCompatActivity {
     private void saveNote(){
         //Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
         enableRemoveButton(true);
-        if (mNote == null) {
-            TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
-            TextView tfContent = (TextView)findViewById(R.id.tfContent);
-            String title = tfTitle.getText().toString();
-            String content = tfContent.getText().toString();
 
-            //TODO: pinning
-            mNote = new Note(title, content, 0);
-
+        if (mNote.getId() == Note.ILLEGAL_ID) {
+            Log.d("NoteActivity", "insert");
+            mStorage.insert(mNote);
         } else {
-            //TODO: storage.update(mNote);
+
+            try {
+                mStorage.update(mNote);
+                Log.d("NoteActivity", "update");
+            }
+            catch (NotFoundException e) {
+
+            }
         }
+        this.finish();
     }
 
     private void deleteNote(){
