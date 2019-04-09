@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     NoteAdapter mCustomNoteAdapter;
     ListView mNoteListView;
     NoteStorage mNoteStorage;
+
 
     private static int NOTE_REQUEST_CODE = 1;
 
@@ -57,8 +60,23 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NOTE_REQUEST_CODE) {
             if(resultCode == RESULT_OK){
                 Note note = (Note) data.getSerializableExtra("note");
-                mNoteList.add(note);
-                mNoteStorage.insert(note);
+                boolean editFlag = (boolean) data.getSerializableExtra("editFlag");
+                if(editFlag)
+                {
+                    try {
+
+                        mNoteStorage.update(note);
+                        recreate();
+
+                    } catch (NotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }else
+                {
+                    mNoteList.add(note);
+                    mNoteStorage.insert(note);
+                }
+
             }
             if (resultCode == RESULT_CANCELED) {
                //TODO handle error
@@ -83,8 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
         mNoteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(view, "load the note view and remove this box!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(view.getContext(), NoteActivity.class);
+                intent.putExtra("note",  mNoteList.get(position) );
+                startActivityForResult(intent, NOTE_REQUEST_CODE);
             }
         });
     }
