@@ -1,5 +1,7 @@
 package at.tugraz.ist.swe.note;
 
+
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ListView;
@@ -7,6 +9,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.util.Random;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -15,6 +21,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -93,5 +101,45 @@ public class MainActivityTest {
 
         activityActivityTestRule.getActivity().setmNoteList(notes);
         onView(withId(R.id.notesList)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void checkNoteSaveButtonForEditingNote() {
+
+        NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Note note = new Note ("myTitle", "myContent", 0);
+        storage.insert(note);
+
+        //click second element
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
+
+
+
+        onView(withId(R.id.tfTitle))
+                .check(matches(withText("myTitle")));
+
+
+        onView(withId(R.id.tfTitle)).perform(typeText("update"));
+
+
+
+        onView(withId(R.id.action_add)).perform(click());
+
+        note = new Note('myTitleupdate', 'myContentupdate', 1);
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+
+        assertNotEquals(0, noteListView.getAdapter().getCount());
+        boolean foundNote = false;
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i){
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if(note.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    note.getContent().compareTo(fetchedNote.getContent()) == 0)
+            {
+                foundNote = true;
+                break;
+            }
+
+        }
+        assertTrue(foundNote);
     }
 }
