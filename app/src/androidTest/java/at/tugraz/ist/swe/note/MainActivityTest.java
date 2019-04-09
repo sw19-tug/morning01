@@ -125,7 +125,7 @@ public class MainActivityTest {
 
         onView(withId(R.id.action_add)).perform(click());
 
-        note = new Note('myTitleupdate', 'myContentupdate', 1);
+        note = new Note("myTitleupdate", "myContentupdate", 1);
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
         assertNotEquals(0, noteListView.getAdapter().getCount());
