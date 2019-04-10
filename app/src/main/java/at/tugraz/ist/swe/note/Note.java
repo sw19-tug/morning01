@@ -74,16 +74,16 @@ public class Note implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this) {
+    public boolean equals(Object other){
+        if (other == this) {
             return true;
         }
 
-        if (!(o instanceof Note)) {
+        if (!(other instanceof Note)) {
             return false;
         }
 
-        Note otherNote = (Note)o;
+        Note otherNote = (Note)other;
 
         return this.title.equals(otherNote.title) && this.content.equals(otherNote.content) &&
                 (this.pinned == otherNote.pinned);

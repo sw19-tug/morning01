@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void setNoteList(Note[] newNotes){
         noteList.clear();
-        for(Note n : newNotes){
-            noteList.add(n);
+        for(Note node : newNotes){
+            noteList.add(node);
         }
     }
 
