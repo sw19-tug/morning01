@@ -3,9 +3,7 @@ package at.tugraz.ist.swe.note;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -56,30 +54,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NOTE_REQUEST_CODE) {
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra("note");
-                boolean editFlag = (boolean) data.getSerializableExtra("editFlag");
-                if(editFlag)
-                {
-                    try {
+                OptionFlag flag = (OptionFlag) data.getSerializableExtra("flag");
 
-                        mNoteStorage.update(note);
-                        recreate();
-
-                    } catch (NotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }else
+                switch (flag)
                 {
-                    mNoteList.add(note);
-                    mNoteStorage.insert(note);
+                    case SAVE:
+                        mNoteList.add(note);
+                        mNoteStorage.insert(note);
+                        break;
+                    case EDIT:
+                        try {
+
+                            mNoteStorage.update(note);
+                            recreate();
+
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case REMOVE:
+                        try {
+                            mNoteList.remove(note);
+                            mNoteStorage.delete(note.getId());
+                            recreate();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
 
-            }
-            if (resultCode == RESULT_CANCELED) {
-               //TODO handle error
+                if (resultCode == RESULT_CANCELED) {
+                    //TODO handle error
+                }
             }
         }
     }
