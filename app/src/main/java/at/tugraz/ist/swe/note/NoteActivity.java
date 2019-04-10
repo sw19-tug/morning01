@@ -132,18 +132,12 @@ public class NoteActivity extends AppCompatActivity {
             TextView tfContent = (TextView)findViewById(R.id.tfContent);
             String title = tfTitle.getText().toString();
             String content = tfContent.getText().toString();
-
-            //TODO: pinning
             mNote = new Note(title, content, 0);
-
-        } else {
-            //TODO: storage.update(mNote);
         }
     }
 
     private void deleteNote(){
         Toast.makeText(getApplicationContext(),"delete clicked",Toast.LENGTH_SHORT).show();
-        //todo add dialog
         enableRemoveButton(false);
     }
 

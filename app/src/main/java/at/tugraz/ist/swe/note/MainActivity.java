@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 mNoteStorage.insert(note);
             }
             if (resultCode == RESULT_CANCELED) {
-               //TODO handle error
+               throw new RuntimeException("Note was not saved correctly.");
             }
         }
     }
