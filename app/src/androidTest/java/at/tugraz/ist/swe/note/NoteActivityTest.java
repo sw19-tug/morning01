@@ -29,10 +29,6 @@ public class NoteActivityTest {
         databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Rule
     public ActivityTestRule<NoteActivity> activityActivityTestRule = new ActivityTestRule<>(NoteActivity.class);
 

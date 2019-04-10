@@ -21,15 +21,19 @@ public class NoteAdapter extends ArrayAdapter<Note> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//        return super.getView(position, convertView, parent);
-        Note note = getItem(position);
+
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.note_list_item, parent, false);
         }
 
-        TextView titleTextView = (TextView)convertView.findViewById(R.id.titleTextView);
-        TextView contentTextView = (TextView)convertView.findViewById(R.id.contentTextView);
+        TextView titleTextView = convertView.findViewById(R.id.titleTextView);
+        TextView contentTextView = convertView.findViewById(R.id.contentTextView);
 
+        Note note = getItem(position);
+        if(note == null)
+        {
+            return  convertView;
+        }
         titleTextView.setText(note.getTitle());
         contentTextView.setText(note.getContent());
 
