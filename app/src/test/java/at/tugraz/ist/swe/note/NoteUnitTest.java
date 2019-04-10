@@ -25,7 +25,7 @@ public class NoteUnitTest {
         assertEquals("", note.getTitle());
         assertEquals("", note.getContent());
         assertNull(note.getCreatedDate());
-        assertEquals(0, note.getPinned());
+        assertEquals(Note.DEFAULT_PINNED, note.getPinned());
         assertFalse(note.isRemoved());
         assertNull(note.getChangedDate());
     }
@@ -36,7 +36,7 @@ public class NoteUnitTest {
         assertEquals("School", noteWithParams.getTitle());
         assertEquals("Lorum Ipsum", noteWithParams.getContent());
         assertNull(noteWithParams.getCreatedDate());
-        assertEquals(0, noteWithParams.getPinned());
+        assertEquals(Note.DEFAULT_PINNED, noteWithParams.getPinned());
         assertFalse(noteWithParams.isRemoved());
         assertNull(noteWithParams.getChangedDate());
     }
