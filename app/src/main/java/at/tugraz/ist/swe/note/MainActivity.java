@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 Note note = (Note) data.getSerializableExtra("note");
                 noteList.add(note);
                 noteStorage.insert(note);
+                customNoteAdapter.notifyDataSetChanged();
             }
             if (resultCode == RESULT_CANCELED) {
                throw new RuntimeException("Note was not saved correctly.");
