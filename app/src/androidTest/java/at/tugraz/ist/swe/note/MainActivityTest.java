@@ -91,6 +91,29 @@ public class MainActivityTest {
     }
 
     @Test
+    public void checkNoEmptyNote() {
+
+        boolean foundEmptyNote = false;
+        onView(withId(R.id.createNoteButton)).perform(click());
+
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i){
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if(fetchedNote.getTitle().isEmpty() && fetchedNote.getContent().isEmpty())
+            {
+                foundEmptyNote = true;
+                break;
+            }
+        }
+
+        assertNotEquals(true, foundEmptyNote);
+
+    }
+
+    @Test
     public void checkNotesListViewVisibility() {
         Note[] notes = {
                 new Note("note1", "blabla1", 1)
