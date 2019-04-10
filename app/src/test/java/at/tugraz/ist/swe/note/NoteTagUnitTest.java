@@ -12,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class TagUnitTest {
+public class NoteTagUnitTest {
 
     private NoteTag mTag;
     private NoteTag mTagWithParams;
@@ -29,18 +29,18 @@ public class TagUnitTest {
     public void testInitialState() {
         assertNotNull(mTag);
         assertEquals("", mTag.getName());
-        assertNull(mTag.getColor());
-        assertEquals(0, mTag.getNumberOfUsages);
-        assertEquals(0, mTag.getId());
+        assertEquals(0, mTag.getColor());
+        assertEquals(0, mTag.getNumberOfUsages());
+        assertEquals(-1, mTag.getId());
     }
 
     @Test
     public void testInitialStateWithParams() {
         assertNotNull(mTagWithParams);
-        assertEquals(tagName, mTag.getName());
-        assertEquals(tagColor, mTag.getColor());
-        assertEquals(0, mTag.getNumberOfUsages);
-        assertEquals(0, mTag.getId());
+        assertEquals(tagName, mTagWithParams.getName());
+        assertEquals(tagColor, mTagWithParams.getColor());
+        assertEquals(0, mTagWithParams.getNumberOfUsages());
+        assertEquals(-1, mTagWithParams.getId());
     }
 
 }
