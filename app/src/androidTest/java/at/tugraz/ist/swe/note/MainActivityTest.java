@@ -47,8 +47,7 @@ public class MainActivityTest {
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
-
-        assertEquals(3, noteListView.getAdapter().getCount());
+        assertEquals(notes.length, noteListView.getAdapter().getCount());
         for (int i = 0; i < notes.length; ++i){
             assertTrue(notes[i].equals(noteListView.getAdapter().getItem(i)));
         }

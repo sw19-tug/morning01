@@ -10,8 +10,9 @@ import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class NoteStorage {
-    public static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault());
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault());
+    public static final int INITIAL_PINNING_NUMBER = 1;
 
     private DatabaseHelper databaseHelper;
 
@@ -123,7 +124,7 @@ public class NoteStorage {
     }
 
     public int getNewPinningNumber(){
-        int pinningNumber = 1;
+        int pinningNumber = INITIAL_PINNING_NUMBER;
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String selection = DatabaseHelper.NOTE_COLUMN_PINNED +"=(SELECT MAX("+DatabaseHelper.NOTE_COLUMN_PINNED+") FROM  "+DatabaseHelper.NOTE_TABLE_NAME+")" ;
 

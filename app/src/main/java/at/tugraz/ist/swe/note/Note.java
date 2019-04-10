@@ -4,14 +4,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Note implements Serializable {
-    public static long ILLEGAL_ID = -1;
+    public static final long ILLEGAL_ID = -1;
+    public static final int DEFAULT_PINNED = 0;
 
     private long id = ILLEGAL_ID;
     private String title = "";
     private String content = "";
     private Date createdDate = null;
     private boolean removed = false;
-    private int pinned = 0;
+    private int pinned = DEFAULT_PINNED;
     private Date changedDate = null;
 
     public Note(){
