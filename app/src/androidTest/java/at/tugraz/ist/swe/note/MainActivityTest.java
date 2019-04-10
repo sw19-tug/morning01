@@ -138,4 +138,20 @@ public class MainActivityTest {
         }
         assertTrue(foundNote);
     }
+
+    @Test
+    public void checkToolbarButtonsVisibility() {
+        onView(withId(R.id.burgerButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.appTitle)).check(matches(isDisplayed()));
+        onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.actionButton)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void checkIfToolbarButtonsAreClickable() {
+        onView(withId(R.id.burgerButton)).check(matches(isClickable()));
+        onView(withId(R.id.appTitle)).check(matches(isClickable()));
+        onView(withId(R.id.searchButton)).check(matches(isClickable()));
+        onView(withId(R.id.actionOverflowButton)).check(matches(isClickable()));
+    }
 }
