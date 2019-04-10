@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import at.tugraz.ist.swe.note.Note;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 2;
@@ -36,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NOTE_COLUMN_CONTENT + " TEXT NOT NULL, " +
                 NOTE_COLUMN_CREATED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 NOTE_COLUMN_CHANGED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON CONFLICT REPLACE, " +
-                NOTE_COLUMN_PINNED + " INTEGER DEFAULT 0 NOT NULL, " +
+                NOTE_COLUMN_PINNED + " INTEGER DEFAULT " + Note.DEFAULT_PINNED + " NOT NULL, " +
                 NOTE_COLUMN_REMOVED + " BOOLEAN DEFAULT 0 NOT NULL" +")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
     }
 

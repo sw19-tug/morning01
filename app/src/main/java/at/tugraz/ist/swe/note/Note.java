@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Note implements Serializable {
-    public static long ILLEGAL_ID = -1;
-    public static int DEFAULT_PINNED = 0;
+    public static final long ILLEGAL_ID = -1;
+    public static final int DEFAULT_PINNED = 0;
 
     private long id = ILLEGAL_ID;
     private String title = "";

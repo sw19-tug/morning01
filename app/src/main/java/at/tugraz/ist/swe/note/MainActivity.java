@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     ListView noteListView;
     NoteStorage noteStorage;
 
-    private static int NOTE_REQUEST_CODE = 1;
+    private static final int NOTE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
