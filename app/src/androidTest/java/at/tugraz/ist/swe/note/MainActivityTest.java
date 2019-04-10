@@ -119,10 +119,8 @@ public class MainActivityTest {
         onView(withId(R.id.tfTitle)).perform(typeText("update"));
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
-        noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
         Note note = new Note(check_note.getTitle()+"update", check_note.getContent(), check_note.getPinned());
-
 
         assertNotEquals(0, noteListView.getAdapter().getCount());
         boolean foundNote = false;
@@ -137,5 +135,40 @@ public class MainActivityTest {
 
         }
         assertTrue(foundNote);
+    }
+
+    @Test
+    public void checkIfNoteIsDeletedAfterPressingDeleteOK(){
+        //click second element
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        Note check_note = (Note) noteListView.getAdapter().getItem(0);
+        onView(withId(R.id.tfTitle))
+                .check(matches(withText(check_note.getTitle())));
+
+        onView(withId(R.id.tfContent))
+                .check(matches(withText(check_note.getContent())));
+
+        onView(withContentDescription(R.string.action_remove)).perform(click());
+        onView(withText("YES")).perform(click());
+
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        Note note = new Note(check_note.getTitle(), check_note.getContent(), check_note.getPinned());
+
+        assertNotEquals(0, noteListView.getAdapter().getCount());
+        boolean foundNote = false;
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i){
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if(note.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    note.getContent().compareTo(fetchedNote.getContent()) == 0)
+            {
+                foundNote = true;
+                break;
+            }
+
+        }
+        assertTrue(!foundNote);
     }
 }
