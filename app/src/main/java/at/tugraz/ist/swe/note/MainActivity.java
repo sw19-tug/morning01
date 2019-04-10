@@ -15,10 +15,10 @@ import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<Note> mNoteList = new ArrayList<>();
-    NoteAdapter mCustomNoteAdapter;
-    ListView mNoteListView;
-    NoteStorage mNoteStorage;
+    ArrayList<Note> noteList = new ArrayList<>();
+    NoteAdapter customNoteAdapter;
+    ListView noteListView;
+    NoteStorage noteStorage;
 
     private static int NOTE_REQUEST_CODE = 1;
 
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mNoteStorage = new NoteStorage(new DatabaseHelper(this));
+        noteStorage = new NoteStorage(new DatabaseHelper(this));
         initAddNoteButton();
 
         initNoteView();
@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setmNoteList(Note[] newNotes){
-        mNoteList.clear();
-        for(Note n: newNotes){
-            mNoteList.add(n);
+    public void setNoteList(Note[] newNotes){
+        noteList.clear();
+        for(Note n : newNotes){
+            noteList.add(n);
         }
     }
 
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NOTE_REQUEST_CODE) {
             if(resultCode == RESULT_OK){
                 Note note = (Note) data.getSerializableExtra("note");
-                mNoteList.add(note);
-                mNoteStorage.insert(note);
+                noteList.add(note);
+                noteStorage.insert(note);
             }
             if (resultCode == RESULT_CANCELED) {
                throw new RuntimeException("Note was not saved correctly.");
@@ -67,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNoteView(){
-        Note[] allNotes = mNoteStorage.getAll();
+        Note[] allNotes = noteStorage.getAll();
 
-        setmNoteList(allNotes);
+        setNoteList(allNotes);
 
-        mCustomNoteAdapter = new NoteAdapter(this, mNoteList);
-        mNoteListView = findViewById(R.id.notesList);
-        mNoteListView.setAdapter(mCustomNoteAdapter);
+        customNoteAdapter = new NoteAdapter(this, noteList);
+        noteListView = findViewById(R.id.notesList);
+        noteListView.setAdapter(customNoteAdapter);
     }
 
     private void showNotes(){
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         //This could for example be just <Note i> for i in [0 ... length of notes list]
         //or maybe the first few words of the corresponding note.
 
-        mNoteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(view, "load the note view and remove this box!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
