@@ -106,9 +106,9 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         saveNote();
-        Intent noteIntent = new Intent();
-        noteIntent.putExtra("note", note);
-        setResult(RESULT_OK, noteIntent);
+        Intent intent = new Intent();
+        intent.putExtra("note", note);
+        setResult(RESULT_OK, intent);
         finish();
         super.onBackPressed();
     }
@@ -121,11 +121,10 @@ public class NoteActivity extends AppCompatActivity {
 
 
     private void saveNote(){
-        //Toast.makeText(getApplicationContext(),"save clicked",Toast.LENGTH_SHORT).show();
         enableRemoveButton(true);
         if (note == null) {
-            TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
-            TextView tfContent = (TextView)findViewById(R.id.tfContent);
+            TextView tfTitle = findViewById(R.id.tfTitle);
+            TextView tfContent = findViewById(R.id.tfContent);
             String title = tfTitle.getText().toString();
             String content = tfContent.getText().toString();
             note = new Note(title, content, 0);
