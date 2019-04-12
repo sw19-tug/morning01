@@ -12,15 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
-import at.tugraz.ist.swe.note.database.NotFoundException;
 
 
 public class NoteActivity extends AppCompatActivity {
-
-    private Menu mMenu;
-    private Note mNote;
+    private Menu menu;
+    private Note note;
     boolean editFlag = false;
-    NoteStorage mStorage;
+    NoteStorage storage;
 
 
     @Override
@@ -28,15 +26,15 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-         mStorage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+        storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
 
-        mNote =  (Note) getIntent().getSerializableExtra("note");
-        if(mNote == null){
-            mNote = new Note();
+        note =  (Note) getIntent().getSerializableExtra("note");
+        if(note == null){
+            note = new Note();
         }
 
         TextView tfTitle = findViewById(R.id.tfTitle);
-        tfTitle.setText(mNote.getTitle());
+        tfTitle.setText(note.getTitle());
         tfTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {}
@@ -47,12 +45,12 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 enableRemoveButton(false);
-                mNote.setTitle(s.toString());
+                note.setTitle(s.toString());
             }
         });
 
         TextView tfContent = findViewById(R.id.tfContent);
-        tfContent.setText(mNote.getContent());
+        tfContent.setText(note.getContent());
         tfContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {}
@@ -63,7 +61,7 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 enableRemoveButton(false);
-                mNote.setContent(s.toString());
+                note.setContent(s.toString());
             }
         });
 
@@ -73,34 +71,34 @@ public class NoteActivity extends AppCompatActivity {
     private  void  createToolbar(){
         setSupportActionBar((Toolbar) findViewById(R.id.add_new_note_toolbar));
         if(getSupportActionBar() != null) {
-            if(mNote.getTitle().equals(""))
+            if(note.getTitle().equals(""))
                 getSupportActionBar().setTitle(R.string.text_new_note);
             else
-                getSupportActionBar().setTitle(mNote.getTitle());
+                getSupportActionBar().setTitle(note.getTitle());
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
     }
 
     private  void enableRemoveButton(boolean enabled){
-        mMenu.findItem(R.id.action_add).setVisible(!enabled);
-        mMenu.findItem(R.id.action_remove).setVisible(enabled);
+        menu.findItem(R.id.action_add).setVisible(!enabled);
+        menu.findItem(R.id.action_remove).setVisible(enabled);
     }
 
     private  void enableUnpinningButton(boolean enabled){
-        mMenu.findItem(R.id.action_pinning).setVisible(!enabled);
-        mMenu.findItem(R.id.action_unpinning).setVisible(enabled);
+        menu.findItem(R.id.action_pinning).setVisible(!enabled);
+        menu.findItem(R.id.action_unpinning).setVisible(enabled);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
-        mMenu = menu;
+        this.menu = menu;
         enableRemoveButton(false);
         enableUnpinningButton(false);
 
-        MenuItem addButton = mMenu.findItem(R.id.action_add);
+        MenuItem addButton = this.menu.findItem(R.id.action_add);
         addButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -110,7 +108,7 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        MenuItem removeButton = mMenu.findItem(R.id.action_remove);
+        MenuItem removeButton = this.menu.findItem(R.id.action_remove);
         removeButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -120,7 +118,7 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        MenuItem pinningButton = mMenu.findItem(R.id.action_pinning);
+        MenuItem pinningButton = this.menu.findItem(R.id.action_pinning);
         pinningButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -130,7 +128,7 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        MenuItem unpinningButton = mMenu.findItem(R.id.action_unpinning);
+        MenuItem unpinningButton = this.menu.findItem(R.id.action_unpinning);
         unpinningButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -140,7 +138,7 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        MenuItem shareButton = mMenu.findItem(R.id.action_share);
+        MenuItem shareButton = this.menu.findItem(R.id.action_share);
         shareButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -156,11 +154,11 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         saveNote();
-        Intent noteIntent = new Intent();
-        noteIntent.putExtra("note", mNote);
-        noteIntent.putExtra("editFlag",editFlag);
+        Intent intent = new Intent();
+        intent.putExtra("note", note);
+        intent.putExtra("editFlag",editFlag);
         Log.d("anna",editFlag+" editflag note");
-        setResult(RESULT_OK, noteIntent);
+        setResult(RESULT_OK, intent);
         finish();
         super.onBackPressed();
     }
@@ -174,28 +172,23 @@ public class NoteActivity extends AppCompatActivity {
 
     private void saveNote(){
         enableRemoveButton(true);
-        TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
-        TextView tfContent = (TextView)findViewById(R.id.tfContent);
+        TextView tfTitle = findViewById(R.id.tfTitle);
+        TextView tfContent = findViewById(R.id.tfContent);
         String title = tfTitle.getText().toString();
         String content = tfContent.getText().toString();
 
-        if (mNote.getId() == Note.ILLEGAL_ID) {
+        if (note.getId() == Note.ILLEGAL_ID) {
             editFlag = false;
-
-            //TODO: pinning
-            mNote = new Note(title, content, 0);
+            note = new Note(title, content, 0);
         } else {
-                editFlag = true;
-                mNote.setContent(content);
-                mNote.setTitle(title);
-
-
+            editFlag = true;
+            note.setContent(content);
+            note.setTitle(title);
         }
     }
 
     private void deleteNote(){
         Toast.makeText(getApplicationContext(),"delete clicked",Toast.LENGTH_SHORT).show();
-        //todo add dialog
         enableRemoveButton(false);
     }
 

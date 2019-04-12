@@ -4,14 +4,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Note implements Serializable {
-    public static long ILLEGAL_ID = -1;
+    public static final long ILLEGAL_ID = -1;
+    public static final int DEFAULT_PINNED = 0;
 
     private long id = ILLEGAL_ID;
     private String title = "";
     private String content = "";
     private Date createdDate = null;
     private boolean removed = false;
-    private int pinned = 0;
+    private int pinned = DEFAULT_PINNED;
     private Date changedDate = null;
 
     public Note(){
@@ -74,16 +75,16 @@ public class Note implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this) {
+    public boolean equals(Object other){
+        if (other == this) {
             return true;
         }
 
-        if (!(o instanceof Note)) {
+        if (!(other instanceof Note)) {
             return false;
         }
 
-        Note otherNote = (Note)o;
+        Note otherNote = (Note)other;
 
         return this.title.equals(otherNote.title) && this.content.equals(otherNote.content) &&
                 (this.pinned == otherNote.pinned);

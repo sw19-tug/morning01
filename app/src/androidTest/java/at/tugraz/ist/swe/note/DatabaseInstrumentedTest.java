@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -49,16 +48,20 @@ public class DatabaseInstrumentedTest {
     @Test
     public  void testGetNewPinningNumber() throws NotFoundException{
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        assertEquals(1, storage.getNewPinningNumber());
-        Note note = new Note ("title1", "content1", 3);
+        assertEquals(NoteStorage.INITIAL_PINNING_NUMBER, storage.getNewPinningNumber());
+        int nodePinningNumber = 3;
+        Note note = new Note ("title1", "content1", nodePinningNumber);
         storage.insert(note);
-        assertEquals(4, storage.getNewPinningNumber());
+        assertEquals(NoteStorage.INITIAL_PINNING_NUMBER + nodePinningNumber, storage.getNewPinningNumber());
     }
 
     @Test
     public void testNoteInsert() {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        Note note = new Note("title1", "content1", 1);
+        String title = "title1";
+        String content = "content1";
+        int pinned = 1;
+        Note note = new Note(title, content, pinned);
         assertNull(note.getCreatedDate());
         assertNull(note.getChangedDate());
         storage.insert(note);
@@ -68,7 +71,7 @@ public class DatabaseInstrumentedTest {
 
         String selection = DatabaseHelper.NOTE_COLUMN_TITLE + " = ? AND " + DatabaseHelper.NOTE_COLUMN_CONTENT + " = ? AND " + DatabaseHelper.NOTE_COLUMN_PINNED + " = ?";
 
-        String[] selectionArgs = {"title1", "content1", "1"};
+        String[] selectionArgs = {title, content, String.valueOf(pinned)};
 
         Cursor cursor = database.query(
                 DatabaseHelper.NOTE_TABLE_NAME,
@@ -108,12 +111,15 @@ public class DatabaseInstrumentedTest {
     @Test
     public void testFindNoteById() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        Note note = new Note ("title1", "content1", 1);
+        String title = "title1";
+        String content = "content1";
+        int pinned = 1;
+        Note note = new Note (title, content, pinned);
         storage.insert(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),"title1");
-        assertEquals(foundNote.getContent(),"content1");
-        assertEquals(foundNote.getPinned(),1);
+        assertEquals(foundNote.getTitle(),title);
+        assertEquals(foundNote.getContent(),content);
+        assertEquals(foundNote.getPinned(),pinned);
     }
 
 
@@ -122,14 +128,17 @@ public class DatabaseInstrumentedTest {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         Note note = new Note ("title1", "content1", 1);
         storage.insert(note);
-        note.setTitle("title2");
-        note.setContent("content2");
-        note.setPinned(0);
+        String title = "title2";
+        String content = "content2";
+        int pinned = 0;
+        note.setTitle(title);
+        note.setContent(content);
+        note.setPinned(pinned);
         storage.update(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),"title2");
-        assertEquals(foundNote.getContent(),"content2");
-        assertEquals(foundNote.getPinned(),0);
+        assertEquals(foundNote.getTitle(),title);
+        assertEquals(foundNote.getContent(),content);
+        assertEquals(foundNote.getPinned(),pinned);
     }
 
     @Test
@@ -148,7 +157,7 @@ public class DatabaseInstrumentedTest {
 
         Note[] allStoredNotes = noteStorage.getAll();
 
-        assertEquals(3, allStoredNotes.length);
+        assertEquals(notes.length, allStoredNotes.length);
         for (int i = 0; i < notes.length; ++i){
             assertTrue(notes[i].equals(allStoredNotes[i]));
         }
