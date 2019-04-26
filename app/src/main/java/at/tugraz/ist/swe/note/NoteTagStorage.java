@@ -90,5 +90,25 @@ public class NoteTagStorage {
         setValues(noteTag, noteTagsCursor);
         return noteTag;
     }
+
+    public void update(NoteTag noteTag) throws NotFoundException {
+        SQLiteDatabase database = tagDatabaseHelper.getWritableDatabase();
+        long id = noteTag.getId();
+        String whereClause = TagDatabaseHelper.TAG_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = getTagContentValues(noteTag);
+        assertOneAffectedRow(database.update(tagDatabaseHelper.TAG_TABLE_NAME, getTagContentValues(noteTag), whereClause, whereArgs), id);
+        Cursor cursor = getTagCursor(id);
+        cursor.moveToNext();
+        setValues(noteTag, cursor);
+        cursor.close();
+    }
+
+    public void delete(long id) throws NotFoundException {
+        SQLiteDatabase database = tagDatabaseHelper.getWritableDatabase();
+        String whereClause = tagDatabaseHelper.TAG_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        assertOneAffectedRow(database.delete(tagDatabaseHelper.TAG_TABLE_NAME, whereClause, whereArgs), id);
+    }
 }
 
