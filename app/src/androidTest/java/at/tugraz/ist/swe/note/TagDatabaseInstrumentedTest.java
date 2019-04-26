@@ -107,4 +107,41 @@ public class TagDatabaseInstrumentedTest {
             found = false;
         }
     }
+
+    @Test
+    public void testTagUpdate() {
+        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTag noteTag = new NoteTag("name", 2);
+
+        storage.insert(noteTag);
+
+        noteTag.setName("some other name");
+        noteTag.setColor(35);
+
+        try {
+            storage.update(noteTag);
+            NoteTag fetchedTag = storage.findTagById(noteTag.getId());
+            assertEquals(noteTag, fetchedTag);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testTagDelete() {
+        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTag noteTag = new NoteTag("name", 2);
+
+        storage.insert(noteTag);
+        boolean idNotFound = false;
+        try {
+            storage.delete(noteTag.getId());
+            storage.findTagById(noteTag.getId());
+        }
+        catch (NotFoundException ex) {
+            idNotFound = true;
+        }
+        assertTrue(idNotFound);
+    }
+
 }
