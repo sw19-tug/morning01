@@ -1,0 +1,102 @@
+package at.tugraz.ist.swe.note;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class TagDatabaseInstrumentedTest {
+    private TagDatabaseHelper tagDatabaseHelper;
+
+    @Before
+    public void setUpTagDB() {
+        tagDatabaseHelper = new TagDatabaseHelper(InstrumentationRegistry.getTargetContext());
+        tagDatabaseHelper.getWritableDatabase().execSQL("DELETE FROM " + tagDatabaseHelper.TAG_TABLE_NAME);
+    }
+
+    @Test
+    public void testConnectionTagDB() {
+        assertEquals(tagDatabaseHelper.getDatabaseName(), "tag");
+        assertNotNull(tagDatabaseHelper.getReadableDatabase());
+        assertNotNull(tagDatabaseHelper.getWritableDatabase());
+    }
+
+    @Test
+    public void testTagTable() {
+        SQLiteDatabase database = tagDatabaseHelper.getReadableDatabase();
+        database.query("tag", null, null, 1, 1);
+    }
+
+
+    @Test
+    public void testTagInsert() {
+        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTag noteTag = new NoteTag("name", 2, 0);
+        storage.insert(noteTag);
+        assertNotNull(noteTag.getName());
+        assertNotNull(noteTag.getColor());
+        assertEquals(0, noteTag.getNumberOfUsages());
+        SQLiteDatabase database = tagDatabaseHelper.getReadableDatabase();
+
+        String selection = tagDatabaseHelper.TAG_COLUMN_NAME + " = ? AND " + tagDatabaseHelper.TAG_COLUMN_COLOR + " = ? AND " + tagDatabaseHelper.TAG_COLUMN_NUMBER_OF_USAGES + " = ?";
+
+        String[] selectionArgs = {"name", "2", "1"};
+
+        Cursor cursor = database.query(
+                tagDatabaseHelper.TAG_TABLE_NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+        );
+
+        assertTrue(cursor.getCount() > 0);
+        cursor.close();
+    }
+
+
+
+
+
+    @Test
+    public void testGetAllTags() {
+        NoteTag[] noteTags = {
+                new noteTag("tag1", "blabla1", 1),
+                new noteTag("tag2", "blabla2", 2),
+                new noteTag("tag3", "blabla3", 3)
+        };
+
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+
+        for (int i = 0; i < notes.length; ++i){
+            noteTagStorage.insert(noteTags[i]);
+        }
+
+        NoteTag[] allStoredNoteTags = noteTagStorage.getAll();
+
+        assertEquals(3, allStoredNoteTags.length);
+        for (int i = 0; i < noteTags.length; ++i){
+            assertTrue(noteTags[i].equals(allStoredNoteTags[i]));
+        }
+    }
+
+}
