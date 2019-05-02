@@ -9,6 +9,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.util.Random;
+
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -141,17 +144,32 @@ public class MainActivityTest {
 
     @Test
     public void checkToolbarButtonsVisibility() {
-        onView(withId(R.id.burgerButton)).check(matches(isDisplayed()));
-        onView(withId(R.id.appTitle)).check(matches(isDisplayed()));
         onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
-        onView(withId(R.id.actionButton)).check(matches(isDisplayed()));
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_import)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void checkIfToolbarButtonsAreClickable() {
-        onView(withId(R.id.burgerButton)).check(matches(isClickable()));
-        onView(withId(R.id.appTitle)).check(matches(isClickable()));
+    public void checkIfSearchButtonIsClickable() {
         onView(withId(R.id.searchButton)).check(matches(isClickable()));
-        onView(withId(R.id.actionOverflowButton)).check(matches(isClickable()));
     }
-}
+    @Test
+    public void checkIfImportButtonIsClickable() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_import)).check(matches(isDisplayed()));
+
+    }
+    @Test
+    public void checkIfExportButtonIsClickable() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void checkIfSortButtonIsClickable() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
+    }
+
+    }
