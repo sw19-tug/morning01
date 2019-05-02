@@ -125,23 +125,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         mMenu = menu;
-        return true;
-    }
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
-        mMenu = menu;
-
-
         MenuItem searchButton = mMenu.findItem(R.id.searchButton);
         searchButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+
                 return true;
             }
         });
-
         MenuItem sortButton = mMenu.findItem(R.id.sortButton);
         sortButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -150,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         MenuItem importButton = mMenu.findItem(R.id.importButton);
         importButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -159,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         MenuItem exportButton = mMenu.findItem(R.id.exportButton);
         exportButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -168,9 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         return true;
-    }*/
-
+    }
 
 }
