@@ -141,7 +141,7 @@ public class MainActivityTest {
         }
         assertTrue(foundNote);
     }
-
+/*
     @Test
     public void checkToolbarButtonsVisibility() {
         onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
@@ -171,5 +171,6 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
     }
-
+*/
     }
+

@@ -115,12 +115,12 @@ public class MainActivity extends AppCompatActivity {
 
     private  void  createToolbar(){
         setSupportActionBar((Toolbar) findViewById(R.id.mainActivityToolbar));
-        if(getSupportActionBar() != null) {
+       /* if(getSupportActionBar() != null) {
             getSupportActionBar().setLogo(R.drawable.ic_main_burger_button);
             getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        }
-    }
+        }*/
+    }/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
@@ -160,5 +160,7 @@ public class MainActivity extends AppCompatActivity {
         });
         return true;
     }
+    */
 
 }
+
