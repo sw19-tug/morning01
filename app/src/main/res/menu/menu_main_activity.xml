@@ -3,19 +3,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
+    <!--<item
         android:id="@+id/searchButton"
         android:icon="@drawable/ic_main_search"
         android:title="@string/main_search"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
 
     <item
         android:id="@+id/sortButton"
         android:icon="@drawable/ic_main_sort"
         android:title="@string/main_sort"
-        app:showAsAction="never" />
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/sortByTitleAscButton"
+                android:title="@string/main_sort_by_title_asc"
+                app:showAsAction="never" />
 
-    <item
+            <item
+                android:id="@+id/sortByCreatedDateDescButton"
+                android:title="@string/main_sort_by_created_date_desc"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+
+    <!--<item
         android:id="@+id/importButton"
         android:icon="@drawable/ic_main_import"
         android:title="@string/main_import"
@@ -25,5 +37,5 @@
         android:id="@+id/exportButton"
         android:icon="@drawable/ic_main_export"
         android:title="@string/main_export"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 </menu>

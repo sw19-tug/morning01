@@ -6,9 +6,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ListView;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import java.util.Random;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -33,9 +36,13 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-
     @Rule
     public ActivityTestRule<MainActivity> activityActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Before
+    public void setUp() {
+        Util.resetDatabase(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+    }
 
     @Test
     public void checkCreateNoteButtonVisibility() {
@@ -168,8 +175,6 @@ public class MainActivityTest {
         assertTrue(foundNote);
     }
 /*
-
-
     @Test
     public void checkIfSearchButtonIsClickable() {
         onView(withId(R.id.searchButton)).check(matches(isClickable()));
@@ -185,7 +190,6 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.main_export)).check(matches(isClickable()));
     }
-
 */
 
     @Test
@@ -235,6 +239,4 @@ public class MainActivityTest {
             assertTrue(expectedNoteArray[i].equals(noteListView.getAdapter().getItem(i)));
         }
     }
-
 }
-

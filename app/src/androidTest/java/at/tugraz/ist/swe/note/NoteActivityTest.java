@@ -25,7 +25,7 @@ public class NoteActivityTest {
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
-        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        Util.resetDatabase(databaseHelper);
     }
 
     @Rule

@@ -2,6 +2,8 @@ package at.tugraz.ist.swe.note;
 
 import java.util.Date;
 
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -27,9 +29,14 @@ public abstract class Util {
     static public void fillNoteStorage(Note[] notes, NoteStorage noteStorage) {
         for (int i = 0; i < notes.length; ++i) {
             Note note = notes[i];
-            note.setCreatedDate(makeNextDate());
+            Date date = makeNextDate();
+            note.setCreatedDate(date);
+            note.setChangedDate(date);
             noteStorage.insert(note);
         }
     }
 
+    static public void resetDatabase(DatabaseHelper databaseHelper) {
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+    }
 }

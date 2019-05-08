@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     ListView noteListView;
     NoteStorage noteStorage;
     private Menu menu;
+    private boolean sortByCreatedDate = true;
 
     private static final int NOTE_REQUEST_CODE = 1;
 
@@ -43,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
         for(Note node : newNotes){
             noteList.add(node);
         }
+    }
+
+    public void refreshNoteList() {
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate);
+        setNoteList(allNotes);
+        customNoteAdapter.notifyDataSetChanged();
     }
 
     public void initAddNoteButton(){
@@ -75,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    noteList.add(note);
+                    noteList.add(0, note);
                     noteStorage.insert(note);
                 }
             }
@@ -116,12 +123,13 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         }*/
-    }/*
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         this.menu = menu;
-        MenuItem searchButton = this.menu.findItem(R.id.searchButton);
+        /*MenuItem searchButton = this.menu.findItem(R.id.searchButton);
         searchButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -129,16 +137,26 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             }
-        });
-        MenuItem sortButton = this.menu.findItem(R.id.sortButton);
-        sortButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
+        });*/
+        MenuItem sortByTitleAscButton = this.menu.findItem(R.id.sortByTitleAscButton);
+        sortByTitleAscButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                sortByCreatedDate = false;
+                refreshNoteList();
                 return true;
             }
         });
-        MenuItem importButton = this.menu.findItem(R.id.importButton);
+        MenuItem sortByCreatedDateDescButton = this.menu.findItem(R.id.sortByCreatedDateDescButton);
+        sortByCreatedDateDescButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sortByCreatedDate = true;
+                refreshNoteList();
+                return true;
+            }
+        });
+        /*MenuItem importButton = this.menu.findItem(R.id.importButton);
         importButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -153,8 +171,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 return true;
             }
-        });
+        });*/
         return true;
     }
-    */
 }

@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Date;
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
@@ -31,7 +29,7 @@ public class DatabaseInstrumentedTest {
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
-        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        Util.resetDatabase(databaseHelper);
     }
 
     @Test
