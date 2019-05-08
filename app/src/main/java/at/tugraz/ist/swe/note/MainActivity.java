@@ -57,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NOTE_REQUEST_CODE) {
             if(resultCode == RESULT_OK){
                 Note note = (Note) data.getSerializableExtra("note");
+                if (note.getTitle().isEmpty() && note.getContent().isEmpty())
+                {
+                    return;
+                }
                 boolean editFlag = (boolean) data.getSerializableExtra("editFlag");
                 if(editFlag) {
                     try {

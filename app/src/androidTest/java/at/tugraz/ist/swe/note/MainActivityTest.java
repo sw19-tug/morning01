@@ -19,6 +19,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -86,6 +87,29 @@ public class MainActivityTest {
 
         }
         assertTrue(foundNote);
+
+    }
+
+    @Test
+    public void checkNoEmptyNote() {
+
+        boolean foundEmptyNote = false;
+        onView(withId(R.id.createNoteButton)).perform(click());
+
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i){
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if(fetchedNote.getTitle().isEmpty() && fetchedNote.getContent().isEmpty())
+            {
+                foundEmptyNote = true;
+                break;
+            }
+        }
+
+        assertFalse(foundEmptyNote);
 
     }
 
