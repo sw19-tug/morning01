@@ -11,4 +11,11 @@
     <string name="text_new_note">New note</string>
     <string name="text_title">Title</string>
     <string name="text_content">Content</string>
+    <string name="main_sort">Sort</string>
+    <string name="main_import">Import</string>
+    <string name="main_export">Export</string>
+    <string name="main_search">Search</string>
+
+
+
 </resources>
