@@ -161,4 +161,26 @@ public class MainActivityTest {
         }
         assertTrue(foundNote);
     }
+
+    @Test
+    public void checkNotePinning() {
+        Note[] notes = {
+                new Note("note1", "blabla1", 0),
+                new Note("note2", "blabla2", 0),
+                new Note("note3", "blabla3", 0)
+        };
+
+        activityActivityTestRule.getActivity().setNoteList(notes);
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        Note check_note = (Note) noteListView.getAdapter().getItem(1);
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
+        onView(withId(R.id.action_pinning)).perform(click());
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        Note pinned_note = (Note) noteListView.getAdapter().getItem(0);
+
+        assertTrue(check_note.equals(pinned_note));
+    }
 }
