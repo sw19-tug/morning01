@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ListView;
@@ -9,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.util.Random;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
@@ -165,14 +168,7 @@ public class MainActivityTest {
         assertTrue(foundNote);
     }
 /*
-    @Test
-    public void checkToolbarButtonsVisibility() {
-        onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_import)).check(matches(isDisplayed()));
-        onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
-        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
-    }
+
 
     @Test
     public void checkIfSearchButtonIsClickable() {
@@ -181,19 +177,64 @@ public class MainActivityTest {
     @Test
     public void checkIfImportButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_import)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_import)).check(matches(isClickable()));
 
     }
     @Test
     public void checkIfExportButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_export)).check(matches(isClickable()));
+    }
+
+*/
+
+    @Test
+    public void checkToolbarButtonsVisibility() {
+        //onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        //onView(withText(R.string.main_import)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
+        //onView(withText(R.string.main_export)).check(matches(isDisplayed()));
     }
     @Test
     public void checkIfSortButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_sort)).check(matches(isClickable()));
     }
-*/
+
+    @Test
+    public void checkSortByTitle() {
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 2);
+
+        Note[] notes = {
+                note1,
+                note3,
+                note4,
+                note2,
+        };
+        Note[] expectedNoteArray = {
+                note4,
+                note1,
+                note2,
+                note3,
+        };
+
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Util.fillNoteStorage(notes, activity.noteStorage);
+        ListView noteListView = activity.findViewById(R.id.notesList);
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_sort)).perform(click());
+        onView(withText(R.string.main_sort_by_title_asc)).perform(click());
+
+        assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
+        for (int i = 0; i < expectedNoteArray.length; ++i){
+            assertTrue(expectedNoteArray[i].equals(noteListView.getAdapter().getItem(i)));
+        }
     }
+
+}
 
