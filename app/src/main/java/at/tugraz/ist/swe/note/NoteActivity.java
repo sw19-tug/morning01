@@ -1,11 +1,12 @@
 package at.tugraz.ist.swe.note;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -15,11 +16,12 @@ import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 
 public class NoteActivity extends AppCompatActivity {
+    public final static String NOTE_KEY = "note";
+    public final static String FLAG_KEY = "flag";
     private Menu menu;
     private Note note;
     boolean editFlag = false;
     NoteStorage storage;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,6 @@ public class NoteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                enableRemoveButton(false);
                 note.setTitle(s.toString());
             }
         });
@@ -60,11 +61,9 @@ public class NoteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                enableRemoveButton(false);
                 note.setContent(s.toString());
             }
         });
-
         createToolbar();
     }
 
@@ -80,33 +79,16 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    private  void enableRemoveButton(boolean enabled){
-        menu.findItem(R.id.action_add).setVisible(!enabled);
-        menu.findItem(R.id.action_remove).setVisible(enabled);
-    }
-
     private  void enableUnpinningButton(boolean enabled){
         menu.findItem(R.id.action_pinning).setVisible(!enabled);
         menu.findItem(R.id.action_unpinning).setVisible(enabled);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
         this.menu = menu;
-        enableRemoveButton(false);
         enableUnpinningButton(false);
-
-        MenuItem addButton = this.menu.findItem(R.id.action_add);
-        addButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                NoteActivity.this.saveNote();
-                return true;
-            }
-        });
 
         MenuItem removeButton = this.menu.findItem(R.id.action_remove);
         removeButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -153,13 +135,8 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        saveNote();
-        Intent intent = new Intent();
-        intent.putExtra("note", note);
-        intent.putExtra("editFlag",editFlag);
-        Log.d("anna",editFlag+" editflag note");
-        setResult(RESULT_OK, intent);
-        finish();
+        OptionFlag flag = saveNote();
+        startIntentMain(flag);
         super.onBackPressed();
     }
 
@@ -169,27 +146,43 @@ public class NoteActivity extends AppCompatActivity {
         return true;
     }
 
-
-    private void saveNote(){
-        enableRemoveButton(true);
-        TextView tfTitle = findViewById(R.id.tfTitle);
-        TextView tfContent = findViewById(R.id.tfContent);
+    private OptionFlag saveNote(){
+        TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
+        TextView tfContent = (TextView)findViewById(R.id.tfContent);
         String title = tfTitle.getText().toString();
         String content = tfContent.getText().toString();
 
         if (note.getId() == Note.ILLEGAL_ID) {
-            editFlag = false;
             note = new Note(title, content, 0);
+            return OptionFlag.SAVE;
         } else {
-            editFlag = true;
             note.setContent(content);
             note.setTitle(title);
+            return OptionFlag.EDIT;
         }
     }
 
     private void deleteNote(){
         Toast.makeText(getApplicationContext(),"delete clicked",Toast.LENGTH_SHORT).show();
-        enableRemoveButton(false);
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
+                NoteActivity.this);
+
+        confirmDeleteDialog.setTitle("Confirm Delete");
+        confirmDeleteDialog.setMessage("Are you sure you want delete this note?");
+        confirmDeleteDialog.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startIntentMain(OptionFlag.REMOVE);
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
     }
 
     private void pinningNote(){
@@ -204,5 +197,14 @@ public class NoteActivity extends AppCompatActivity {
 
     private void callShare(){
         Toast.makeText(getApplicationContext(),"share clicked",Toast.LENGTH_SHORT).show();
+    }
+
+    private void startIntentMain(OptionFlag flag)
+    {
+        Intent noteIntent = new Intent();
+        noteIntent.putExtra(NOTE_KEY, note);
+        noteIntent.putExtra(FLAG_KEY, flag);
+        setResult(RESULT_OK, noteIntent);
+        finish();
     }
 }

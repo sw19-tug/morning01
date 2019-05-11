@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -23,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     ListView noteListView;
     NoteStorage noteStorage;
     private Menu menu;
+    int currentSelectedNote;
 
     private static final int NOTE_REQUEST_CODE = 1;
 
@@ -57,30 +57,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NOTE_REQUEST_CODE) {
-            if(resultCode == RESULT_OK){
-                Note note = (Note) data.getSerializableExtra("note");
+            if (resultCode == RESULT_OK) {
+                Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
                 if (note.getTitle().isEmpty() && note.getContent().isEmpty())
                 {
                     return;
                 }
-                boolean editFlag = (boolean) data.getSerializableExtra("editFlag");
-                if(editFlag) {
-                    try {
-                        noteStorage.update(note);
-                        recreate();
+                OptionFlag flag = (OptionFlag) data.getSerializableExtra(NoteActivity.FLAG_KEY);
 
-                    } catch (NotFoundException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    noteList.add(note);
-                    noteStorage.insert(note);
+                switch (flag)
+                {
+                    case SAVE:
+                        noteList.add(note);
+                        noteStorage.insert(note);
+                        customNoteAdapter.notifyDataSetChanged();
+                        break;
+                    case EDIT:
+                        try {
+                            noteStorage.update(note);
+                            noteList.set(currentSelectedNote, note);
+                            customNoteAdapter.notifyDataSetChanged();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case REMOVE:
+                        try {
+                            noteList.remove(note);
+                            noteStorage.delete(note.getId());
+                            customNoteAdapter.notifyDataSetChanged();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-            }
-            if (resultCode == RESULT_CANCELED) {
-               throw new RuntimeException("Note was not saved correctly.");
+
+                if (resultCode == RESULT_CANCELED) {
+                }
             }
         }
     }
@@ -96,15 +111,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNotes(){
-        //noteTitles should contain title of notes. Need to be dynamically loaded.
-        //This could for example be just <Note i> for i in [0 ... length of notes list]
-        //or maybe the first few words of the corresponding note.
-
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
                 intent.putExtra("note",  noteList.get(position) );
                 startActivityForResult(intent, NOTE_REQUEST_CODE);
+                currentSelectedNote = position;
             }
         });
     }

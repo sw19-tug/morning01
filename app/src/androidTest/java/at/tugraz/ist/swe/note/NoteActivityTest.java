@@ -31,21 +31,6 @@ public class NoteActivityTest {
     @Rule
     public ActivityTestRule<NoteActivity> activityActivityTestRule = new ActivityTestRule<>(NoteActivity.class);
 
-    @Test
-    public void checkDisplayLogicSaveDeleteButtons() {
-        onView(withId(R.id.action_add)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_remove)).check(doesNotExist());
-
-        onView(withId(R.id.action_add)).perform(click());
-
-        onView(withId(R.id.action_add)).check(doesNotExist());
-        onView(withId(R.id.action_remove)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.action_remove)).perform(click());
-
-        onView(withId(R.id.action_add)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_remove)).check(doesNotExist());
-    }
 
     @Test
     public void checkDisplayLogicPinUnpinButtons() {
