@@ -43,6 +43,7 @@ public class TagListActivity extends AppCompatActivity {
         tagAdaper = new TagAdapter(this, tags);
         tagListView.setAdapter(tagAdaper);
         tagStorage = new NoteTagStorage(new TagDatabaseHelper(this));
+        setTagList(tagStorage.getAllTags());
         tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), TagActivity.class);
