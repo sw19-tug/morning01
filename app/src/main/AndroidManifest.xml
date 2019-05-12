@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".TagsListActivity"
+            android:name=".TagListActivity"
             android:label="@string/title_activity_tags_list"
             android:theme="@style/NoActionBar"></activity>
         <activity android:name=".MainActivity">

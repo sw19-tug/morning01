@@ -1,4 +1,4 @@
-package at.tugraz.ist.swe.note.database;
+package at.tugraz.ist.swe.note;
 
 
 public class NoteTag {

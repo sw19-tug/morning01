@@ -2,18 +2,12 @@ package at.tugraz.ist.swe.note;
 
 import android.graphics.Color;
 import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 import android.widget.ListView;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import java.util.Random;
 
-import at.tugraz.ist.swe.note.database.NoteTag;
-
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -28,12 +22,11 @@ import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 
-public class TagsListActivityTest {
+public class TagListActivityTest {
 
     @Rule
-    public ActivityTestRule<TagsListActivity> activityActivityTestRule = new ActivityTestRule<>(TagsListActivity.class);
+    public ActivityTestRule<TagListActivity> activityActivityTestRule = new ActivityTestRule<>(TagListActivity.class);
 
     @Test
     public void checkCreateNoteButtonVisibility() {
@@ -55,11 +48,39 @@ public class TagsListActivityTest {
 
         activityActivityTestRule.getActivity().setTagList(tags);
 
-        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagsListView);
+        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
 
         assertEquals(tags.length, tagListView.getAdapter().getCount());
         for (int i = 0; i < tags.length; ++i){
             assertTrue(tags[i].equals(tagListView.getAdapter().getItem(i)));
         }
+    }
+
+    @Test
+    public void checkProperReturnFromTagActivity() {
+        onView(withId(R.id.createTagButton)).perform(click());
+
+        Random generator = new Random();
+        String randomTitle = String.valueOf(generator.nextInt(100000));
+
+        onView(withId(R.id.tagTitle)).perform(typeText(randomTitle));
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        NoteTag tag = new NoteTag(randomTitle, Color.BLUE);
+        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
+
+        assertNotEquals(0, tagListView.getAdapter().getCount());
+        boolean foundTag = false;
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+            Note fetchedNote = (Note) tagListView.getAdapter().getItem(i);
+            if(tag.getName().compareTo(fetchedNote.getTitle()) == 0)
+            {
+                foundTag = true;
+                break;
+            }
+
+        }
+        assertTrue(foundTag);
+
     }
 }
