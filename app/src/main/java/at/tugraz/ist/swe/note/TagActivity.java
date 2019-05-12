@@ -71,11 +71,12 @@ public class TagActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_add_new_tag, menu);
         this.menu = menu;
 
-        MenuItem removeButton = this.menu.findItem(R.id.action_remove);
+        MenuItem removeButton = this.menu.findItem(R.id.action_tag_remove);
         removeButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                TagActivity.this.deleteNoteTag();
                 return true;
             }
         });
@@ -115,5 +116,27 @@ public class TagActivity extends AppCompatActivity {
         tagIntent.putExtra(FLAG_KEY, flag);
         setResult(RESULT_OK, tagIntent);
         finish();
+    }
+
+    private void deleteNoteTag(){
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
+                TagActivity.this);
+
+        confirmDeleteDialog.setTitle("Confirm Delete");
+        confirmDeleteDialog.setMessage("Are you sure you want delete this tag?");
+        confirmDeleteDialog.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startIntentMain(OptionFlag.REMOVE);
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
     }
 }

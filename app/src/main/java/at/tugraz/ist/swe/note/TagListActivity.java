@@ -86,6 +86,15 @@ public class TagListActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         break;
+                    case REMOVE:
+                        try {
+                            tags.remove(tag);
+                            tagStorage.delete(tag.getId());
+                            tagAdaper.notifyDataSetChanged();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
 
 
