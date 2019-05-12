@@ -1,5 +1,7 @@
 package at.tugraz.ist.swe.note;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -138,6 +140,13 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+        if (note.getPinned() > 0){
+            enableUnpinningButton(true);
+        }
+        else {
+            enableUnpinningButton(false);
+        }
+
         MenuItem shareButton = this.menu.findItem(R.id.action_share);
         shareButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -179,7 +188,8 @@ public class NoteActivity extends AppCompatActivity {
 
         if (note.getId() == Note.ILLEGAL_ID) {
             editFlag = false;
-            note = new Note(title, content, 0);
+            note.setContent(content);
+            note.setTitle(title);
         } else {
             editFlag = true;
             note.setContent(content);
@@ -193,16 +203,36 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void pinningNote(){
-        Toast.makeText(getApplicationContext(),"pinning clicked",Toast.LENGTH_SHORT).show();
+        note.setPinned(getCurrentPinningNumber());
         enableUnpinningButton(true);
     }
 
     private void unpinningNote(){
-        Toast.makeText(getApplicationContext(),"unpinning clicked",Toast.LENGTH_SHORT).show();
+        note.setPinned(0);
         enableUnpinningButton(false);
     }
 
     private void callShare(){
         Toast.makeText(getApplicationContext(),"share clicked",Toast.LENGTH_SHORT).show();
     }
+
+    int getCurrentPinningNumber(){
+        int currentPinningNumber =  loadInt("currentPinningNumber");
+        saveInt("currentPinningNumber", currentPinningNumber + 1);
+        return currentPinningNumber;
+    }
+
+    public void saveInt(String key, int value){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    public int loadInt(String key){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int savedValue = sharedPreferences.getInt(key, 0);
+        return savedValue;
+    }
+
 }

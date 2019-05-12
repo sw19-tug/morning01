@@ -4,6 +4,7 @@ package at.tugraz.ist.swe.note;
 
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
@@ -50,6 +52,19 @@ public class MainActivityTest {
         };
 
         activityActivityTestRule.getActivity().setNoteList(notes);
+
+        try{
+            runOnUiThread(new Runnable(){
+                public void run() {
+                    NoteAdapter customNoteAdapter = new NoteAdapter(
+                            activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
+
+                    activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
+                }
+            });
+        }
+        catch(Throwable e){throw new RuntimeException();}
+
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
@@ -126,6 +141,24 @@ public class MainActivityTest {
     @Test
     public void checkNoteSaveButtonForEditingNote() {
 
+        Note[] notes = {
+                new Note("note1", "blabla1", 0),
+                new Note("note2", "blabla2", 0),
+                new Note("note3", "blabla3", 0)
+        };
+        activityActivityTestRule.getActivity().setNoteList(notes);
+
+        try{
+            runOnUiThread(new Runnable(){
+                public void run() {
+                    NoteAdapter customNoteAdapter = new NoteAdapter(
+                            activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
+
+                    activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
+                }
+            });
+        }
+        catch(Throwable e){throw new RuntimeException();}
 
         //click second element
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).perform(click());
@@ -169,18 +202,31 @@ public class MainActivityTest {
                 new Note("note2", "blabla2", 0),
                 new Note("note3", "blabla3", 0)
         };
-
         activityActivityTestRule.getActivity().setNoteList(notes);
 
+        try{
+            runOnUiThread(new Runnable(){
+                public void run() {
+                    NoteAdapter customNoteAdapter = new NoteAdapter(
+                            activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
+
+                    activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
+                }
+            });
+        }
+        catch(Throwable e){throw new RuntimeException();}
+
+
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
-        Note check_note = (Note) noteListView.getAdapter().getItem(1);
+        Note checkNote = (Note) noteListView.getAdapter().getItem(1);
 
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
         onView(withId(R.id.action_pinning)).perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
-        Note pinned_note = (Note) noteListView.getAdapter().getItem(0);
+        Note pinnedNote = (Note) noteListView.getAdapter().getItem(0);
 
-        assertTrue(check_note.equals(pinned_note));
+        assertTrue(checkNote.getTitle().equals(pinnedNote.getTitle()) &&
+                checkNote.getContent().equals(pinnedNote.getContent()));
     }
 }

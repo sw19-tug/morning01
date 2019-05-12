@@ -71,7 +71,12 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    noteList.add(note);
+                    if (note.getPinned() > 0){
+                        noteList.add(0, note);
+                    }
+                    else{
+                        noteList.add(note);
+                    }
                     noteStorage.insert(note);
                 }
             }
