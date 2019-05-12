@@ -1,11 +1,15 @@
 package at.tugraz.ist.swe.note;
 
 
-public class NoteTag {
+import android.graphics.Color;
+
+import java.io.Serializable;
+
+public class NoteTag implements Serializable {
     public static long ILLEGAL_ID = -1;
 
     private long id = ILLEGAL_ID;
-    private int color = 0;
+    private int color = Color.BLACK;
     private int numberOfUsages = 0;
     private String name = "";
 

@@ -1,5 +1,6 @@
 package at.tugraz.ist.swe.note;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,14 +8,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.util.ArrayList;
+import at.tugraz.ist.swe.note.database.NotFoundException;
+import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
 
 public class TagListActivity extends AppCompatActivity {
     private ListView tagListView;
     private TagAdapter tagAdaper;
-    private ArrayList<NoteTag> tags;
+    private NoteTagStorage tagStorage;
+    ArrayList<NoteTag> tags;
+    private static final int TAG_REQUEST_CODE = 2;
+    int currentSelectedTag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,21 +33,47 @@ public class TagListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(view.getContext(), TagActivity.class);
+                startActivityForResult(intent, TAG_REQUEST_CODE);
             }
         });
+
         tagListView = findViewById(R.id.tagListView);
         tags = new ArrayList<NoteTag>();
         tagAdaper = new TagAdapter(this, tags);
         tagListView.setAdapter(tagAdaper);
-
-
+        tagStorage = new NoteTagStorage(new TagDatabaseHelper(this));
     }
     public void setTagList(NoteTag[] tagsList) {
         tags.clear();
         for(NoteTag tag : tagsList){
             tags.add(tag);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TAG_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                NoteTag tag = (NoteTag) data.getSerializableExtra(TagActivity.TAG_KEY);
+                if (tag.getName().isEmpty())
+                {
+                    return;
+                }
+                OptionFlag flag = (OptionFlag) data.getSerializableExtra(TagActivity.FLAG_KEY);
+
+                switch (flag)
+                {
+                    case SAVE:
+                        tags.add(tag);
+                        tagStorage.insert(tag);
+                        tagAdaper.notifyDataSetChanged();
+                        break;
+                }
+
+                if (resultCode == RESULT_CANCELED) {
+                }
+            }
         }
     }
 

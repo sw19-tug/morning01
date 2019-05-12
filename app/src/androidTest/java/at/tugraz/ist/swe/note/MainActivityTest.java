@@ -112,7 +112,6 @@ public class MainActivityTest {
         }
 
         assertFalse(foundEmptyNote);
-
     }
 
     @Test

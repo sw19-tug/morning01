@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -57,13 +58,13 @@ public class TagListActivityTest {
     }
 
     @Test
-    public void checkProperReturnFromTagActivity() {
+    public void checkSaveTag() {
         onView(withId(R.id.createTagButton)).perform(click());
 
         Random generator = new Random();
         String randomTitle = String.valueOf(generator.nextInt(100000));
 
-        onView(withId(R.id.tagTitle)).perform(typeText(randomTitle));
+        onView(withId(R.id.tagNameEditText)).perform(typeText(randomTitle));
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
         NoteTag tag = new NoteTag(randomTitle, Color.BLUE);
@@ -72,8 +73,8 @@ public class TagListActivityTest {
         assertNotEquals(0, tagListView.getAdapter().getCount());
         boolean foundTag = false;
         for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
-            Note fetchedNote = (Note) tagListView.getAdapter().getItem(i);
-            if(tag.getName().compareTo(fetchedNote.getTitle()) == 0)
+            NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
+            if(tag.getName().compareTo(fetchedTag.getName()) == 0)
             {
                 foundTag = true;
                 break;
@@ -81,6 +82,44 @@ public class TagListActivityTest {
 
         }
         assertTrue(foundTag);
+    }
 
+    @Test
+    public void checkEditTag() {
+
+        onView(withId(R.id.createNoteButton)).perform(click());
+
+        Random generator = new Random();
+        String randomTitle = String.valueOf(generator.nextInt(100000));
+
+        onView(withId(R.id.tagNameEditText)).perform(typeText(randomTitle));
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
+
+        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
+        onView(withId(R.id.tagNameEditText))
+                .check(matches(withText(check_tag.getName())));
+
+        String updateString = "update";
+        onView(withId(R.id.tagNameEditText)).perform(typeText(updateString));
+
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        NoteTag tag = new NoteTag(check_tag.getName() + updateString, Color.BLACK);
+
+        assertNotEquals(0, tagListView.getAdapter().getCount());
+        boolean foundTag = false;
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+            NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
+            if(tag.getName().compareTo(fetchedTag.getName()) == 0)
+            {
+                foundTag = true;
+                break;
+            }
+
+        }
+        assertTrue(foundTag);
     }
 }

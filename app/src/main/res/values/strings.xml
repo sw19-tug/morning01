@@ -9,6 +9,8 @@
     <string name="action_pinning">Pinning</string>
     <string name="action_unpinning">Unpinning</string>
     <string name="text_new_note">New note</string>
+    <string name="text_new_tag">New tag</string>
+    <string name="text_edit_tag">Edit tag</string>
     <string name="text_title">Title</string>
     <string name="text_content">Content</string>
     <string name="main_sort">Sort</string>
