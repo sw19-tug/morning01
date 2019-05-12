@@ -16,7 +16,7 @@
     <string name="main_export">Export</string>
     <string name="main_search">Search</string>
     <string name="main_tags_list">Tags</string>
-
+    <string name="title_activity_tags_list">TagsListActivity</string>
 
 
 </resources>
