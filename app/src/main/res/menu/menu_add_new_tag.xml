@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_remove"
+        android:id="@+id/action_tag_remove"
         android:icon="@drawable/ic_remove"
         android:title="@string/action_remove"
         app:showAsAction="ifRoom" />

@@ -102,8 +102,10 @@ public class TagActivity extends AppCompatActivity {
         if (tag.getId() == NoteTag.ILLEGAL_ID) {
             tag = new NoteTag(name, Color.BLACK);
             return OptionFlag.SAVE;
+        } else {
+            tag.setName(name);
+            return OptionFlag.EDIT;
         }
-        return OptionFlag.SAVE;
     }
 
     private void startIntentMain(OptionFlag flag)

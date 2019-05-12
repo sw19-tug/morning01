@@ -43,6 +43,14 @@ public class TagListActivity extends AppCompatActivity {
         tagAdaper = new TagAdapter(this, tags);
         tagListView.setAdapter(tagAdaper);
         tagStorage = new NoteTagStorage(new TagDatabaseHelper(this));
+        tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(view.getContext(), TagActivity.class);
+                intent.putExtra(TagActivity.TAG_KEY,  tags.get(position) );
+                startActivityForResult(intent, TAG_REQUEST_CODE);
+                currentSelectedTag = position;
+            }
+        });
     }
     public void setTagList(NoteTag[] tagsList) {
         tags.clear();
@@ -69,7 +77,17 @@ public class TagListActivity extends AppCompatActivity {
                         tagStorage.insert(tag);
                         tagAdaper.notifyDataSetChanged();
                         break;
+                    case EDIT:
+                        try {
+                            tagStorage.update(tag);
+                            tags.set(currentSelectedTag, tag);
+                            tagAdaper.notifyDataSetChanged();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
+
 
                 if (resultCode == RESULT_CANCELED) {
                 }

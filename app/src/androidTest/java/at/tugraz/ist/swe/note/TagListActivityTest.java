@@ -87,7 +87,7 @@ public class TagListActivityTest {
     @Test
     public void checkEditTag() {
 
-        onView(withId(R.id.createNoteButton)).perform(click());
+        onView(withId(R.id.createTagButton)).perform(click());
 
         Random generator = new Random();
         String randomTitle = String.valueOf(generator.nextInt(100000));
@@ -95,9 +95,9 @@ public class TagListActivityTest {
         onView(withId(R.id.tagNameEditText)).perform(typeText(randomTitle));
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
-        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
 
-        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
         NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
         onView(withId(R.id.tagNameEditText))
                 .check(matches(withText(check_tag.getName())));
@@ -121,5 +121,42 @@ public class TagListActivityTest {
 
         }
         assertTrue(foundTag);
+    }
+
+
+
+    @Test
+    public void checkTagDelete(){
+
+        onView(withId(R.id.createTagButton)).perform(click());
+
+        Random generator = new Random();
+        String randomTitle = String.valueOf(generator.nextInt(100000));
+
+        onView(withId(R.id.tagNameEditText)).perform(typeText(randomTitle));
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
+
+        ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
+        NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
+        onView(withId(R.id.tagNameEditText))
+                .check(matches(withText(check_tag.getName())));
+
+
+        onView(withId(R.id.action_tag_remove)).perform(click());
+        onView(withText("YES")).perform(click());
+
+        boolean foundTag = false;
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+            NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
+            if(check_tag.getName().compareTo(fetchedTag.getName()) == 0)
+            {
+                foundTag = true;
+                break;
+            }
+
+        }
+        assertTrue(!foundTag);
     }
 }
