@@ -24,6 +24,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -138,41 +139,26 @@ public class MainActivityTest {
 
     @Test
     public void checkNoteSaveButtonForEditingNote() {
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Note[] notes = {
+                new Note("note1", "blabla1", 1)
+        };
 
+        Util.fillNoteStorage(notes, activity);
 
-        //click second element
+        // click first element
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).perform(click());
-
-        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
-        Note check_note = (Note) noteListView.getAdapter().getItem(0);
-        onView(withId(R.id.tfTitle))
-                .check(matches(withText(check_note.getTitle())));
-
-        onView(withId(R.id.tfContent))
-                .check(matches(withText(check_note.getContent())));
-
 
         onView(withId(R.id.tfTitle)).perform(typeText("update"));
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
-        noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
-        Note note = new Note(check_note.getTitle()+"update", check_note.getContent(), check_note.getPinned());
+        Note updatedNote = new Note(notes[0].getTitle() + "update", notes[0].getContent(), notes[0].getPinned());
 
+        assertEquals(1, activity.customNoteAdapter.getCount());
 
-        assertNotEquals(0, noteListView.getAdapter().getCount());
-        boolean foundNote = false;
-        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i){
-            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
-            if(note.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
-                    note.getContent().compareTo(fetchedNote.getContent()) == 0)
-            {
-                foundNote = true;
-                break;
-            }
-
-        }
-        assertTrue(foundNote);
+        Note fetchedNote = activity.customNoteAdapter.getItem(0);
+        assertEquals(updatedNote, fetchedNote);
     }
 /*
     @Test
@@ -203,7 +189,10 @@ public class MainActivityTest {
     @Test
     public void checkIfSortButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_sort)).check(matches(isClickable()));
+        onView(withText(R.string.main_sort)).perform(click());
+        // MenuItems are not clickable -> therefore isEnabled()
+        onView(withText(R.string.main_sort_by_title_asc)).check(matches(isEnabled()));
+        onView(withText(R.string.main_sort_by_created_date_desc)).check(matches(isEnabled()));
     }
 
     @Test

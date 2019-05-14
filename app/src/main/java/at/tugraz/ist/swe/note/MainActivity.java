@@ -76,14 +76,14 @@ public class MainActivity extends AppCompatActivity {
                 if(editFlag) {
                     try {
                         noteStorage.update(note);
-                        recreate();
+                        refreshNoteList();
 
                     } catch (NotFoundException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    noteList.add(0, note);
                     noteStorage.insert(note);
+                    refreshNoteList();
                 }
             }
             if (resultCode == RESULT_CANCELED) {
