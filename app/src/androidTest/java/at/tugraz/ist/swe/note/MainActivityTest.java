@@ -155,9 +155,11 @@ public class MainActivityTest {
 
         Note updatedNote = new Note(notes[0].getTitle() + "update", notes[0].getContent(), notes[0].getPinned());
 
-        assertEquals(1, activity.customNoteAdapter.getCount());
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
 
-        Note fetchedNote = activity.customNoteAdapter.getItem(0);
+        assertEquals(1, noteListView.getAdapter().getCount());
+
+        Note fetchedNote = (Note)noteListView.getAdapter().getItem(0);
         assertEquals(updatedNote, fetchedNote);
     }
 /*
@@ -195,6 +197,20 @@ public class MainActivityTest {
         onView(withText(R.string.main_sort_by_created_date_desc)).check(matches(isEnabled()));
     }
 
+    private void checkSort(Note[] notes, Note[] expectedNoteArray, int resourceButtonId) {
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Util.fillNoteStorage(notes, activity);
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_sort)).perform(click());
+        onView(withText(resourceButtonId)).perform(click());
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
+        for (int i = 0; i < expectedNoteArray.length; ++i){
+            assertEquals(expectedNoteArray[i], noteListView.getAdapter().getItem(i));
+        }
+    }
+
     @Test
     public void checkSortByTitle() {
         Note note1 = new Note("A_Test_title", "blabla1", 1);
@@ -215,17 +231,29 @@ public class MainActivityTest {
                 note3,
         };
 
-        MainActivity activity = activityActivityTestRule.getActivity();
-        Util.fillNoteStorage(notes, activity.noteStorage);
-        ListView noteListView = activity.findViewById(R.id.notesList);
+        checkSort(notes, expectedNoteArray, R.string.main_sort_by_title_asc);
+    }
 
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_sort)).perform(click());
-        onView(withText(R.string.main_sort_by_title_asc)).perform(click());
+    @Test
+    public void checkSortByCreatedDate() {
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 2);
+        Note note4 = new Note("D_Test_title", "blabla4", 1);
 
-        assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
-        for (int i = 0; i < expectedNoteArray.length; ++i){
-            assertTrue(expectedNoteArray[i].equals(noteListView.getAdapter().getItem(i)));
-        }
+        Note[] notes = {
+                note1,
+                note2,
+                note3,
+                note4,
+        };
+        Note[] expectedNoteArray = {
+                note3,
+                note4,
+                note2,
+                note1,
+        };
+
+        checkSort(notes, expectedNoteArray, R.string.main_sort_by_created_date_desc);
     }
 }
