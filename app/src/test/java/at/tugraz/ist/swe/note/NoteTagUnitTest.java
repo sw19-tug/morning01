@@ -27,7 +27,7 @@ public class NoteTagUnitTest {
     public void testInitialState() {
         assertNotNull(mTag);
         assertEquals("", mTag.getName());
-        assertEquals(0, mTag.getColor());
+        assertEquals(Color.BLACK, mTag.getColor());
         assertEquals(0, mTag.getNumberOfUsages());
         assertEquals(-1, mTag.getId());
     }
