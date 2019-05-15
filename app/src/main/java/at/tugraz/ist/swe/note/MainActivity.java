@@ -174,11 +174,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent = new Intent(getApplicationContext(), TagListActivity.class);
-//                startActivityForResult(intent, NOTE_REQUEST_CODE);
                 startActivity(intent);
                 return true;
             }
         });
+        searchButton.setVisible(false);
+        sortButton.setVisible(false);
+        importButton.setVisible(false);
+        exportButton.setVisible(false);
         return true;
     }
 }
