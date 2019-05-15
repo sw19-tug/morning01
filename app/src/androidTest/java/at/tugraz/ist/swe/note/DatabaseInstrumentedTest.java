@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Date;
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
@@ -27,18 +25,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class DatabaseInstrumentedTest {
     private DatabaseHelper databaseHelper;
-    private long timestampInMilliseconds = 0;
-
-    private Date makeNextDate() {
-        Date date = new Date(timestampInMilliseconds);
-        timestampInMilliseconds += 1000;
-        return date;
-    }
 
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
-        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        Util.resetDatabase(databaseHelper);
     }
 
     @Test
@@ -150,22 +141,6 @@ public class DatabaseInstrumentedTest {
         assertEquals(foundNote.getPinned(),pinned);
     }
 
-    public void assertNoteArrayEquals(Note[] allStoredNotes, Note[] expectedArray){
-
-        assertEquals(expectedArray.length, allStoredNotes.length);
-        for (int i = 0; i < allStoredNotes.length; ++i){
-            assertTrue(expectedArray[i].equals(allStoredNotes[i]));
-        }
-
-    }
-    public void fillNoteStorage(Note[] notes, NoteStorage noteStorage) {
-        for (int i = 0; i < notes.length; ++i) {
-            Note note = notes[i];
-            note.setCreatedDate(makeNextDate());
-            noteStorage.insert(note);
-        }
-    }
-
 
 
     public void testGetAllNotesSortedByTitle() {
@@ -190,11 +165,11 @@ public class DatabaseInstrumentedTest {
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
 
-        fillNoteStorage(notes, noteStorage);
+        Util.fillNoteStorage(notes, noteStorage);
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
+        Util.assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
     }
 
     @Test
@@ -219,11 +194,11 @@ public class DatabaseInstrumentedTest {
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
 
-        fillNoteStorage(notes, noteStorage);
+        Util.fillNoteStorage(notes, noteStorage);
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
+        Util.assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
     }
 
     @Test
@@ -245,13 +220,13 @@ public class DatabaseInstrumentedTest {
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-        fillNoteStorage(notes, noteStorage);
+        Util.fillNoteStorage(notes, noteStorage);
         noteStorage.softDelete(note1.getId());
         noteStorage.softDelete(note2.getId());
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
 
-        assertNoteArrayEquals(allStoredNotes, expectedArray);
+        Util.assertNoteArrayEquals(allStoredNotes, expectedArray);
     }
 
     @Test
@@ -273,13 +248,13 @@ public class DatabaseInstrumentedTest {
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-        fillNoteStorage(notes, noteStorage);
+        Util.fillNoteStorage(notes, noteStorage);
         noteStorage.softDelete(note1.getId());
         noteStorage.softDelete(note2.getId());
 
         Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
 
-        assertNoteArrayEquals(allStoredNotes, expecterArray);
+        Util.assertNoteArrayEquals(allStoredNotes, expecterArray);
     }
     @Test
     public void testSoftDeleteNote() throws NotFoundException {

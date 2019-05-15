@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     ListView noteListView;
     NoteStorage noteStorage;
     private Menu menu;
-    int currentSelectedNote;
+    private boolean sortByCreatedDate = true;
+
 
     private static final int NOTE_REQUEST_CODE = 1;
 
@@ -39,14 +40,20 @@ public class MainActivity extends AppCompatActivity {
         createToolbar();
     }
 
-    public void setNoteList(Note[] newNotes){
+    public void setNoteList(Note[] newNotes) {
         noteList.clear();
-        for(Note node : newNotes){
+        for (Note node : newNotes) {
             noteList.add(node);
         }
     }
 
-    public void initAddNoteButton(){
+    public void refreshNoteList() {
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate);
+        setNoteList(allNotes);
+        customNoteAdapter.notifyDataSetChanged();
+    }
+
+    public void initAddNoteButton() {
         FloatingActionButton addNoteButton = findViewById(R.id.createNoteButton);
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,33 +69,28 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NOTE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
-                if (note.getTitle().isEmpty() && note.getContent().isEmpty())
-                {
+                if (note.getTitle().isEmpty() && note.getContent().isEmpty()) {
                     return;
                 }
                 OptionFlag flag = (OptionFlag) data.getSerializableExtra(NoteActivity.FLAG_KEY);
 
-                switch (flag)
-                {
+                switch (flag) {
                     case SAVE:
-                        noteList.add(note);
                         noteStorage.insert(note);
-                        customNoteAdapter.notifyDataSetChanged();
+                        refreshNoteList();
                         break;
                     case EDIT:
                         try {
                             noteStorage.update(note);
-                            noteList.set(currentSelectedNote, note);
-                            customNoteAdapter.notifyDataSetChanged();
+                            refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
                         }
                         break;
                     case REMOVE:
                         try {
-                            noteList.remove(note);
                             noteStorage.delete(note.getId());
-                            customNoteAdapter.notifyDataSetChanged();
+                            refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
                         }
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initNoteView(){
+    private void initNoteView() {
         Note[] allNotes = noteStorage.getAll();
 
         setNoteList(allNotes);
@@ -111,18 +113,17 @@ public class MainActivity extends AppCompatActivity {
         noteListView.setAdapter(customNoteAdapter);
     }
 
-    private void showNotes(){
+    private void showNotes() {
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
-                intent.putExtra("note",  noteList.get(position) );
+                intent.putExtra("note", noteList.get(position));
                 startActivityForResult(intent, NOTE_REQUEST_CODE);
-                currentSelectedNote = position;
             }
         });
     }
 
-    private  void  createToolbar(){
+    private void createToolbar() {
         setSupportActionBar((Toolbar) findViewById(R.id.mainActivityToolbar));
        /* if(getSupportActionBar() != null) {
             getSupportActionBar().setLogo(R.drawable.ic_main_burger_button);
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
         }*/
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
@@ -139,15 +141,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
                 return true;
             }
         });
-        MenuItem sortButton = this.menu.findItem(R.id.sortButton);
-        sortButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
+        MenuItem sortByTitleAscButton = this.menu.findItem(R.id.sortByTitleAscButton);
+        sortByTitleAscButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                sortByCreatedDate = false;
+                refreshNoteList();
+                return true;
+            }
+        });
+        MenuItem sortByCreatedDateDescButton = this.menu.findItem(R.id.sortByCreatedDateDescButton);
+        sortByCreatedDateDescButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sortByCreatedDate = true;
+                refreshNoteList();
                 return true;
             }
         });
@@ -179,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         searchButton.setVisible(false);
-        sortButton.setVisible(false);
         importButton.setVisible(false);
         exportButton.setVisible(false);
         return true;

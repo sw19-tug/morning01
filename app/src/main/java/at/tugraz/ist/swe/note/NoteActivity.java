@@ -169,14 +169,14 @@ public class NoteActivity extends AppCompatActivity {
 
         confirmDeleteDialog.setTitle("Confirm Delete");
         confirmDeleteDialog.setMessage("Are you sure you want delete this note?");
-        confirmDeleteDialog.setPositiveButton("YES",
+        confirmDeleteDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startIntentMain(OptionFlag.REMOVE);
                     }
                 });
 
-        confirmDeleteDialog.setNegativeButton("NO",
+        confirmDeleteDialog.setNegativeButton(R.string.no,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
