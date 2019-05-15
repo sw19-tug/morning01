@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import at.tugraz.ist.swe.note.database.NoteTag;
 import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 

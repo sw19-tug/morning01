@@ -3,11 +3,8 @@ package at.tugraz.ist.swe.note;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+
 import at.tugraz.ist.swe.note.database.NotFoundException;
-import at.tugraz.ist.swe.note.database.NoteTag;
 import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
 
 public class NoteTagStorage {

@@ -8,6 +8,11 @@
         android:icon="@drawable/ic_main_search"
         android:title="@string/main_search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/tagListButton"
+        android:icon="@drawable/ic_main_tag_list"
+        android:title="@string/main_tags_list"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/sortButton"

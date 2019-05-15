@@ -30,7 +30,7 @@ public class NoteActivity extends AppCompatActivity {
 
         storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
 
-        note =  (Note) getIntent().getSerializableExtra("note");
+        note =  (Note) getIntent().getSerializableExtra(NOTE_KEY);
         if(note == null){
             note = new Note();
         }

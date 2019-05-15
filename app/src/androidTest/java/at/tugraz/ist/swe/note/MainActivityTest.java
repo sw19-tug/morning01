@@ -112,7 +112,6 @@ public class MainActivityTest {
         }
 
         assertFalse(foundEmptyNote);
-
     }
 
     @Test
@@ -172,13 +171,14 @@ public class MainActivityTest {
         assertTrue(foundNote);
     }
 /*
-    @Test
+     @Test
     public void checkToolbarButtonsVisibility() {
         onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.main_import)).check(matches(isDisplayed()));
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
         onView(withText(R.string.main_export)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_tag_list)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -200,6 +200,11 @@ public class MainActivityTest {
     public void checkIfSortButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void checkIfTagButtonIsClickable() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_tag_list)).check(matches(isDisplayed()));
     }
 */
 

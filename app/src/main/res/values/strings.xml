@@ -9,13 +9,16 @@
     <string name="action_pinning">Pinning</string>
     <string name="action_unpinning">Unpinning</string>
     <string name="text_new_note">New note</string>
+    <string name="text_new_tag">New tag</string>
+    <string name="text_edit_tag">Edit tag</string>
     <string name="text_title">Title</string>
     <string name="text_content">Content</string>
     <string name="main_sort">Sort</string>
     <string name="main_import">Import</string>
     <string name="main_export">Export</string>
     <string name="main_search">Search</string>
-
+    <string name="main_tags_list">Tags</string>
+    <string name="title_activity_tags_list">TagsListActivity</string>
 
 
 </resources>
