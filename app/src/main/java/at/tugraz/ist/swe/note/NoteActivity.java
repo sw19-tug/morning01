@@ -196,7 +196,11 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void callShare(){
-        Toast.makeText(getApplicationContext(),"share clicked",Toast.LENGTH_SHORT).show();
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, note.getTitle());
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, note.getContent());
+        startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_via)));
     }
 
     private void startIntentMain(OptionFlag flag)
