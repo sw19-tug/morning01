@@ -21,6 +21,7 @@
     <string name="main_sort_by_created_date_desc">By date</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
+    <string name="ok">OK</string>
     <string name="main_tags_list">Tags</string>
     <string name="title_activity_tags_list">TagsListActivity</string>
 </resources>
