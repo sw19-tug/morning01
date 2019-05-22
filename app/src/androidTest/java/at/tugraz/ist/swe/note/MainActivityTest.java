@@ -2,10 +2,6 @@ package at.tugraz.ist.swe.note;
 
 
 
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -31,8 +27,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -142,6 +138,7 @@ public class MainActivityTest {
     @Test
     public void checkNoteSaveButtonForEditingNote() {
         MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
         Note checkNote = new Note("note1", "blabla1", 1);
         Note[] notes = {
                 checkNote
@@ -179,6 +176,7 @@ public class MainActivityTest {
     public void checkIfNoteIsDeletedAfterPressingDeleteOK() {
 
         MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
         Note checkNote = new Note("note1", "blabla1", 1);
         Note[] notes = {
                 checkNote
@@ -218,6 +216,7 @@ public class MainActivityTest {
 
     private void checkSort(Note[] notes, Note[] expectedNoteArray, int resourceButtonId) {
         MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
         Util.fillNoteStorage(notes, activity);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -276,4 +275,38 @@ public class MainActivityTest {
         checkSort(notes, expectedNoteArray, R.string.main_sort_by_created_date_desc);
     }
 
+    @Test
+    public void checkNotePinning() {
+        Note[] notes = {
+                new Note("note1", "blabla1", 0),
+                new Note("note2", "blabla2", 0),
+                new Note("note3", "blabla3", 0)
+        };
+        activityActivityTestRule.getActivity().setNoteList(notes);
+
+        try{
+            runOnUiThread(new Runnable(){
+                public void run() {
+                    NoteAdapter customNoteAdapter = new NoteAdapter(
+                            activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
+
+                    activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
+                }
+            });
+        }
+        catch(Throwable e){throw new RuntimeException();}
+
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        Note checkNote = (Note) noteListView.getAdapter().getItem(1);
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
+        onView(withId(R.id.action_pinning)).perform(click());
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+
+        Note pinnedNote = (Note) noteListView.getAdapter().getItem(0);
+
+        assertTrue(checkNote.getTitle().equals(pinnedNote.getTitle()) &&
+                checkNote.getContent().equals(pinnedNote.getContent()));
+    }
 }

@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
         initNoteView();
         showNotes();
         createToolbar();
+    }
+
+    @VisibleForTesting
+    public void setNoteStorage(NoteStorage noteStorage) {
+        this.noteStorage = noteStorage;
     }
 
     public void setNoteList(Note[] newNotes) {
@@ -95,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         break;
-                }
-
-                if (resultCode == RESULT_CANCELED) {
                 }
             }
         }

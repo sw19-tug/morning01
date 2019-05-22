@@ -18,10 +18,15 @@ public class Note implements Serializable {
     public Note(){
     }
 
-    public Note(String title, String content, int pinned){
+    public Note(String title, String content, int pinned) {
         this.title = title;
         this.content = content;
         this.pinned = pinned;
+    }
+
+    public Note(String title, String content){
+        this.title = title;
+        this.content = content;
     }
 
     public long getId() {

@@ -20,7 +20,6 @@ public class NoteActivity extends AppCompatActivity {
     public final static String FLAG_KEY = "flag";
     private Menu menu;
     private Note note;
-    boolean editFlag = false;
     NoteStorage storage;
 
     @Override
@@ -120,6 +119,13 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+        if (note.getPinned() > 0){
+            enableUnpinningButton(true);
+        }
+        else {
+            enableUnpinningButton(false);
+        }
+
         MenuItem shareButton = this.menu.findItem(R.id.action_share);
         shareButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -147,13 +153,14 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private OptionFlag saveNote(){
-        TextView tfTitle = (TextView)findViewById(R.id.tfTitle);
-        TextView tfContent = (TextView)findViewById(R.id.tfContent);
+        TextView tfTitle = findViewById(R.id.tfTitle);
+        TextView tfContent = findViewById(R.id.tfContent);
         String title = tfTitle.getText().toString();
         String content = tfContent.getText().toString();
 
         if (note.getId() == Note.ILLEGAL_ID) {
-            note = new Note(title, content, 0);
+            note.setContent(content);
+            note.setTitle(title);
             return OptionFlag.SAVE;
         } else {
             note.setContent(content);
@@ -186,12 +193,12 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void pinningNote(){
-        Toast.makeText(getApplicationContext(),"pinning clicked",Toast.LENGTH_SHORT).show();
+        note.setPinned(getCurrentPinningNumber());
         enableUnpinningButton(true);
     }
 
     private void unpinningNote(){
-        Toast.makeText(getApplicationContext(),"unpinning clicked",Toast.LENGTH_SHORT).show();
+        note.setPinned(0);
         enableUnpinningButton(false);
     }
 
@@ -210,5 +217,9 @@ public class NoteActivity extends AppCompatActivity {
         noteIntent.putExtra(FLAG_KEY, flag);
         setResult(RESULT_OK, noteIntent);
         finish();
+    }
+
+    int getCurrentPinningNumber(){
+        return storage.getNewPinningNumber();
     }
 }
