@@ -276,18 +276,4 @@ public class MainActivityTest {
         checkSort(notes, expectedNoteArray, R.string.main_sort_by_created_date_desc);
     }
 
-    @Test
-    public void checkShareNote() {
-
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CHOOSER);
-        final Instrumentation.ActivityMonitor activityMonitor = getInstrumentation().addMonitor(filter, null, false);
-
-        onView(withId(R.id.createNoteButton)).perform(click());
-        onView(withId(R.id.action_share)).perform(click());
-
-        final Activity shareActivity = activityMonitor.waitForActivityWithTimeout(1000);
-        assertNotNull(shareActivity);
-    }
-
 }
