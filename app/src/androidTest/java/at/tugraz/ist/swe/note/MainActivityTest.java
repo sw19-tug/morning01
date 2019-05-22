@@ -167,7 +167,7 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         //onView(withText(R.string.main_import)).check(matches(isDisplayed()));
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
-        //onView(withText(R.string.main_export)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -271,4 +271,24 @@ public class MainActivityTest {
         checkSort(notes, expectedNoteArray, R.string.main_sort_by_created_date_desc);
     }
 
+
+    @Test
+    public void checkExporting(){
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 2);
+        Note note4 = new Note("D_Test_title", "blabla4", 1);
+        Note[] notes = {
+                note1,
+                note2,
+                note3,
+                note4,
+        };
+        Util.fillNoteStorage(notes, activity);
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.main_export)).perform(click());
+        onView(withId(R.id.checkBox)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirmExportButton)).check(matches(isDisplayed()));
+    }
 }
