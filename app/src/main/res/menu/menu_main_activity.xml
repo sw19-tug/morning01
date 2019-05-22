@@ -43,4 +43,10 @@
         android:icon="@drawable/ic_main_export"
         android:title="@string/main_export"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/changeTheme"
+        android:icon="@drawable/ic_change_theme_black_24dp"
+        android:title="@string/change_dark_theme"
+        app:showAsAction="never" />
 </menu>

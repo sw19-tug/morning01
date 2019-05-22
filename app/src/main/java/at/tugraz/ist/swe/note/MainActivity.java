@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     NoteAdapter customNoteAdapter;
     ListView noteListView;
     NoteStorage noteStorage;
+    private boolean isDarkThemeEnabled = false;
     private Menu menu;
     private boolean sortByCreatedDate = true;
 
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         this.menu = menu;
         MenuItem searchButton = this.menu.findItem(R.id.searchButton);
@@ -192,9 +194,33 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        MenuItem changeThemeButton = this.menu.findItem(R.id.changeTheme);
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            changeThemeButton.setTitle(R.string.change_light_theme);
+        } else {
+            changeThemeButton.setTitle(R.string.change_dark_theme);
+        }
+
         searchButton.setVisible(false);
         importButton.setVisible(false);
         exportButton.setVisible(false);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.changeTheme:
+                if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    recreate();
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    recreate();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
