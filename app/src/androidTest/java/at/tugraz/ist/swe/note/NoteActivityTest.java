@@ -52,7 +52,6 @@ public class NoteActivityTest {
     public void checkShareButtonVisibility() {
         onView(withId(R.id.action_share)).check(matches(isDisplayed()));
         onView(withId(R.id.action_share)).check(matches(isClickable()));
-        onView(withId(R.id.action_share)).perform(click());
     }
 
     @Test

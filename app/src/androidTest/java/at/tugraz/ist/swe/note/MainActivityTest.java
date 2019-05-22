@@ -2,6 +2,10 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -28,6 +32,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
