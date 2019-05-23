@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SearchView;
@@ -14,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -162,13 +160,13 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getApplicationContext(), "onQueryTextSubmit:" + query, Toast.LENGTH_SHORT).show();
                 return false;
             }
             @Override
-            public boolean onQueryTextChange(String newText) {
-                Toast.makeText(getApplicationContext(), "onQueryTextChange:" + newText, Toast.LENGTH_SHORT).show();
-                return false;
+            public boolean onQueryTextChange(String newPattern) {
+                pattern = newPattern;
+                refreshNoteList();
+                return true;
             }
         });
 
