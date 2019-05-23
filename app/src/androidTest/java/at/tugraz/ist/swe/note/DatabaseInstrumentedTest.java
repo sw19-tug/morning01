@@ -285,15 +285,7 @@ public class DatabaseInstrumentedTest {
         Note expectedNotes[] = {note2, note4};
         Note foundNotes[] = noteStorage.getAll(true, false, pattern);
         assertTrue(expectedNotes.length == foundNotes.length);
-        for (Note eNote: expectedNotes){
-            boolean found = false;
-            for(Note fNote: foundNotes){
-                if (eNote.equals(fNote)){
-                    found = true;
-                }
-            }
-            assertTrue(found);
-        }
+        Util.assertNoteArrayContains(foundNotes, expectedNotes);
     }
 
 

@@ -1,5 +1,7 @@
 package at.tugraz.ist.swe.note;
 
+import android.widget.ListAdapter;
+
 import java.util.Date;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -25,6 +27,30 @@ public abstract class Util {
             assertTrue(expectedArray[i].equals(allStoredNotes[i]));
         }
 
+    }
+
+    static public void assertNoteArrayContains(ListAdapter adapter, Note[] expectedNotes) {
+        assertNoteArrayContains(convertAdapterToNoteArray(adapter), expectedNotes);
+    }
+
+    static public void assertNoteArrayContains(Note[] foundNotes, Note[] expectedNotes) {
+        for (Note eNote: expectedNotes){
+            boolean found = false;
+            for(Note fNote: foundNotes){
+                if (eNote.equals(fNote)){
+                    found = true;
+                }
+            }
+            assertTrue(found);
+        }
+    }
+
+    static public Note[] convertAdapterToNoteArray(ListAdapter adapter) {
+        Note[] result = new Note[adapter.getCount()];
+        for (int i = 0; i < adapter.getCount(); ++i){
+            result[i] = (Note)adapter.getItem(i);
+        }
+        return result;
     }
 
     static public void fillNoteStorage(Note[] notes, NoteStorage noteStorage) {

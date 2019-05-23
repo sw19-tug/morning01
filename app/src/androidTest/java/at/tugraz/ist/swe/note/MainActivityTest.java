@@ -333,14 +333,9 @@ public class MainActivityTest {
         activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
         Util.fillNoteStorage(notes, activity);
 
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.main_sort)).perform(click());
         onView(withId(R.id.search)).perform(click());
-        onView(withId(R.id.search)).perform(typeText(pattern));
+        onView(withId(android.support.design.R.id.search_src_text)).perform(typeText(pattern));
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
-        assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
-        for (int i = 0; i < expectedNoteArray.length; ++i){
-            assertEquals(expectedNoteArray[i], noteListView.getAdapter().getItem(i));
-        }
+        Util.assertNoteArrayContains(noteListView.getAdapter(), expectedNoteArray);
     }
 }
