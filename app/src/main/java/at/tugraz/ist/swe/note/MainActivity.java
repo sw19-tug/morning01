@@ -140,15 +140,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
         this.menu = menu;
-        MenuItem searchButton = this.menu.findItem(R.id.searchButton);
-        searchButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return true;
-            }
-        });
         MenuItem sortByTitleAscButton = this.menu.findItem(R.id.sortByTitleAscButton);
         sortByTitleAscButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -202,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
             changeThemeButton.setTitle(R.string.change_dark_theme);
         }
 
-        searchButton.setVisible(false);
         importButton.setVisible(false);
         exportButton.setVisible(false);
         return true;
