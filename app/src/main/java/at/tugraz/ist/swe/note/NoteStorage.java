@@ -99,6 +99,10 @@ public class NoteStorage {
     }
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly) {
+        return getAll(sortByCreatedDate, removedOnly, "");
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String patten) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
         if(sortByCreatedDate) {
@@ -112,7 +116,9 @@ public class NoteStorage {
         } else {
             whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
         }
-        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, null, null ,null, orderBy);
+        String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
+        whereClause += " AND (title LIKE ? OR content LIKE ?)";
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, selectionArgs, null ,null, orderBy);
 
         Note[] allNotes = new Note[allNotesCursor.getCount()];
         int arrayIndex = 0;

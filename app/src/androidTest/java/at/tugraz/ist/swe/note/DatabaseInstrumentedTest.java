@@ -270,7 +270,7 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void testSearchNote() throws NotFoundException {
+    public void testSearchNote() {
         Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
         Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
         Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
