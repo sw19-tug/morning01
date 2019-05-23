@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDarkThemeEnabled = false;
     private Menu menu;
     private boolean sortByCreatedDate = true;
+    private boolean removedOnly = false;
+    private String pattern = "";
 
 
     private static final int NOTE_REQUEST_CODE = 1;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
@@ -151,6 +156,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        MenuItem menuItem = this.menu.findItem(R.id.search);
+        SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(getApplicationContext(), "onQueryTextSubmit:" + query, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Toast.makeText(getApplicationContext(), "onQueryTextChange:" + newText, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
         MenuItem sortByCreatedDateDescButton = this.menu.findItem(R.id.sortByCreatedDateDescButton);
         sortByCreatedDateDescButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
