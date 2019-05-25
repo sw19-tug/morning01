@@ -28,7 +28,7 @@ public class CheckBoxAdapter extends ArrayAdapter<Note> {
 
         TextView titleTextView = convertView.findViewById(R.id.titleTextView);
         TextView contentTextView = convertView.findViewById(R.id.contentTextView);
-        CheckBox checkBox =  convertView.findViewById(R.id.checkBox);
+        //CheckBox checkBox =  convertView.findViewById(R.id.checkBox);
 
         Note note = getItem(position);
         if(note == null) {
@@ -36,8 +36,9 @@ public class CheckBoxAdapter extends ArrayAdapter<Note> {
         }
         titleTextView.setText(note.getTitle());
         contentTextView.setText(note.getContent());
-        checkBox.setVisibility(View.VISIBLE);
+        //checkBox.setVisibility(View.VISIBLE);
 
         return convertView;
     }
+
 }

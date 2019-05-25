@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -215,16 +216,19 @@ public class MainActivity extends AppCompatActivity {
                 final FloatingActionButton confirmExportButton = findViewById(R.id.confirmExportButton);
                 confirmExportButton.setEnabled(true);
                 addNoteButton.setEnabled(false);
-
+                noteListView.setItemsCanFocus(true);
                 noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick( AdapterView<?> parent, View item,
                                              int position, long id) {
 
                         Note note = checkBoxAdapter.getItem( position );
+                        Log.d("note",note.getTitle());
                         notesListForExport.add(note);
+                        noteListView.getChildAt(position).setBackgroundColor(Color.GRAY);
                     }
                 });
+
 
                 confirmExportButton.setOnClickListener(new View.OnClickListener() {
                     @Override
