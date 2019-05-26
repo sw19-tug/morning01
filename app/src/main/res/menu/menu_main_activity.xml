@@ -44,4 +44,10 @@
         android:icon="@drawable/ic_change_theme_black_24dp"
         android:title="@string/change_dark_theme"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_trash"
+        android:icon="@drawable/ic_remove"
+        android:title="@string/trash_activity"
+        app:showAsAction="never" />
 </menu>
