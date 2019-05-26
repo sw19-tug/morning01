@@ -341,7 +341,8 @@ public class MainActivityTest {
 
     @Test
     public void checkTrashMenuItemVisibility() {
-        onView(withId(R.id.action_trash)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_trash)).check(matches(isClickable()));
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.trash_activity)).check(matches(isDisplayed()));
+        onView(withText(R.string.trash_activity)).check(matches(isEnabled()));
     }
 }
