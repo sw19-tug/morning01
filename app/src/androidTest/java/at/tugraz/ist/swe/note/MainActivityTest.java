@@ -340,9 +340,8 @@ public class MainActivityTest {
     }
 
     @Test
-    public void checkTrashButtonVisibility() {
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.trash_activity)).check(matches(isDisplayed()));
-        onView(withText(R.string.trash_activity)).check(matches(isEnabled()));
+    public void checkTrashMenuItemVisibility() {
+        onView(withId(R.id.action_trash)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_trash)).check(matches(isClickable()));
     }
 }
