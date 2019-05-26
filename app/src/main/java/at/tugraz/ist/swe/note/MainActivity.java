@@ -231,6 +231,10 @@ public class MainActivity extends AppCompatActivity {
                     recreate();
                 }
                 return true;
+            case R.id.action_trash:
+                Intent intent = new Intent(getApplicationContext(), TrashActivity.class);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

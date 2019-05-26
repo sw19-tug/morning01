@@ -12,6 +12,15 @@ import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.onData;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -41,14 +50,17 @@ public class TrashActivityTest {
                 note2,
                 note3
         };
+        TrashActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Util.fillNoteStorage(notes, activity);
 
-        activityActivityTestRule.getActivity().setNoteList(notes);
+        //activityActivityTestRule.getActivity().setNoteList(notes);
 
         ListView trashListView = activityActivityTestRule.getActivity().findViewById(R.id.trashList);
 
         assertEquals(notes.length - 1, trashListView.getAdapter().getCount());
-        assertTrue(notes[0].equals(trashListView.getAdapter().getItem(0)));
-        assertTrue(notes[1].equals(trashListView.getAdapter().getItem(1)));
+        assertTrue(notes[1].equals(trashListView.getAdapter().getItem(0)));
+        assertTrue(notes[0].equals(trashListView.getAdapter().getItem(1)));
 
         boolean foundNote = false;
         for (int i = 0; i < trashListView.getAdapter().getCount(); ++i) {
@@ -61,4 +73,39 @@ public class TrashActivityTest {
         }
         assertFalse(foundNote);
     }
+
+    @Test
+    public void checkIfRestoredNoteIsNotDisplayed() {
+        Note note1 = new Note("note1", "blabla1", 1);
+
+        note1.setRemoved(true);
+
+        Note[] notes = {
+                note1
+        };
+        TrashActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Util.fillNoteStorage(notes, activity);
+
+        //activityActivityTestRule.getActivity().setNoteList(notes);
+
+        ListView trashListView = activityActivityTestRule.getActivity().findViewById(R.id.trashList);
+
+        onData(anything()).inAdapterView(withId(R.id.trashList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+        onView(withContentDescription(R.string.action_restore)).perform(click());
+        onView(withText(R.string.yes)).perform(click());
+
+        boolean foundNote = false;
+        for (int i = 0; i < trashListView.getAdapter().getCount(); ++i) {
+            Note fetchedNote = (Note) trashListView.getAdapter().getItem(i);
+            if (note1.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    note1.getContent().compareTo(fetchedNote.getContent()) == 0) {
+                foundNote = true;
+                break;
+            }
+        }
+        assertFalse(foundNote);
+    }
+
+
 }
