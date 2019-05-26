@@ -117,7 +117,6 @@ public class TrashActivityTest {
         ListView trashListView = activityActivityTestRule.getActivity().findViewById(R.id.trashList);
 
         onData(anything()).inAdapterView(withId(R.id.trashList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(longClick());
-        onView(withContentDescription(R.string.action_restore)).perform(click());
         onView(withText(R.string.yes)).perform(click());
 
         boolean foundNote = false;

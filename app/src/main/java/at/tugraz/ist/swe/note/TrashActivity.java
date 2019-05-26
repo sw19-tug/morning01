@@ -1,7 +1,9 @@
 package at.tugraz.ist.swe.note;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -41,6 +43,13 @@ public class TrashActivity extends AppCompatActivity {
                 intent.putExtra(NOTE_KEY, noteList.get(position));
                 intent.putExtra(REQUEST_CODE_KEY, NOTE_RESTORE_CODE);
                 startActivityForResult(intent, NOTE_RESTORE_CODE);
+            }
+        });
+        noteListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                restoreNote(i);
+                return true;
             }
         });
     }
@@ -110,6 +119,34 @@ public class TrashActivity extends AppCompatActivity {
 
     public void setNoteStorage(NoteStorage noteStorage) {
         this.noteStorage = noteStorage;
+    }
+
+
+    private void restoreNote(final int position){
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
+                TrashActivity.this);
+
+        confirmDeleteDialog.setTitle("Confirm Restore");
+        confirmDeleteDialog.setMessage("Are you sure you want restore this note?");
+        confirmDeleteDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            noteStorage.restore(noteList.get(position).getId());
+                            refreshNoteList();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
     }
 
 }

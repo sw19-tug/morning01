@@ -98,14 +98,25 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         break;
-                    case REMOVE:
+                    case SOFT_REMOVE:
                         try {
-                            noteStorage.delete(note.getId());
+                            noteStorage.softDelete(note.getId());
                             refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
                         }
                         break;
+                    case REMOVE:
+                        try {
+                            noteStorage.delete(note.getId());
+                            refreshNoteList();
+                        }
+                        catch (NotFoundException e){
+                            e.printStackTrace();
+                        }
+                        break;
+                    default:
+                        refreshNoteList();
                 }
             }
         }
