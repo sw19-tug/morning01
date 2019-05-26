@@ -28,4 +28,5 @@
     <string name="change_dark_theme">Dark theme</string>
     <string name="search_title">Search...</string>
     <string name="trash_activity">Trash</string>
+    <string name="action_restore">Restore</string>
 </resources>

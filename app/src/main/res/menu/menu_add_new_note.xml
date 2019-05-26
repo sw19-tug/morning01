@@ -27,4 +27,10 @@
         android:icon="?attr/actionModeShareDrawable"
         android:title="@string/action_share"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_restore"
+        android:icon="@drawable/ic_restore_black_24dp"
+        android:title="@string/action_restore"
+        app:showAsAction="ifRoom" />
 </menu>
