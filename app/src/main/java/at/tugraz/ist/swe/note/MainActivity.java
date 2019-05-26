@@ -1,5 +1,7 @@
 package at.tugraz.ist.swe.note;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean sortByCreatedDate = true;
     Context context = this;
     ArrayList<Note> notesListForExport = new ArrayList<>();
+    Activity mainActivity = this;
 
 
 
@@ -229,11 +232,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
+                ActivityCompat.requestPermissions(mainActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
                 confirmExportButton.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View view) {
-                        for (Note note : notesListForExport) {
+                       for (Note note : notesListForExport) {
                             convertNoteToFile(note);
                         }
                         File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -355,5 +359,24 @@ public class MainActivity extends AppCompatActivity {
 
         // The directory is now empty so delete it
         return dir.delete();
+    }
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
+
+                //This is called if user has denied the permission before
+                //In this case I am just asking the permission again
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
+
+            } else {
+
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
+            }
+        } else {
+            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
