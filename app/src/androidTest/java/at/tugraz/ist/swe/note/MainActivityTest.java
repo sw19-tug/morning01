@@ -338,4 +338,11 @@ public class MainActivityTest {
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
         Util.assertNoteArrayContains(noteListView.getAdapter(), expectedNoteArray);
     }
+
+
+    @Test
+    public void checkTrashButtonVisibility() {
+        onView(withId(R.id.action_trash)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_trash)).check(matches(isClickable()));
+    }
 }
