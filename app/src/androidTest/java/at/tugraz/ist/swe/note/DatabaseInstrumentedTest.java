@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -266,4 +268,25 @@ public class DatabaseInstrumentedTest {
         note = storage.findById(note.getId());
         assertTrue(note.isRemoved());
     }
+
+    @Test
+    public void testSearchNote() {
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
+        Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
+        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
+        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 0);
+
+        Note notes[] = {note1, note2, note3, note4};
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        Util.fillNoteStorage(notes, noteStorage);
+
+        String pattern = "grgrg";
+        Note expectedNotes[] = {note2, note4};
+        Note foundNotes[] = noteStorage.getAll(true, false, pattern);
+        assertTrue(expectedNotes.length == foundNotes.length);
+        Util.assertNoteArrayContains(foundNotes, expectedNotes);
+    }
+
+
 }

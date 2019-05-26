@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDarkThemeEnabled = false;
     private Menu menu;
     private boolean sortByCreatedDate = true;
+    private boolean removedOnly = false;
+    private String pattern = "";
 
 
     private static final int NOTE_REQUEST_CODE = 1;
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
@@ -140,15 +143,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
         this.menu = menu;
-        MenuItem searchButton = this.menu.findItem(R.id.searchButton);
-        searchButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return true;
-            }
-        });
         MenuItem sortByTitleAscButton = this.menu.findItem(R.id.sortByTitleAscButton);
         sortByTitleAscButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -158,6 +154,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        MenuItem menuItem = this.menu.findItem(R.id.search);
+        SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newPattern) {
+                pattern = newPattern;
+                refreshNoteList();
+                return true;
+            }
+        });
+
         MenuItem sortByCreatedDateDescButton = this.menu.findItem(R.id.sortByCreatedDateDescButton);
         sortByCreatedDateDescButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -202,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
             changeThemeButton.setTitle(R.string.change_dark_theme);
         }
 
-        searchButton.setVisible(false);
         importButton.setVisible(false);
         exportButton.setVisible(false);
         return true;

@@ -165,7 +165,7 @@ public class MainActivityTest {
 
     @Test
     public void checkToolbarButtonsVisibility() {
-        //onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.search)).check(matches(isDisplayed()));
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         //onView(withText(R.string.main_import)).check(matches(isDisplayed()));
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
@@ -308,5 +308,34 @@ public class MainActivityTest {
 
         assertTrue(checkNote.getTitle().equals(pinnedNote.getTitle()) &&
                 checkNote.getContent().equals(pinnedNote.getContent()));
+    }
+
+    @Test
+    public void checkNoteSearch() {
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 1);
+        Note note2 = new Note("Khdhd", "Jdkdh dhgrgrgnd udef rtr", 1);
+        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 2);
+        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 1);
+        String pattern = "grgrg";
+
+        Note[] notes = {
+                note1,
+                note2,
+                note3,
+                note4,
+        };
+        Note[] expectedNoteArray = {
+                note4,
+                note2,
+        };
+
+        MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Util.fillNoteStorage(notes, activity);
+
+        onView(withId(R.id.search)).perform(click());
+        onView(withId(android.support.design.R.id.search_src_text)).perform(typeText(pattern));
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        Util.assertNoteArrayContains(noteListView.getAdapter(), expectedNoteArray);
     }
 }
