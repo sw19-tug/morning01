@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
@@ -21,7 +20,7 @@ public class NoteActivity extends AppCompatActivity {
     private Menu menu;
     private Note note;
     NoteStorage storage;
-    private int request_code;
+    private int requestCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +33,7 @@ public class NoteActivity extends AppCompatActivity {
         if(note == null){
             note = new Note();
         }
-        request_code = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
+        requestCode = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
 
         TextView tfTitle = findViewById(R.id.tfTitle);
         tfTitle.setText(note.getTitle());
@@ -65,7 +64,7 @@ public class NoteActivity extends AppCompatActivity {
                 note.setContent(s.toString());
             }
         });
-        if (request_code == TrashActivity.NOTE_RESTORE_CODE){
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
             tfTitle.setEnabled(false);
             tfContent.setEnabled(false);
         }
@@ -152,7 +151,7 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        if (request_code == TrashActivity.NOTE_RESTORE_CODE) {
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             shareButton.setVisible(false);
             pinningButton.setVisible(false);
         }else{
@@ -197,7 +196,7 @@ public class NoteActivity extends AppCompatActivity {
         String message;
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 NoteActivity.this);
-        if (request_code == TrashActivity.NOTE_RESTORE_CODE){
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
             message = "Are you sure you want permanently delete this note?";
         }else{
             message = "Are you sure you want send this note to trash?";
@@ -207,7 +206,7 @@ public class NoteActivity extends AppCompatActivity {
         confirmDeleteDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if (request_code == TrashActivity.NOTE_RESTORE_CODE){
+                        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
                             startIntentMain(OptionFlag.REMOVE);
                         }else{
                             startIntentMain(OptionFlag.SOFT_REMOVE);
