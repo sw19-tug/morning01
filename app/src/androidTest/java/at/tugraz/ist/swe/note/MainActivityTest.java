@@ -338,4 +338,11 @@ public class MainActivityTest {
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
         Util.assertNoteArrayContains(noteListView.getAdapter(), expectedNoteArray);
     }
+
+    @Test
+    public void checkTrashMenuItemVisibility() {
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.trash_activity)).check(matches(isDisplayed()));
+        onView(withText(R.string.trash_activity)).check(matches(isEnabled()));
+    }
 }

@@ -4,5 +4,7 @@ public enum OptionFlag {
 
     EDIT,
     REMOVE,
-    SAVE
+    SOFT_REMOVE,
+    SAVE,
+    RESTORE
 }

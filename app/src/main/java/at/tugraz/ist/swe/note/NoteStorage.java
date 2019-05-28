@@ -183,4 +183,13 @@ public class NoteStorage {
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, true);
         assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
     }
+
+    public void restore(long id) throws NotFoundException {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, false);
+        assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
+    }
 }

@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
@@ -21,6 +20,7 @@ public class NoteActivity extends AppCompatActivity {
     private Menu menu;
     private Note note;
     NoteStorage storage;
+    private int requestCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,7 @@ public class NoteActivity extends AppCompatActivity {
         if(note == null){
             note = new Note();
         }
+        requestCode = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
 
         TextView tfTitle = findViewById(R.id.tfTitle);
         tfTitle.setText(note.getTitle());
@@ -63,6 +64,10 @@ public class NoteActivity extends AppCompatActivity {
                 note.setContent(s.toString());
             }
         });
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+            tfTitle.setEnabled(false);
+            tfContent.setEnabled(false);
+        }
         createToolbar();
     }
 
@@ -136,6 +141,23 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+        MenuItem restoreButton = this.menu.findItem(R.id.action_restore);
+        restoreButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                restoreNote();
+                return true;
+            }
+        });
+
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
+            shareButton.setVisible(false);
+            pinningButton.setVisible(false);
+        }else{
+            restoreButton.setVisible(false);
+        }
+
         return true;
     }
 
@@ -170,16 +192,49 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void deleteNote(){
-        Toast.makeText(getApplicationContext(),"delete clicked",Toast.LENGTH_SHORT).show();
+        String title = "Confirm Delete";
+        String message;
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 NoteActivity.this);
-
-        confirmDeleteDialog.setTitle("Confirm Delete");
-        confirmDeleteDialog.setMessage("Are you sure you want delete this note?");
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+            message = "Are you sure you want permanently delete this note?";
+        }else{
+            message = "Are you sure you want send this note to trash?";
+        }
+        confirmDeleteDialog.setTitle(title);
+        confirmDeleteDialog.setMessage(message);
         confirmDeleteDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        startIntentMain(OptionFlag.REMOVE);
+                        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+                            startIntentMain(OptionFlag.REMOVE);
+                        }else{
+                            startIntentMain(OptionFlag.SOFT_REMOVE);
+                        }
+
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
+    }
+
+    private void restoreNote(){
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
+                NoteActivity.this);
+
+        confirmDeleteDialog.setTitle("Confirm Restore");
+        confirmDeleteDialog.setMessage("Are you sure you want restore this note?");
+        confirmDeleteDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startIntentMain(OptionFlag.RESTORE);
+
                     }
                 });
 

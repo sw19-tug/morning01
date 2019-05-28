@@ -77,4 +77,15 @@ public abstract class Util {
     static public void resetDatabase(DatabaseHelper databaseHelper) {
         databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }
+
+    static public void fillNoteStorage(Note[] notes, final TrashActivity activity) {
+        fillNoteStorage(notes, activity.noteStorage);
+
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                activity.refreshNoteList();
+            }
+        });
+    }
 }
