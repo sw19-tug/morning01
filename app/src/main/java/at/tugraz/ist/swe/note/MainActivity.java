@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
-        getMenuInflater().inflate(R.menu.options_menu, menu);
         this.menu = menu;
         MenuItem sortByTitleAscButton = this.menu.findItem(R.id.sortByTitleAscButton);
         sortByTitleAscButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -168,6 +167,18 @@ public class MainActivity extends AppCompatActivity {
 
         MenuItem menuItem = this.menu.findItem(R.id.search);
         SearchView searchView = (SearchView)menuItem.getActionView();
+        menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                recreate();
+                return true;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
