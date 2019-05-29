@@ -349,9 +349,19 @@ public class MainActivityTest {
     }
 
     @Test
-    public void checkforLimitedContentBox(){
-        TextView textView = activityActivityTestRule.getActivity().findViewById(R.id.contentTextView);
-        assertTrue((textView.getMaxLines()) == 1 && (textView.getEllipsize() == TextUtils.TruncateAt.END));
+    public void checkForLimitedContentBox(){
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 1);
+        Note[] notes = {
+                note1,
+        };
+        MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext())));
+        Util.fillNoteStorage(notes, activity);
+        TextView textView;
+        do {
+            textView = activityActivityTestRule.getActivity().findViewById(R.id.contentTextView);
+        } while(textView == null);
+        assertTrue((textView.getMaxLines() == 1) && (textView.getEllipsize() == TextUtils.TruncateAt.END));
 
     }
 }
