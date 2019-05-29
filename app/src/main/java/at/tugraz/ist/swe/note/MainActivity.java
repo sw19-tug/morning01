@@ -209,9 +209,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                //TODO: title and content in view is false
-                //TODO: Clicklistener is on item instead of checkbox
-
                 checkBoxAdapter = new CheckBoxAdapter(context, noteList);
                 noteListView = findViewById(R.id.notesList);
                 noteListView.setAdapter(checkBoxAdapter);
@@ -256,8 +253,12 @@ public class MainActivity extends AppCompatActivity {
                         zipFolder(zipDir, zipOutputDir);
                         notesListForExport.clear();
                         deleteRecursive(dir1);
+
                         Intent intent = new Intent(view.getContext(), MainActivity.class);
                         startActivity(intent);
+
+                        Toast.makeText(getApplicationContext(), "Exported successfully" , Toast.LENGTH_SHORT).show();
+
                     }
                 });
 
@@ -296,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     FileOutputStream f = new FileOutputStream(file);
                     PrintWriter pw = new PrintWriter(f);
+                    pw.println(title);
                     pw.println(content);
                     pw.flush();
                     pw.close();
