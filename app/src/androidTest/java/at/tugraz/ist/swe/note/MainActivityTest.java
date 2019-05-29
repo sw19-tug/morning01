@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -13,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
 import java.util.Random;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -171,7 +174,7 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         //onView(withText(R.string.main_import)).check(matches(isDisplayed()));
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
-        //onView(withText(R.string.main_export)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_export)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -363,5 +366,35 @@ public class MainActivityTest {
         } while(textView == null);
         assertTrue((textView.getMaxLines() == 1) && (textView.getEllipsize() == TextUtils.TruncateAt.END));
 
+    }
+
+    @Test
+    public void checkExporting(){
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 1);
+        Note[] notes = {
+                note1,
+                note2,
+                note3,
+                note4,
+        };
+        Util.fillNoteStorage(notes, activity);
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
+        onView(withText(R.string.main_export)).perform(click());
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+
+        onView(withId(R.id.confirmExportButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirmExportButton)).perform(click());
+        File root = Environment.getExternalStorageDirectory();
+        File outputDirectory = new File (root.getAbsolutePath() + "/Notes");
+
+        assertTrue(outputDirectory.isDirectory());
+        String[] files = outputDirectory.list();
+        assertFalse(files.length == 0);
     }
 }

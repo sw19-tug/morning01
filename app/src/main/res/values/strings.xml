@@ -21,6 +21,7 @@
     <string name="main_sort_by_created_date_desc">By date</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
+    <string name="ok">OK</string>
     <string name="main_tags_list">Tags</string>
     <string name="title_activity_tags_list">TagsListActivity</string>
     <string name="share_via">Share via</string>
@@ -29,4 +30,6 @@
     <string name="search_title">Search...</string>
     <string name="trash_activity">Trash</string>
     <string name="action_restore">Restore</string>
+    <string name="export_successfully">Exported successfully in</string>
+    <string name="no_notes_selected">No notes selected</string>
 </resources>
