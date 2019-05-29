@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     Context context = this;
     ArrayList<Note> notesListForExport = new ArrayList<>();
     Activity mainActivity = this;
+    boolean exporting = false;
 
 
 
@@ -203,14 +204,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
         MenuItem exportButton = this.menu.findItem(R.id.exportButton);
         exportButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
-                checkBoxAdapter = new CheckBoxAdapter(context, noteList);
+                setTitle("Export");
+                exporting = true;
                 noteListView = findViewById(R.id.notesList);
+                checkBoxAdapter = new CheckBoxAdapter(context, noteList);
                 noteListView.setAdapter(checkBoxAdapter);
                 final FloatingActionButton addNoteButton = findViewById(R.id.createNoteButton);
                 final FloatingActionButton confirmExportButton = findViewById(R.id.confirmExportButton);
@@ -221,11 +224,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick( AdapterView<?> parent, View item,
                                              int position, long id) {
-
                         Note note = checkBoxAdapter.getItem( position );
-                        Log.d("note",note.getTitle());
-                        notesListForExport.add(note);
-                        noteListView.getChildAt(position).setBackgroundColor(Color.GRAY);
+                        Log.d("added note",note.getTitle());
+                        if(notesListForExport.contains(note)){
+                            Log.d("removed note",note.getTitle());
+                            notesListForExport.remove(note);
+                            noteListView.getChildAt(position).setBackgroundColor(Color.WHITE);
+                        } else {
+                            notesListForExport.add(note);
+                            noteListView.getChildAt(position).setBackgroundColor(Color.GRAY);
+                        }
                     }
                 });
 
@@ -253,15 +261,23 @@ public class MainActivity extends AppCompatActivity {
                             counter++;
                         }
 
-                        zipFolder(tmpDirectory.toString(), zipOutputPath);
+                        boolean zipped = zipFolder(tmpDirectory.toString(), zipOutputPath);
                         notesListForExport.clear();
                         deleteRecursive(tmpDirectory);
 
-                        Intent intent = new Intent(view.getContext(), MainActivity.class);
-                        startActivity(intent);
+                        if (zipped)
+                        {
+                            //Intent intent = new Intent(view.getContext(), MainActivity.class);
+                           // startActivity(intent);
 
-                        Toast.makeText(getApplicationContext(), "Exported successfully" , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Exported successfully in " + zipOutputPath , Toast.LENGTH_SHORT).show();
+                            exporting = false;
+                            recreate();
 
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No notes selected" , Toast.LENGTH_SHORT).show();
+
+                        }
                     }
                 });
 
@@ -284,6 +300,14 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        if(exporting){
+            recreate();
+            return;
+        }
+        super.onBackPressed();
+    }
 
     public void convertNoteToFile(Note note, File outPutDirectory) {
         String title = note.getTitle();
@@ -295,14 +319,12 @@ public class MainActivity extends AppCompatActivity {
                 outPutDirectory.mkdirs();
                 File file = new File(outPutDirectory, title + ".txt");
 
-                try {
-                    FileOutputStream f = new FileOutputStream(file);
-                    PrintWriter pw = new PrintWriter(f);
-                    pw.println(title);
-                    pw.println(content);
-                    pw.flush();
-                    pw.close();
-                    f.close();
+                try(FileOutputStream f = new FileOutputStream(file)) {
+                    try(PrintWriter pw = new PrintWriter(f)) {
+                        pw.println(title);
+                        pw.println(content);
+                        pw.flush();
+                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
 
@@ -322,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-    private static void zipFolder(String inputFolderPath, String outZipPath) {
+    private static boolean zipFolder(String inputFolderPath, String outZipPath) {
 
         try {
             Log.d("Zip", "zipFolder function");
@@ -330,6 +352,10 @@ public class MainActivity extends AppCompatActivity {
             ZipOutputStream zos = new ZipOutputStream(fos);
             File srcFile = new File(inputFolderPath);
             File[] files = srcFile.listFiles();
+
+            if (files == null){
+                return false;
+            }
             Log.d("Zip", "Zip directory: " + srcFile.getName());
             for (int i = 0; i < files.length; i++) {
                 Log.d("Zip", "Adding file: " + files[i].getName());
@@ -347,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ioe) {
             Log.e("Zip", ioe.getMessage());
         }
+        return true;
     }
 
     public static boolean deleteRecursive(File dir) {
@@ -359,27 +386,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
-        // The directory is now empty so delete it
         return dir.delete();
     }
 
-    private void askForPermission(String permission, Integer requestCode) {
-        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
-
-                //This is called if user has denied the permission before
-                //In this case I am just asking the permission again
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
-
-            } else {
-
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
-            }
-        } else {
-            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
-        }
-    }
 }

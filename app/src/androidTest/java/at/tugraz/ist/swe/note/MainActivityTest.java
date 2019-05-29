@@ -256,7 +256,7 @@ public class MainActivityTest {
     public void checkSortByCreatedDate() {
         Note note1 = new Note("A_Test_title", "blabla1", 1);
         Note note2 = new Note("B_Test_title", "blabla2", 1);
-        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 2);
         Note note4 = new Note("D_Test_title", "blabla4", 1);
 
         Note[] notes = {
