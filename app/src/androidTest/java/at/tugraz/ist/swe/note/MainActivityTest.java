@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -11,7 +12,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
@@ -252,7 +256,7 @@ public class MainActivityTest {
     public void checkSortByCreatedDate() {
         Note note1 = new Note("A_Test_title", "blabla1", 1);
         Note note2 = new Note("B_Test_title", "blabla2", 1);
-        Note note3 = new Note("C_Test_title", "blabla3", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
         Note note4 = new Note("D_Test_title", "blabla4", 1);
 
         Note[] notes = {
@@ -277,7 +281,7 @@ public class MainActivityTest {
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("A_Test_title", "blabla1", 1);
         Note note2 = new Note("B_Test_title", "blabla2", 1);
-        Note note3 = new Note("C_Test_title", "blabla3", 2);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
         Note note4 = new Note("D_Test_title", "blabla4", 1);
         Note[] notes = {
                 note1,
@@ -287,8 +291,19 @@ public class MainActivityTest {
         };
         Util.fillNoteStorage(notes, activity);
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
         onView(withText(R.string.main_export)).perform(click());
-        onView(withId(R.id.checkBox)).check(matches(isDisplayed()));
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+
         onView(withId(R.id.confirmExportButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirmExportButton)).perform(click());
+        File root = Environment.getExternalStorageDirectory();
+        File outputDirectory = new File (root.getAbsolutePath() + "/Notes");
+
+        assertTrue(outputDirectory.isDirectory());
+        String[] files = outputDirectory.list();
+        assertFalse(files.length == 0);
+
     }
 }

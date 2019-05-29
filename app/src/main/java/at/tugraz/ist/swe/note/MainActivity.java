@@ -234,25 +234,28 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(View view) {
+                        File root = Environment.getExternalStorageDirectory();
+                        File tmpDirectory = new File (root.getAbsolutePath() + "/tmpNotes");
+                        File outputDirectory = new File (root.getAbsolutePath() + "/Notes");
+                        outputDirectory.mkdirs();
+                        File zipFile = new File (outputDirectory.toString() + "/Notes.zip");
+                        String zipOutputPath = zipFile.toString();
+
                        for (Note note : notesListForExport) {
-                            convertNoteToFile(note);
+                            convertNoteToFile(note, tmpDirectory);
                         }
-                        File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                        File dir1 = new File (root.getAbsolutePath() + "/Notes");
-                        File dir = new File (root.getAbsolutePath() + "/Notes.zip");
-                        String zipOutputDir = root.getAbsolutePath() + "/Notes.zip";
+
                         int counter = 1;
-                        while(dir.exists())
+                        while(zipFile.exists())
                         {
-                            dir = new File (root.getAbsolutePath() + "/Notes" + counter + ".zip");
-                            zipOutputDir = root.getAbsolutePath() + "/Notes" + counter + ".zip";
+                            zipOutputPath = outputDirectory.toString()  + "/Notes" + counter + ".zip";
+                            zipFile = new File (zipOutputPath);
                             counter++;
                         }
-                        String zipDir = root.getAbsolutePath() + "/Notes";
 
-                        zipFolder(zipDir, zipOutputDir);
+                        zipFolder(tmpDirectory.toString(), zipOutputPath);
                         notesListForExport.clear();
-                        deleteRecursive(dir1);
+                        deleteRecursive(tmpDirectory);
 
                         Intent intent = new Intent(view.getContext(), MainActivity.class);
                         startActivity(intent);
@@ -282,17 +285,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void convertNoteToFile(Note note) {
+    public void convertNoteToFile(Note note, File outPutDirectory) {
         String title = note.getTitle();
         String content = note.getContent();
         String state = Environment.getExternalStorageState();
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (checkPermission()) {
-                File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                File dir = new File (root.getAbsolutePath() + "/Notes");
-                dir.mkdirs();
-                File file = new File(dir, title + ".txt");
+                outPutDirectory.mkdirs();
+                File file = new File(outPutDirectory, title + ".txt");
 
                 try {
                     FileOutputStream f = new FileOutputStream(file);
