@@ -12,7 +12,6 @@
         android:theme="@style/AppTheme">
     </android.support.design.widget.AppBarLayout>
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/createNoteButton"
         android:layout_width="wrap_content"
