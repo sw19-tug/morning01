@@ -229,9 +229,10 @@ public class MainActivity extends AppCompatActivity {
                         if(notesListForExport.contains(note)){
                             Log.d("removed note",note.getTitle());
                             notesListForExport.remove(note);
-                            noteListView.getChildAt(position).setBackgroundColor(Color.WHITE);
+                            noteListView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
                         } else {
                             notesListForExport.add(note);
+                            //TODO if dark theme ...
                             noteListView.getChildAt(position).setBackgroundColor(Color.GRAY);
                         }
                     }
@@ -348,28 +349,28 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             Log.d("Zip", "zipFolder function");
-            FileOutputStream fos = new FileOutputStream(outZipPath);
-            ZipOutputStream zos = new ZipOutputStream(fos);
-            File srcFile = new File(inputFolderPath);
-            File[] files = srcFile.listFiles();
+            try(FileOutputStream fos = new FileOutputStream(outZipPath)) {
+                try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+                    File srcFile = new File(inputFolderPath);
+                    File[] files = srcFile.listFiles();
 
-            if (files == null){
-                return false;
-            }
-            Log.d("Zip", "Zip directory: " + srcFile.getName());
-            for (int i = 0; i < files.length; i++) {
-                Log.d("Zip", "Adding file: " + files[i].getName());
-                byte[] buffer = new byte[1024];
-                FileInputStream fis = new FileInputStream(files[i]);
-                zos.putNextEntry(new ZipEntry(files[i].getName()));
-                int length;
-                while ((length = fis.read(buffer)) > 0) {
-                    zos.write(buffer, 0, length);
+                    if (files == null) {
+                        return false;
+                    }
+                    Log.d("Zip", "Zip directory: " + srcFile.getName());
+                    for (int i = 0; i < files.length; i++) {
+                        Log.d("Zip", "Adding file: " + files[i].getName());
+                        byte[] buffer = new byte[1024];
+                        try(FileInputStream fis = new FileInputStream(files[i])) {
+                            zos.putNextEntry(new ZipEntry(files[i].getName()));
+                            int length;
+                            while ((length = fis.read(buffer)) > 0) {
+                                zos.write(buffer, 0, length);
+                            }
+                        }
+                    }
                 }
-                zos.closeEntry();
-                fis.close();
             }
-            zos.close();
         } catch (IOException ioe) {
             Log.e("Zip", ioe.getMessage());
         }
