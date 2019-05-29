@@ -5,7 +5,9 @@ package at.tugraz.ist.swe.note;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.text.TextUtils;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -344,5 +346,12 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.trash_activity)).check(matches(isDisplayed()));
         onView(withText(R.string.trash_activity)).check(matches(isEnabled()));
+    }
+
+    @Test
+    public void checkforLimitedContentBox(){
+        TextView textView = activityActivityTestRule.getActivity().findViewById(R.id.contentTextView);
+        assertTrue((textView.getMaxLines()) == 1 && (textView.getEllipsize() == TextUtils.TruncateAt.END));
+
     }
 }
