@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTE_REQUEST_CODE = 1;
     public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
     public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
+    public static final String ZIP_ENTRY_EXTENSION = ".txt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (checkPermission()) {
                 outPutDirectory.mkdirs();
-                File file = new File(outPutDirectory, title + ".txt");
+                File file = new File(outPutDirectory, title + ZIP_ENTRY_EXTENSION);
                 try (PrintWriter pw = new PrintWriter(new FileOutputStream(file))) {
                     pw.print(content);
                     pw.flush();
@@ -484,34 +485,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static  Note[] unzip(String zipFile){
-        try {
-            ArrayList<Note> newNotes = new ArrayList<>();
-            InputStream zis = new FileInputStream(zipFile);
-            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(zis));
-            try {
-                ZipEntry ze = null;
-                while ((ze = zin.getNextEntry()) != null) {
-                    String title = ze.getName();
-                    title = title.replace(".txt", "");
-
-                    byte[] buffer = new byte[1024];
-                    StringBuilder content = new StringBuilder();
-
-                    for (int c = zin.read(buffer); c != -1; c = zin.read()) {
-                        content.append(new String(buffer, 0, c ));
-                    }
-                    Note note = new Note(title, content.toString(), 0);
-                    newNotes.add(note);
-                    zin.closeEntry();
+        ArrayList<Note> newNotes = new ArrayList<>();
+        try(ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String title = ze.getName();
+                title = title.substring(0, title.length() - ZIP_ENTRY_EXTENSION.length());
+                byte[] buffer = new byte[1024];
+                StringBuilder content = new StringBuilder();
+                for (int c = zin.read(buffer); c != -1; c = zin.read()) {
+                    content.append(new String(buffer, 0, c ));
                 }
-                Note[] notes = new Note[newNotes.size()];
-                newNotes.toArray(notes);
-                return notes;
-            } finally {
-
-                zin.close();
+                Note note = new Note(title, content.toString(), 0);
+                newNotes.add(note);
+                zin.closeEntry();
             }
-        } catch (Exception e) {
+            Note[] notes = new Note[newNotes.size()];
+            newNotes.toArray(notes);
+            return notes;
+        } catch (IOException e) {
             e.printStackTrace();
             Log.e("", "Unzip exception", e);
         }
