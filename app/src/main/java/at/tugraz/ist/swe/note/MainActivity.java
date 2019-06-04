@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int NOTE_REQUEST_CODE = 1;
-    public final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
-    public final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
+    public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
+    public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
         int result = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return result == PackageManager.PERMISSION_GRANTED;
     }
-    private static boolean zipFolder(String inputFolderPath, String outZipPath) {
+    public static boolean zipFolder(String inputFolderPath, String outZipPath) {
         Log.d("Zip", "zipFolder function");
         File srcFile = new File(inputFolderPath);
         File[] files = srcFile.listFiles();
