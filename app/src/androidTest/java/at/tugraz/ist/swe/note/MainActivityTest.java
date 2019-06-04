@@ -397,29 +397,4 @@ public class MainActivityTest {
         String[] files = outputDirectory.list();
         assertFalse(files.length == 0);
     }
-
-    @Test
-    public void checkImporting(){
-        MainActivity activity = activityActivityTestRule.getActivity();
-        File tmpDirectory = new File(MainActivity.TMP_DIRECTORY);
-        File outputDirectory = new File(MainActivity.OUTPUT_DIRECTORY);
-        String zipOutputPath = outputDirectory.toString()  + "/NotesTest.zip";
-        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", Note.DEFAULT_PINNED);
-        Note note2 = new Note("Khdhd", "Jdkdh dhgrgrgnd udef rtr", Note.DEFAULT_PINNED);
-        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", Note.DEFAULT_PINNED);
-        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", Note.DEFAULT_PINNED);
-        Note[] notes = {
-                note1,
-                note2,
-                note3,
-                note4,
-        };
-        for (Note note : notes) {
-            activity.convertNoteToFile(note, tmpDirectory);
-        }
-        assertTrue(MainActivity.zipFolder(tmpDirectory.toString(), zipOutputPath));
-        assertTrue(new File(zipOutputPath).exists());
-        Note[] unzipNotes = MainActivity.unzip(zipOutputPath);
-        Util.assertNoteArrayContains(unzipNotes, notes);
-    }
 }
