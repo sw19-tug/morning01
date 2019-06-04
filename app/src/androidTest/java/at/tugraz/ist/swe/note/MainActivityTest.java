@@ -34,6 +34,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static junit.framework.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -373,6 +374,15 @@ public class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.protected_notes)).check(matches(isDisplayed()));
         onView(withText(R.string.protected_notes)).check(matches(isEnabled()));
+    }
+
+    @Test
+    public void checkAlertDialogVisibility(){
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.protected_notes)).perform(click());
+        onView(withText(R.string.password_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.cancel)).perform(click());
+        onView(withText(R.string.password_dialog_title)).check(matches(not(isDisplayed())));
     }
 
     @Test
