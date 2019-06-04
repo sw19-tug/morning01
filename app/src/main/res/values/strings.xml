@@ -17,6 +17,7 @@
     <string name="main_import">Import</string>
     <string name="main_export">Export</string>
     <string name="main_search">Search</string>
+    <string name="protected_notes">Show protected notes</string>
     <string name="main_sort_by_title_asc">By title</string>
     <string name="main_sort_by_created_date_desc">By date</string>
     <string name="yes">YES</string>
