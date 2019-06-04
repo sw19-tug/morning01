@@ -2,12 +2,17 @@ package at.tugraz.ist.swe.note;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -24,13 +29,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -38,6 +46,7 @@ import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int READ_REQUEST_CODE = 42;
     ArrayList<Note> noteList = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     CheckBoxAdapter checkBoxAdapter;
@@ -101,6 +110,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                String path = getFilePath(uri);
+                path = path.substring(path.indexOf(':') + 1);
+                Log.i("", "Uri: " + path);
+                Note[] notes = unzip(path);
+
+                for (Note note : notes) {
+                    noteStorage.insert(note);
+                }
+                refreshNoteList();
+
+            }
+        }
+
         if (requestCode == NOTE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
@@ -298,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                openFilePicker();
                 return true;
             }
         });
@@ -328,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
             changeThemeButton.setTitle(R.string.change_dark_theme);
         }
 
-        importButton.setVisible(false);
+        importButton.setVisible(true);
         return true;
     }
 
@@ -374,8 +401,7 @@ public class MainActivity extends AppCompatActivity {
                 outPutDirectory.mkdirs();
                 File file = new File(outPutDirectory, title + ".txt");
                 try (PrintWriter pw = new PrintWriter(new FileOutputStream(file))) {
-                    pw.println(title);
-                    pw.println(content);
+                    pw.print(content);
                     pw.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -383,7 +409,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
+
+                //This is called if user has denied the permission before
+                //In this case I am just asking the permission again
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
+
+            } else {
+
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
+            }
+        } else {
+            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
+        }
+    }
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return result == PackageManager.PERMISSION_GRANTED;
@@ -427,5 +470,61 @@ public class MainActivity extends AppCompatActivity {
         }
         return dir.delete();
     }
+
+    public String getFilePath(Uri uri){
+        final String id = DocumentsContract.getDocumentId(uri);
+        final Uri contentUri = ContentUris.withAppendedId(
+                Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
+        int column_index = ((Cursor) cursor).getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+    public static  Note[] unzip(String zipFile){
+        try {
+            ArrayList<Note> newNotes = new ArrayList<>();
+            InputStream zis = new FileInputStream(zipFile);
+            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(zis));
+            try {
+                ZipEntry ze = null;
+                while ((ze = zin.getNextEntry()) != null) {
+                    String title = ze.getName();
+                    title = title.replace(".txt", "");
+
+                    byte[] buffer = new byte[1024];
+                    StringBuilder content = new StringBuilder();
+
+                    for (int c = zin.read(buffer); c != -1; c = zin.read()) {
+                        content.append(new String(buffer, 0, c ));
+                    }
+                    Note note = new Note(title, content.toString(), 0);
+                    newNotes.add(note);
+                    zin.closeEntry();
+                }
+                Note[] notes = new Note[newNotes.size()];
+                newNotes.toArray(notes);
+                return notes;
+            } finally {
+
+                zin.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("", "Unzip exception", e);
+        }
+        return null;
+    }
+
+    private void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/zip");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
 
 }
