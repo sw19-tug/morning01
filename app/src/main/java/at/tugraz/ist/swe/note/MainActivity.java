@@ -2,8 +2,11 @@ package at.tugraz.ist.swe.note;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,11 +19,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -51,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Note> notesListForExport = new ArrayList<>();
     Activity mainActivity = this;
     boolean exporting = false;
+    String userPassword;
+    String inputPassword;
 
 
 
@@ -321,6 +330,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        MenuItem protectedNotesButton = this.menu.findItem(R.id.protectedNotesButton);
+        protectedNotesButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showProtectedNotes();
+                return true;
+            }
+        });
+
         MenuItem changeThemeButton = this.menu.findItem(R.id.changeTheme);
         if(isNightModeEnabled()){
             changeThemeButton.setTitle(R.string.change_light_theme);
@@ -426,6 +445,55 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return dir.delete();
+    }
+
+    private void showProtectedNotes(){
+        SharedPreferences settings = getSharedPreferences(getString(R.string.protected_notes), MODE_PRIVATE);
+        userPassword = settings.getString(getString(R.string.protected_notes_password),"");
+        if(userPassword.isEmpty()){
+            showPasswordDialog(getString(R.string.new_password_dialog_title), true);
+        }else {
+            showPasswordDialog(getString(R.string.password_dialog_title), false);
+        }
+    }
+
+    private void showPasswordDialog(String dialogTitle, final boolean newPassword){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(dialogTitle);
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                inputPassword = input.getText().toString();
+
+                if(!newPassword) {
+                    if (userPassword.equals(inputPassword)) {
+                        dialogInterface.cancel();
+                        Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT);
+                        // TODO show protected notes!!!
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.wrong_password, Toast.LENGTH_SHORT);
+                    }
+                }else{
+                    userPassword = input.getText().toString();
+                    SharedPreferences settings = getSharedPreferences(getString(R.string.protected_notes), MODE_PRIVATE);
+                    settings.edit().putString(getString(R.string.protected_notes_password),userPassword).apply();
+                    dialogInterface.cancel();
+                }
+            }
+        });
+
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        builder.show();
     }
 
 }

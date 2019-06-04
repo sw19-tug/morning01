@@ -18,6 +18,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static junit.framework.TestCase.assertTrue;
 
 public class NoteActivityTest {
     private DatabaseHelper databaseHelper;
@@ -52,6 +53,18 @@ public class NoteActivityTest {
     public void checkShareButtonVisibility() {
         onView(withId(R.id.action_share)).check(matches(isDisplayed()));
         onView(withId(R.id.action_share)).check(matches(isClickable()));
+    }
+
+    @Test
+    public void checkProtectButtonVisibility() {
+        onView(withId(R.id.action_protect)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_protect)).check(matches(isClickable()));
+    }
+
+    @Test
+    public void checkNoteIsProtected() {
+        onView(withId(R.id.action_protect)).perform(click());
+        assertTrue(activityActivityTestRule.getActivity().getNote().isProtected());
     }
 
     @Test

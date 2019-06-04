@@ -382,7 +382,6 @@ public class MainActivityTest {
         onView(withText(R.string.protected_notes)).perform(click());
         onView(withText(R.string.password_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.cancel)).perform(click());
-        onView(withText(R.string.password_dialog_title)).check(matches(not(isDisplayed())));
     }
 
     @Test

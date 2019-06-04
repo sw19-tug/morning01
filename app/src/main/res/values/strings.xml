@@ -33,4 +33,10 @@
     <string name="action_restore">Restore</string>
     <string name="export_successfully">Exported successfully in</string>
     <string name="no_notes_selected">No notes selected</string>
+    <string name="cancel">CANCEL</string>
+    <string name="password_dialog_title">Enter your password</string>
+    <string name="protected_notes_password">password</string>
+    <string name="new_password_dialog_title">Set up new password</string>
+    <string name="wrong_password">Wrong password!</string>
+    <string name="logged_in">Logged in!</string>
 </resources>

@@ -274,6 +274,10 @@ public class NoteActivity extends AppCompatActivity {
         finish();
     }
 
+    public Note getNote() {
+        return note;
+    }
+
     int getCurrentPinningNumber(){
         return storage.getNewPinningNumber();
     }
