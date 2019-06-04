@@ -369,6 +369,13 @@ public class MainActivityTest {
     }
 
     @Test
+    public void checkProtectedNotesMenuItemVisibility(){
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.protected_notes)).check(matches(isDisplayed()));
+        onView(withText(R.string.protected_notes)).check(matches(isEnabled()));
+    }
+
+    @Test
     public void checkExporting(){
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("A_Test_title", "blabla1", 1);
