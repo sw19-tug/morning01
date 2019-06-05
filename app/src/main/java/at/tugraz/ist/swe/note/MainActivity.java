@@ -2,12 +2,17 @@ package at.tugraz.ist.swe.note;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -24,13 +29,19 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -38,6 +49,7 @@ import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int READ_REQUEST_CODE = 42;
     ArrayList<Note> noteList = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     CheckBoxAdapter checkBoxAdapter;
@@ -55,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int NOTE_REQUEST_CODE = 1;
-    public final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
-    public final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
+    public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
+    public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
+    public static final String ZIP_ENTRY_EXTENSION = ".morning01.note";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +114,31 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                String path = getFilePath(uri);
+                path = path.substring(path.indexOf(':') + 1);
+                Log.i("", "Uri: " + path);
+                try {
+                    Note[] notes = unzip(path);
+                    for (Note note : notes) {
+                        try {
+                            noteStorage.update(note);
+                        } catch(NotFoundException e) {
+                            noteStorage.insert(note);
+                        }
+                    }
+                    Toast.makeText(getApplicationContext(), notes.length + " " + getString(R.string.import_successfully) , Toast.LENGTH_SHORT).show();
+                    refreshNoteList();
+                }  catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), getString(R.string.import_failed) , Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
         if (requestCode == NOTE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
@@ -178,6 +216,14 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
+    public void convertNotesToFiles(File directory, Note[] notes) {
+        long exportId = 0;
+        for (Note note : notes) {
+            convertNoteToFile(note, directory, exportId);
+            exportId++;
+        }
+    }
+
     private boolean onExport() {
         setTitle(getString(R.string.main_export));
         exporting = true;
@@ -219,8 +265,10 @@ public class MainActivity extends AppCompatActivity {
                 outputDirectory.mkdirs();
                 File zipFile = new File (outputDirectory.toString() + "/Notes.zip");
                 String zipOutputPath = zipFile.toString();
+                long exportId = 0;
                 for (Note note : notesListForExport) {
-                    convertNoteToFile(note, tmpDirectory);
+                    convertNoteToFile(note, tmpDirectory, exportId);
+                    exportId++;
                 }
                 int counter = 1;
                 while(zipFile.exists()) {
@@ -298,6 +346,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                openFilePicker();
                 return true;
             }
         });
@@ -328,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
             changeThemeButton.setTitle(R.string.change_dark_theme);
         }
 
-        importButton.setVisible(false);
+        importButton.setVisible(true);
         return true;
     }
 
@@ -365,30 +414,26 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public void convertNoteToFile(Note note, File outPutDirectory) {
-        String title = note.getTitle();
-        String content = note.getContent();
+    public void convertNoteToFile(Note note, File outPutDirectory, long exportId) {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (checkPermission()) {
                 outPutDirectory.mkdirs();
-                File file = new File(outPutDirectory, title + ".txt");
+                File file = new File(outPutDirectory, exportId + ZIP_ENTRY_EXTENSION);
                 try (PrintWriter pw = new PrintWriter(new FileOutputStream(file))) {
-                    pw.println(title);
-                    pw.println(content);
+                    pw.print(note.getJsonString());
                     pw.flush();
-                } catch (IOException e) {
+                } catch (IOException|JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
-
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return result == PackageManager.PERMISSION_GRANTED;
     }
-    private static boolean zipFolder(String inputFolderPath, String outZipPath) {
+    public static boolean zipFolder(String inputFolderPath, String outZipPath) {
         Log.d("Zip", "zipFolder function");
         File srcFile = new File(inputFolderPath);
         File[] files = srcFile.listFiles();
@@ -427,5 +472,59 @@ public class MainActivity extends AppCompatActivity {
         }
         return dir.delete();
     }
+
+    public String getFilePath(Uri uri){
+        final String id = DocumentsContract.getDocumentId(uri);
+        try {
+            final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+            String[] projection = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        } catch(NumberFormatException e) {
+            return id.replace("primary:", Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
+        }
+    }
+
+    public static  Note[] unzip(String zipFile) throws IOException {
+        ArrayList<Note> newNotes = new ArrayList<>();
+        try(ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String fileName = ze.getName();
+                String ending = fileName.substring(fileName.length() - ZIP_ENTRY_EXTENSION.length());
+                if (!ending.equals(ZIP_ENTRY_EXTENSION)) {
+                    continue;
+                }
+                byte[] buffer = new byte[1024];
+                StringBuilder content = new StringBuilder();
+                for (int c = zin.read(buffer); c != -1; c = zin.read()) {
+                    content.append(new String(buffer, 0, c));
+                }
+                Note note;
+                try {
+                    note = new Note(content.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                newNotes.add(note);
+                zin.closeEntry();
+            }
+            Note[] notes = new Note[newNotes.size()];
+            newNotes.toArray(notes);
+            return notes;
+        }
+    }
+
+    private void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/zip");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
 
 }

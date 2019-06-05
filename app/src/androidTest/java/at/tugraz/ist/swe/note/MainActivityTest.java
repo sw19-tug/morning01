@@ -172,7 +172,7 @@ public class MainActivityTest {
     public void checkToolbarButtonsVisibility() {
         onView(withId(R.id.search)).check(matches(isDisplayed()));
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        //onView(withText(R.string.main_import)).check(matches(isDisplayed()));
+        onView(withText(R.string.main_import)).check(matches(isDisplayed()));
         onView(withText(R.string.main_sort)).check(matches(isDisplayed()));
         onView(withText(R.string.main_export)).check(matches(isDisplayed()));
     }
