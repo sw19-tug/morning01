@@ -15,9 +15,9 @@ import at.tugraz.ist.swe.note.R;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 public class NoteRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private Context mContext = null;
+    private Context mContext;
     private int appWidgetId;
-    private NoteStorage noteStorage = null;
+    private NoteStorage noteStorage;
     private ArrayList<Note> notes = null;
 
     public NoteRemoteViewsFactory(Context context, Intent intent) {
@@ -25,7 +25,6 @@ public class NoteRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         noteStorage = new NoteStorage(new DatabaseHelper(context));
-
     }
 
     private void updateWidgetListView()
