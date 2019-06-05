@@ -189,7 +189,6 @@ public class MainActivityTest {
         };
 
         Util.fillNoteStorage(notes, activity);
-        //click first element
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
@@ -211,6 +210,41 @@ public class MainActivityTest {
         }
         assertTrue(!foundNote);
     }
+
+
+    @Test
+    public void checkIfNoteIsNotVisibleAfterSettingToProtected() {
+
+        MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Note checkNote = new Note("note1", "blabla1", 1);
+        Note[] notes = {
+                checkNote
+        };
+
+        Util.fillNoteStorage(notes, activity);
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        onView(withId(R.id.tfTitle)).check(matches(withText(checkNote.getTitle())));
+
+        onView(withId(R.id.tfContent)).check(matches(withText(checkNote.getContent())));
+
+        onView(withContentDescription(R.string.action_protect)).perform(click());
+        onView(withText(R.string.yes)).perform(click());
+
+        boolean foundNote = false;
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i) {
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if (checkNote.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    checkNote.getContent().compareTo(fetchedNote.getContent()) == 0) {
+                foundNote = true;
+                break;
+            }
+        }
+        assertTrue(!foundNote);
+    }
+
     @Test
     public void checkIfSortButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());

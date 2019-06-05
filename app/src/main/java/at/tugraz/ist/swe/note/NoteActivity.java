@@ -141,6 +141,17 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+
+        MenuItem setProtectedNoteButton = this.menu.findItem(R.id.action_protect);
+        setProtectedNoteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                setProtectedNote();
+                return true;
+            }
+        });
+
         MenuItem restoreButton = this.menu.findItem(R.id.action_restore);
         restoreButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -212,6 +223,30 @@ public class NoteActivity extends AppCompatActivity {
                             startIntentMain(OptionFlag.SOFT_REMOVE);
                         }
 
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
+    }
+
+    private void setProtectedNote() {
+        String title = "Confirm Protection";
+        String message = "Are you sure you want to move the note to the protected area?";
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(NoteActivity.this);
+        confirmDeleteDialog.setTitle(title);
+        confirmDeleteDialog.setMessage(message);
+        confirmDeleteDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        note.setIsProtected(true);
+                        startIntentMain(OptionFlag.PROTECT);
                     }
                 });
 

@@ -18,6 +18,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.TestCase.assertTrue;
 
 public class NoteActivityTest {
@@ -64,7 +65,8 @@ public class NoteActivityTest {
     @Test
     public void checkNoteIsProtected() {
         onView(withId(R.id.action_protect)).perform(click());
-        assertTrue(activityActivityTestRule.getActivity().getNote().isProtected());
+        onView(withText(R.string.yes)).perform(click());
+        assertTrue(activityActivityTestRule.getActivity().getNote().getIsProtected());
     }
 
     @Test

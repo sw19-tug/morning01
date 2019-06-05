@@ -11,6 +11,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_protect"
+        android:icon="@drawable/ic_vpn_key_black_24dp"
+        android:title="@string/action_protect"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_pinning"
         android:icon="@drawable/ic_pinning"
         android:title="@string/action_pinning"
@@ -33,4 +39,5 @@
         android:icon="@drawable/ic_restore_black_24dp"
         android:title="@string/action_restore"
         app:showAsAction="ifRoom" />
+
 </menu>
