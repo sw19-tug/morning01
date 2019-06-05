@@ -93,13 +93,13 @@ public class TrashActivity extends AppCompatActivity {
 
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(true, true);
+        Note[] allNotes = noteStorage.getAll(true, true, false);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
 
     private void initNoteView() {
-        Note[] allNotes = noteStorage.getAll(true, true);
+        Note[] allNotes = noteStorage.getAll(true, true, false);
 
         setNoteList(allNotes);
 

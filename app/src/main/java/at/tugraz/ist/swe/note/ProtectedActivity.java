@@ -93,13 +93,13 @@ public class ProtectedActivity  extends AppCompatActivity {
 
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(true, true);
+        Note[] allNotes = noteStorage.getAll(true, false, true);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
 
     private void initNoteView() {
-        Note[] allNotes = noteStorage.getAll(true, true);
+        Note[] allNotes = noteStorage.getAll(true, false, true);
 
         setNoteList(allNotes);
 

@@ -20,6 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String NOTE_COLUMN_CHANGED_DATE = "changed_at";
     public static final String NOTE_COLUMN_REMOVED = "removed";
     public static final String NOTE_COLUMN_PINNED = "pinned";
+    public static final String NOTE_COLUMN_PROTECTED = "pinned";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, NOTE_DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,7 +40,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NOTE_COLUMN_CREATED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON CONFLICT REPLACE, " +
                 NOTE_COLUMN_CHANGED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON CONFLICT REPLACE, " +
                 NOTE_COLUMN_PINNED + " INTEGER DEFAULT " + Note.DEFAULT_PINNED + " NOT NULL, " +
-                NOTE_COLUMN_REMOVED + " BOOLEAN DEFAULT 0 NOT NULL" +")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
+                NOTE_COLUMN_REMOVED + " BOOLEAN DEFAULT 0 NOT NULL," +
+                NOTE_COLUMN_PROTECTED + " BOOLEAN DEFAULT 0 NOT NULL" +")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
     }
 
     @Override

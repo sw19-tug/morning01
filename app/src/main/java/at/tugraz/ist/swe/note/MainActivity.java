@@ -46,6 +46,8 @@ import at.tugraz.ist.swe.note.database.NotFoundException;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Note> noteList = new ArrayList<>();
+    ArrayList<Note> protectedNoteList = new ArrayList<>();
+    ArrayList<Note> notesListForExport = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     CheckBoxAdapter checkBoxAdapter;
     ListView noteListView;
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean removedOnly = false;
     private String pattern = "";
     Context context = this;
-    ArrayList<Note> notesListForExport = new ArrayList<>();
     Activity mainActivity = this;
     boolean exporting = false;
     String userPassword;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly,false, pattern);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case PROTECT:
                         try {
-                            noteStorage.delete(note.getId());
+                            noteStorage.protectNote(note.getId());
                             refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
@@ -379,10 +380,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), TrashActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.protectedNotesButton:
-                Intent intent_p = new Intent(getApplicationContext(), ProtectedActivity.class);
-                startActivity(intent_p);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -485,6 +482,8 @@ public class MainActivity extends AppCompatActivity {
                     if (userPassword.equals(inputPassword)) {
                         dialogInterface.cancel();
                         Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), ProtectedActivity.class);
+                        startActivity(intent);
 
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.wrong_password, Toast.LENGTH_SHORT).show();
