@@ -2,9 +2,11 @@ package at.tugraz.ist.swe.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
@@ -22,7 +24,7 @@ public class NoteWidget extends AppWidgetProvider {
     public static final String ACTION_NOTES_PULLED = "at.tugraz.ist.swe.widget.NOTES_PULLED";
 
     public static void sendRefreshBroadcast(Context context) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(context,NoteWidget.class);
         intent.setAction(NoteWidget.ACTION_NOTES_PULLED);
         context.sendBroadcast(intent);
     }
