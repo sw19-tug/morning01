@@ -34,6 +34,7 @@ import org.json.JSONException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,15 +121,21 @@ public class MainActivity extends AppCompatActivity {
                 String path = getFilePath(uri);
                 path = path.substring(path.indexOf(':') + 1);
                 Log.i("", "Uri: " + path);
-                Note[] notes = unzip(path);
-                for (Note note : notes) {
-                    try {
-                        noteStorage.update(note);
-                    } catch(NotFoundException e) {
-                        noteStorage.insert(note);
+                try {
+                    Note[] notes = unzip(path);
+                    for (Note note : notes) {
+                        try {
+                            noteStorage.update(note);
+                        } catch(NotFoundException e) {
+                            noteStorage.insert(note);
+                        }
                     }
+                    Toast.makeText(getApplicationContext(), notes.length + " " + getString(R.string.import_successfully) , Toast.LENGTH_SHORT).show();
+                    refreshNoteList();
+                }  catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), getString(R.string.import_failed) , Toast.LENGTH_SHORT).show();
                 }
-                refreshNoteList();
             }
         }
 
@@ -480,20 +487,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static  Note[] unzip(String zipFile){
+    public static  Note[] unzip(String zipFile) throws IOException {
         ArrayList<Note> newNotes = new ArrayList<>();
         try(ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String fileName = ze.getName();
                 String ending = fileName.substring(fileName.length() - ZIP_ENTRY_EXTENSION.length());
-                if(!ending.equals(ZIP_ENTRY_EXTENSION)) {
+                if (!ending.equals(ZIP_ENTRY_EXTENSION)) {
                     continue;
                 }
                 byte[] buffer = new byte[1024];
                 StringBuilder content = new StringBuilder();
                 for (int c = zin.read(buffer); c != -1; c = zin.read()) {
-                    content.append(new String(buffer, 0, c ));
+                    content.append(new String(buffer, 0, c));
                 }
                 Note note;
                 try {
@@ -508,11 +515,7 @@ public class MainActivity extends AppCompatActivity {
             Note[] notes = new Note[newNotes.size()];
             newNotes.toArray(notes);
             return notes;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("", "Unzip exception", e);
         }
-        return null;
     }
 
     private void openFilePicker() {

@@ -38,7 +38,7 @@ public class MainActivityImportTest {
     }
 
     @Test
-    public void checkImportingLogic(){
+    public void checkImportingLogic() throws Exception {
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", Note.DEFAULT_PINNED);
         Note note2 = new Note("Khdhd", "Jdkdh dhgrgrgnd udef rtr", Note.DEFAULT_PINNED);

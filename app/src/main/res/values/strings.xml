@@ -31,5 +31,7 @@
     <string name="trash_activity">Trash</string>
     <string name="action_restore">Restore</string>
     <string name="export_successfully">Exported successfully in</string>
+    <string name="import_successfully">notes were successfully imported</string>
+    <string name="import_failed">Import failed</string>
     <string name="no_notes_selected">No notes selected</string>
 </resources>
