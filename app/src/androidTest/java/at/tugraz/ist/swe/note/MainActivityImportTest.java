@@ -50,9 +50,7 @@ public class MainActivityImportTest {
                 note3,
                 note4,
         };
-        for (Note note : notes) {
-            activity.convertNoteToFile(note, TMP_DIRECTORY);
-        }
+        activity.convertNotesToFiles(TMP_DIRECTORY, notes);
         assertTrue(MainActivity.zipFolder(TMP_DIRECTORY.toString(), ZIP_OUTPUT_PATH));
         assertTrue(ZIP_OUTPUT_FILE.exists());
         Note[] unzipNotes = MainActivity.unzip(ZIP_OUTPUT_PATH);

@@ -1,7 +1,12 @@
 package at.tugraz.ist.swe.note;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.Date;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
 public class Note implements Serializable {
     public static final long ILLEGAL_ID = -1;
@@ -27,6 +32,14 @@ public class Note implements Serializable {
     public Note(String title, String content){
         this.title = title;
         this.content = content;
+    }
+
+    public Note(String jsonString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+        this.id = jsonObject.getLong(DatabaseHelper.NOTE_COLUMN_ID);
+        this.title = jsonObject.getString(DatabaseHelper.NOTE_COLUMN_TITLE);
+        this.content = jsonObject.getString(DatabaseHelper.NOTE_COLUMN_CONTENT);
+        this.pinned = jsonObject.getInt(DatabaseHelper.NOTE_COLUMN_PINNED);
     }
 
     public long getId() {
@@ -95,4 +108,12 @@ public class Note implements Serializable {
                 (this.pinned == otherNote.pinned);
     }
 
+    public String getJsonString() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(DatabaseHelper.NOTE_COLUMN_ID, this.id);
+        jsonObject.put(DatabaseHelper.NOTE_COLUMN_TITLE, this.title);
+        jsonObject.put(DatabaseHelper.NOTE_COLUMN_CONTENT, this.content);
+        jsonObject.put(DatabaseHelper.NOTE_COLUMN_PINNED, this.pinned);
+        return jsonObject.toString();
+    }
 }

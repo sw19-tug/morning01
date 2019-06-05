@@ -29,6 +29,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTE_REQUEST_CODE = 1;
     public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
     public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
-    public static final String ZIP_ENTRY_EXTENSION = ".txt";
+    public static final String ZIP_ENTRY_EXTENSION = ".morning01.note";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 path = path.substring(path.indexOf(':') + 1);
                 Log.i("", "Uri: " + path);
                 Note[] notes = unzip(path);
-
                 for (Note note : notes) {
-                    noteStorage.insert(note);
+                    try {
+                        noteStorage.update(note);
+                    } catch(NotFoundException e) {
+                        noteStorage.insert(note);
+                    }
                 }
                 refreshNoteList();
-
             }
         }
 
@@ -205,6 +209,14 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
+    public void convertNotesToFiles(File directory, Note[] notes) {
+        long exportId = 0;
+        for (Note note : notes) {
+            convertNoteToFile(note, directory, exportId);
+            exportId++;
+        }
+    }
+
     private boolean onExport() {
         setTitle(getString(R.string.main_export));
         exporting = true;
@@ -246,8 +258,10 @@ public class MainActivity extends AppCompatActivity {
                 outputDirectory.mkdirs();
                 File zipFile = new File (outputDirectory.toString() + "/Notes.zip");
                 String zipOutputPath = zipFile.toString();
+                long exportId = 0;
                 for (Note note : notesListForExport) {
-                    convertNoteToFile(note, tmpDirectory);
+                    convertNoteToFile(note, tmpDirectory, exportId);
+                    exportId++;
                 }
                 int counter = 1;
                 while(zipFile.exists()) {
@@ -393,18 +407,16 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public void convertNoteToFile(Note note, File outPutDirectory) {
-        String title = note.getTitle();
-        String content = note.getContent();
+    public void convertNoteToFile(Note note, File outPutDirectory, long exportId) {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (checkPermission()) {
                 outPutDirectory.mkdirs();
-                File file = new File(outPutDirectory, title + ZIP_ENTRY_EXTENSION);
+                File file = new File(outPutDirectory, exportId + ZIP_ENTRY_EXTENSION);
                 try (PrintWriter pw = new PrintWriter(new FileOutputStream(file))) {
-                    pw.print(content);
+                    pw.print(note.getJsonString());
                     pw.flush();
-                } catch (IOException e) {
+                } catch (IOException|JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -473,14 +485,23 @@ public class MainActivity extends AppCompatActivity {
         try(ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
-                String title = ze.getName();
-                title = title.substring(0, title.length() - ZIP_ENTRY_EXTENSION.length());
+                String fileName = ze.getName();
+                String ending = fileName.substring(fileName.length() - ZIP_ENTRY_EXTENSION.length());
+                if(!ending.equals(ZIP_ENTRY_EXTENSION)) {
+                    continue;
+                }
                 byte[] buffer = new byte[1024];
                 StringBuilder content = new StringBuilder();
                 for (int c = zin.read(buffer); c != -1; c = zin.read()) {
                     content.append(new String(buffer, 0, c ));
                 }
-                Note note = new Note(title, content.toString(), 0);
+                Note note;
+                try {
+                    note = new Note(content.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    continue;
+                }
                 newNotes.add(note);
                 zin.closeEntry();
             }
