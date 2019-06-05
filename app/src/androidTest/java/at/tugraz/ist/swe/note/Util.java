@@ -45,6 +45,21 @@ public abstract class Util {
         }
     }
 
+    static public void assertNoteTagsContains(NoteTag[] foundNoteTags, NoteTag[] expectedNoteTags) {
+        int foundCounter = 0;
+        for (NoteTag expectedNoteTag: expectedNoteTags){
+            boolean found = false;
+            for(NoteTag foundNoteTag: foundNoteTags){
+                if (expectedNoteTag.equals(foundNoteTag)){
+                    found = true;
+                    foundCounter++;
+                }
+            }
+            assertTrue(found);
+        }
+        assertEquals(foundCounter, foundNoteTags.length);
+    }
+
     static public Note[] convertAdapterToNoteArray(ListAdapter adapter) {
         Note[] result = new Note[adapter.getCount()];
         for (int i = 0; i < adapter.getCount(); ++i){
@@ -60,6 +75,12 @@ public abstract class Util {
             note.setCreatedDate(date);
             note.setChangedDate(date);
             noteStorage.insert(note);
+        }
+    }
+
+    static public void fillNoteTagStorage(NoteTag[] noteTags, NoteTagStorage noteTagStorage) {
+        for (int i = 0; i < noteTags.length; ++i){
+            noteTagStorage.insert(noteTags[i]);
         }
     }
 

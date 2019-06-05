@@ -87,11 +87,7 @@ public class TagDatabaseInstrumentedTest {
         };
 
         NoteTagStorage noteTagStorage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-
-        for (int i = 0; i < noteTags.length; ++i){
-            noteTagStorage.insert(noteTags[i]);
-        }
-
+        Util.fillNoteTagStorage(noteTags, noteTagStorage);
         NoteTag[] allStoredNoteTags = noteTagStorage.getAllTags();
 
         assertEquals(3, allStoredNoteTags.length);
