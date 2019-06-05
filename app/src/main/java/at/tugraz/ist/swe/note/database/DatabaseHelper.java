@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String NOTE_COLUMN_CHANGED_DATE = "changed_at";
     public static final String NOTE_COLUMN_REMOVED = "removed";
     public static final String NOTE_COLUMN_PINNED = "pinned";
-    public static final String NOTE_COLUMN_PROTECTED = "pinned";
+    public static final String NOTE_COLUMN_PROTECTED = "protected";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, NOTE_DATABASE_NAME, null, DATABASE_VERSION);

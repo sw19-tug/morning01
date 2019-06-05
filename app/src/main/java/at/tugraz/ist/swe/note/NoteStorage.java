@@ -100,6 +100,9 @@ public class NoteStorage {
         return getAll(sortByCreatedDate, false, false);
     }
 
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly) {
+        return getAll(sortByCreatedDate, removedOnly, "");
+    }
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly) {
         return getAll(sortByCreatedDate, false, protectedOnly, "");
