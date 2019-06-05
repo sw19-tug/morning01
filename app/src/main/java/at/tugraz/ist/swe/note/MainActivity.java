@@ -147,6 +147,14 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         break;
+                    case PROTECT:
+                        try {
+                            noteStorage.delete(note.getId());
+                            refreshNoteList();
+                        } catch (NotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                     default:
                         refreshNoteList();
                         break;
@@ -371,6 +379,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), TrashActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.protectedNotesButton:
+                Intent intent_p = new Intent(getApplicationContext(), ProtectedActivity.class);
+                startActivity(intent_p);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -472,10 +484,10 @@ public class MainActivity extends AppCompatActivity {
                 if(!newPassword) {
                     if (userPassword.equals(inputPassword)) {
                         dialogInterface.cancel();
-                        Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT);
-                        // TODO show protected notes!!!
+                        Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT).show();
+
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.wrong_password, Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), R.string.wrong_password, Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     userPassword = input.getText().toString();

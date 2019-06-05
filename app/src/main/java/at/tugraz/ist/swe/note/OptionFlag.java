@@ -7,5 +7,6 @@ public enum OptionFlag {
     SOFT_REMOVE,
     SAVE,
     RESTORE,
-    PROTECT
+    PROTECT,
+    UNPROTECT
 }
