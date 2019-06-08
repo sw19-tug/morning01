@@ -184,6 +184,14 @@ public class NoteStorage {
         assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
     }
 
+    public boolean associate(Note note, NoteTag tag){
+        return false;
+    }
+
+    public boolean dissociate(Note note, NoteTag tag){
+        return false;
+    }
+
     public void restore(long id) throws NotFoundException {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";

@@ -10,7 +10,6 @@ public class NoteTag implements Serializable {
 
     private long id = ILLEGAL_ID;
     private int color = Color.BLACK;
-    private int numberOfUsages = 0;
     private String name = "";
 
     public NoteTag(){
@@ -28,9 +27,6 @@ public class NoteTag implements Serializable {
         return color;
     }
     public String getName() { return name; }
-    public int getNumberOfUsages() {
-        return numberOfUsages;
-    }
 
     public void setId(long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -48,7 +44,6 @@ public class NoteTag implements Serializable {
 
         NoteTag otherNoteTag = (NoteTag)o;
 
-        return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color &&
-                (this.numberOfUsages == otherNoteTag.numberOfUsages);
+        return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color;
     }
 }

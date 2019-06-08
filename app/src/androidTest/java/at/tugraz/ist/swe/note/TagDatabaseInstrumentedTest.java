@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
 import static org.junit.Assert.assertFalse;
@@ -25,44 +25,44 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(AndroidJUnit4.class)
 public class TagDatabaseInstrumentedTest {
-    private TagDatabaseHelper tagDatabaseHelper;
+    private DatabaseHelper databaseHelper;
 
     @Before
     public void setUpTagDB() {
-        tagDatabaseHelper = new TagDatabaseHelper(InstrumentationRegistry.getTargetContext());
-        tagDatabaseHelper.getWritableDatabase().execSQL("DELETE FROM " + tagDatabaseHelper.TAG_TABLE_NAME);
+        databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + databaseHelper.TAG_TABLE_NAME);
     }
 
     @Test
     public void testConnectionTagDB() {
-        assertEquals(tagDatabaseHelper.getDatabaseName(), "tag");
-        assertNotNull(tagDatabaseHelper.getReadableDatabase());
-        assertNotNull(tagDatabaseHelper.getWritableDatabase());
+        assertEquals(databaseHelper.getDatabaseName(), "tag");
+        assertNotNull(databaseHelper.getReadableDatabase());
+        assertNotNull(databaseHelper.getWritableDatabase());
     }
 
     @Test
     public void testTagTable() {
-        SQLiteDatabase database = tagDatabaseHelper.getReadableDatabase();
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
         database.query("tag",null, null, new String[]{}, null, null, null);
     }
 
 
     @Test
     public void testTagInsert() {
-        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTagStorage storage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         NoteTag noteTag = new NoteTag("name", 2);
         storage.insert(noteTag);
         assertNotNull(noteTag.getName());
         assertNotNull(noteTag.getColor());
         assertEquals(0, noteTag.getNumberOfUsages());
-        SQLiteDatabase database = tagDatabaseHelper.getReadableDatabase();
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
-        String selection = tagDatabaseHelper.TAG_COLUMN_NAME + " = ? AND " + tagDatabaseHelper.TAG_COLUMN_COLOR + " = ? AND " + tagDatabaseHelper.TAG_COLUMN_NUMBER_OF_USAGES + " = ?";
+        String selection = databaseHelper.TAG_COLUMN_NAME + " = ? AND " + databaseHelper.TAG_COLUMN_COLOR + " = ? AND " + databaseHelper.TAG_COLUMN_NUMBER_OF_USAGES + " = ?";
 
         String[] selectionArgs = {"name", "2", "0"};
 
         Cursor cursor = database.query(
-                tagDatabaseHelper.TAG_TABLE_NAME,
+                databaseHelper.TAG_TABLE_NAME,
                 null,
                 selection,
                 selectionArgs,
@@ -86,8 +86,13 @@ public class TagDatabaseInstrumentedTest {
                 new NoteTag("tag3", 3)
         };
 
-        NoteTagStorage noteTagStorage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
         Util.fillNoteTagStorage(noteTags, noteTagStorage);
+
+        for (int i = 0; i < noteTags.length; ++i){
+            noteTagStorage.insert(noteTags[i]);
+        }
+
         NoteTag[] allStoredNoteTags = noteTagStorage.getAllTags();
 
         assertEquals(3, allStoredNoteTags.length);
@@ -105,7 +110,7 @@ public class TagDatabaseInstrumentedTest {
 
     @Test
     public void testTagUpdate() {
-        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTagStorage storage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         NoteTag noteTag = new NoteTag("name", 2);
 
         storage.insert(noteTag);
@@ -124,7 +129,7 @@ public class TagDatabaseInstrumentedTest {
 
     @Test
     public void testTagDelete() {
-        NoteTagStorage storage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTagStorage storage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         NoteTag noteTag = new NoteTag("name", 2);
 
         storage.insert(noteTag);

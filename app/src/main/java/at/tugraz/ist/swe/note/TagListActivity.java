@@ -1,18 +1,17 @@
 package at.tugraz.ist.swe.note;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import java.util.ArrayList;
+
+import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
-import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
 
 public class TagListActivity extends AppCompatActivity {
     private ListView tagListView;
@@ -42,7 +41,7 @@ public class TagListActivity extends AppCompatActivity {
         tags = new ArrayList<NoteTag>();
         tagAdaper = new TagAdapter(this, tags);
         tagListView.setAdapter(tagAdaper);
-        tagStorage = new NoteTagStorage(new TagDatabaseHelper(this));
+        tagStorage = new NoteTagStorage(new DatabaseHelper(this));
         setTagList(tagStorage.getAllTags());
         tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
