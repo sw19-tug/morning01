@@ -97,6 +97,8 @@ public abstract class Util {
 
     static public void resetDatabase(DatabaseHelper databaseHelper) {
         databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.TAG_TABLE_NAME);
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TAG_TABLE_NAME);
     }
 
     static public void fillNoteStorage(Note[] notes, final TrashActivity activity) {

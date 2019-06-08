@@ -49,11 +49,11 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public  void testGetNewPinningNumber() throws NotFoundException{
+    public void testGetNewPinningNumber() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         assertEquals(NoteStorage.INITIAL_PINNING_NUMBER, storage.getNewPinningNumber());
         int nodePinningNumber = 3;
-        Note note = new Note ("title1", "content1", nodePinningNumber);
+        Note note = new Note("title1", "content1", nodePinningNumber);
         storage.insert(note);
         assertEquals(NoteStorage.INITIAL_PINNING_NUMBER + nodePinningNumber, storage.getNewPinningNumber());
     }
@@ -91,10 +91,10 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void testDeleteNote() throws NotFoundException{
+    public void testDeleteNote() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
-        Note note = new Note ("some title", "some content", 1);
+        Note note = new Note("some title", "some content", 1);
         storage.insert(note);
 
         storage.delete(note.getId());
@@ -102,8 +102,7 @@ public class DatabaseInstrumentedTest {
         boolean idNotFound = false;
         try {
             storage.findById(note.getId());
-        }
-        catch (NotFoundException ex) {
+        } catch (NotFoundException ex) {
             idNotFound = true;
         }
 
@@ -117,19 +116,19 @@ public class DatabaseInstrumentedTest {
         String title = "title1";
         String content = "content1";
         int pinned = 1;
-        Note note = new Note (title, content, pinned);
+        Note note = new Note(title, content, pinned);
         storage.insert(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),title);
-        assertEquals(foundNote.getContent(),content);
-        assertEquals(foundNote.getPinned(),pinned);
+        assertEquals(foundNote.getTitle(), title);
+        assertEquals(foundNote.getContent(), content);
+        assertEquals(foundNote.getPinned(), pinned);
     }
 
 
     @Test
-    public void testNoteUpdate() throws NotFoundException{
+    public void testNoteUpdate() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        Note note = new Note ("title1", "content1", 1);
+        Note note = new Note("title1", "content1", 1);
         storage.insert(note);
         String title = "title2";
         String content = "content2";
@@ -139,11 +138,10 @@ public class DatabaseInstrumentedTest {
         note.setPinned(pinned);
         storage.update(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),title);
-        assertEquals(foundNote.getContent(),content);
-        assertEquals(foundNote.getPinned(),pinned);
+        assertEquals(foundNote.getTitle(), title);
+        assertEquals(foundNote.getContent(), content);
+        assertEquals(foundNote.getPinned(), pinned);
     }
-
 
 
     public void testGetAllNotesSortedByTitle() {
@@ -259,11 +257,12 @@ public class DatabaseInstrumentedTest {
 
         Util.assertNoteArrayEquals(allStoredNotes, expecterArray);
     }
+
     @Test
     public void testSoftDeleteNote() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
-        Note note = new Note ("some title", "some content", 1);
+        Note note = new Note("some title", "some content", 1);
         storage.insert(note);
         storage.softDelete(note.getId());
         note = storage.findById(note.getId());
@@ -287,76 +286,5 @@ public class DatabaseInstrumentedTest {
         Note[] foundNotes = noteStorage.getAll(true, false, pattern);
         assertTrue(expectedNotes.length == foundNotes.length);
         Util.assertNoteArrayContains(foundNotes, expectedNotes);
-    }
-
-    private interface ApplyNotesTags {
-        void apply(Note note, NoteTag noteTag);
-    }
-
-    private void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
-        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
-            for(NoteTag tag : notesTags[noteIndex]) {
-                callback.apply(notes[noteIndex], tag);
-            }
-        }
-    }
-
-    @Test
-    public void testTagNote() {
-        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
-        Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
-        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
-        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 0);
-        Note[] notes = {note1, note2, note3, note4};
-        NoteTag tag1 = new NoteTag("tag1", 1);
-        NoteTag tag2 = new NoteTag("tag2", 2);
-        NoteTag tag3 = new NoteTag("tag3", 3);
-        NoteTag[] noteTags = {tag1, tag2, tag3};
-        final NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-        Util.fillNoteStorage(notes, noteStorage);
-        Util.fillNoteTagStorage(noteTags, noteTagStorage);
-
-        NoteTag[] note1Tags = {tag1, tag2};
-        NoteTag[] note2Tags = {tag2, tag3};
-        NoteTag[] note3Tags = {};
-        NoteTag[] note4Tags = {tag1};
-        NoteTag[][] notesTags = {note1Tags, note2Tags, note3Tags, note4Tags};
-
-        // Associate first time
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
-            @Override
-            public void apply(Note note, NoteTag tag) {
-                assertTrue(noteStorage.associate(note, tag));
-            }
-        });
-        // Associate twice
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
-            @Override
-            public void apply(Note note, NoteTag tag) {
-                assertFalse(noteStorage.associate(note, tag));
-            }
-        });
-
-        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
-            NoteTag[] fetchedNoteTags = noteStorage.getAssociatedTags(notes[noteIndex]);
-            NoteTag[] expectedNoteTags = notesTags[noteIndex];
-            Util.assertNoteTagsContains(fetchedNoteTags, expectedNoteTags);
-        }
-
-        // Dissociate first time
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
-            @Override
-            public void apply(Note note, NoteTag tag) {
-                assertTrue(noteStorage.dissociate(note, tag));
-            }
-        });
-        // Dissociate twice
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
-            @Override
-            public void apply(Note note, NoteTag tag) {
-                assertFalse(noteStorage.dissociate(note, tag));
-            }
-        });
     }
 }

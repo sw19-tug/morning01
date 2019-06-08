@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Instrumented test, which will execute on an Android device.
+ * In this class we have to use the real database, otherwise tests will fail.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -30,12 +31,12 @@ public class TagDatabaseInstrumentedTest {
     @Before
     public void setUpTagDB() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
-        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + databaseHelper.TAG_TABLE_NAME);
+        Util.resetDatabase(databaseHelper);
     }
 
     @Test
     public void testConnectionTagDB() {
-        assertEquals(databaseHelper.getDatabaseName(), "tag");
+        assertEquals(databaseHelper.getDatabaseName(), DatabaseHelper.NOTE_DATABASE_NAME);
         assertNotNull(databaseHelper.getReadableDatabase());
         assertNotNull(databaseHelper.getWritableDatabase());
     }
@@ -88,10 +89,6 @@ public class TagDatabaseInstrumentedTest {
         NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
         Util.fillNoteTagStorage(noteTags, noteTagStorage);
 
-        for (int i = 0; i < noteTags.length; ++i){
-            noteTagStorage.insert(noteTags[i]);
-        }
-
         NoteTag[] allStoredNoteTags = noteTagStorage.getAllTags();
 
         assertEquals(3, allStoredNoteTags.length);
@@ -143,4 +140,85 @@ public class TagDatabaseInstrumentedTest {
         assertTrue(idNotFound);
     }
 
+
+    private interface ApplyNotesTags {
+        void apply(Note note, NoteTag noteTag);
+    }
+
+    private void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
+        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+            for(NoteTag tag : notesTags[noteIndex]) {
+                callback.apply(notes[noteIndex], tag);
+            }
+        }
+    }
+
+    @Test
+    public void testTagNote() {
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
+        Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
+        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
+        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 0);
+        Note[] notes = {note1, note2, note3, note4};
+        NoteTag tag1 = new NoteTag("tag1", 1);
+        NoteTag tag2 = new NoteTag("tag2", 2);
+        NoteTag tag3 = new NoteTag("tag3", 3);
+        NoteTag[] noteTags = {tag1, tag2, tag3};
+        final NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Util.fillNoteStorage(notes, noteStorage);
+        Util.fillNoteTagStorage(noteTags, noteTagStorage);
+
+        assertTrue(noteStorage.getAll().length > 0);
+        assertTrue(noteTagStorage.getAllTags().length > 0);
+
+        NoteTag[] note1Tags = {tag1, tag2};
+        NoteTag[] note2Tags = {tag2, tag3};
+        NoteTag[] note3Tags = {};
+        NoteTag[] note4Tags = {tag1};
+        NoteTag[][] notesTags = {note1Tags, note2Tags, note3Tags, note4Tags};
+
+        // Associate first time
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertTrue(noteStorage.associate(note, tag));
+            }
+        });
+
+        assertTrue(noteStorage.getAll().length > 0);
+        assertTrue(noteTagStorage.getAllTags().length > 0);
+
+        // Associate twice
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertFalse(noteStorage.associate(note, tag));
+            }
+        });
+
+        assertTrue(noteStorage.getAll().length > 0);
+        assertTrue(noteTagStorage.getAllTags().length > 0);
+
+        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+            NoteTag[] fetchedNoteTags = noteStorage.getAssociatedTags(notes[noteIndex]);
+            NoteTag[] expectedNoteTags = notesTags[noteIndex];
+            Util.assertNoteTagsContains(fetchedNoteTags, expectedNoteTags);
+        }
+
+        // Dissociate first time
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertTrue(noteStorage.dissociate(note, tag));
+            }
+        });
+        // Dissociate twice
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertFalse(noteStorage.dissociate(note, tag));
+            }
+        });
+    }
 }

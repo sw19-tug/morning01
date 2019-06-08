@@ -200,11 +200,12 @@ public class NoteStorage {
     }
 
     public NoteTag[] getAssociatedTags(Note note){
-        String query = "SELECT * FROM " + DatabaseHelper.TAG_TABLE_NAME + " a INNER JOIN " + DatabaseHelper.NOTE_TAG_TABLE_NAME + " b " +
-                " ON a." + DatabaseHelper.TAG_COLUMN_ID + "= b." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
-                " WHERE b." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + "=?";
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(note.getId())});
+        String whereClause = DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID
+                + "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID
+                + " AND " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + "=?";
+        String[] selectionArgs = {String.valueOf(note.getId())};
+        Cursor cursor = database.query(DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME, null, whereClause, selectionArgs, null ,null, null);
         return NoteTagStorage.getAllTags(cursor);
     }
 
