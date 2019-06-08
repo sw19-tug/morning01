@@ -22,10 +22,10 @@ public class NoteTagStorage {
         }
     }
 
-    private void setValues(NoteTag noteTag, Cursor cursor) {
-        noteTag.setId(cursor.getLong(cursor.getColumnIndex(databaseHelper.TAG_COLUMN_ID)));
-        noteTag.setName(cursor.getString(cursor.getColumnIndex(databaseHelper.TAG_COLUMN_NAME)));
-        noteTag.setColor(cursor.getInt(cursor.getColumnIndex(databaseHelper.TAG_COLUMN_COLOR)));
+    private static void setValues(NoteTag noteTag, Cursor cursor) {
+        noteTag.setId(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.TAG_COLUMN_ID)));
+        noteTag.setName(cursor.getString(cursor.getColumnIndex(DatabaseHelper.TAG_COLUMN_NAME)));
+        noteTag.setColor(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.TAG_COLUMN_COLOR)));
     }
 
     private Cursor getTagCursor(long id) {
@@ -63,10 +63,7 @@ public class NoteTagStorage {
         cursor.close();
     }
 
-    public NoteTag[] getAllTags() {
-        SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        Cursor allNoteTagsCursor = database.query(databaseHelper.TAG_TABLE_NAME, null, null, null, null ,null, null);
-
+    public static NoteTag[] getAllTags(Cursor allNoteTagsCursor){
         NoteTag[] allNoteTags = new NoteTag[allNoteTagsCursor.getCount()];
         int arrayIndex = 0;
 
@@ -77,11 +74,16 @@ public class NoteTagStorage {
         } finally {
             allNoteTagsCursor.close();
         }
-
         return allNoteTags;
     }
 
-    private NoteTag convertNoteTagCursorToNoteTag(Cursor noteTagsCursor){
+    public NoteTag[] getAllTags() {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        Cursor allNoteTagsCursor = database.query(databaseHelper.TAG_TABLE_NAME, null, null, null, null ,null, null);
+        return getAllTags(allNoteTagsCursor);
+    }
+
+    private static NoteTag convertNoteTagCursorToNoteTag(Cursor noteTagsCursor){
         NoteTag noteTag = new NoteTag();
         setValues(noteTag, noteTagsCursor);
         return noteTag;

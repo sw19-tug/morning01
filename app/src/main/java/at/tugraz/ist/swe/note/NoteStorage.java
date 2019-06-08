@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -185,11 +186,33 @@ public class NoteStorage {
     }
 
     public boolean associate(Note note, NoteTag tag){
-        return false;
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID, note.getId());
+        values.put(DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID, tag.getId());
+
+        try {
+            SQLiteDatabase database = databaseHelper.getWritableDatabase();
+            database.insertOrThrow(DatabaseHelper.NOTE_TAG_TABLE_NAME, null, values);
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public NoteTag[] getAssociatedTags(Note note){
+        String query = "SELECT * FROM " + DatabaseHelper.TAG_TABLE_NAME + " a INNER JOIN " + DatabaseHelper.NOTE_TAG_TABLE_NAME + " b " +
+                " ON a." + DatabaseHelper.TAG_COLUMN_ID + "= b." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
+                " WHERE b." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + "=?";
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(note.getId())});
+        return NoteTagStorage.getAllTags(cursor);
     }
 
     public boolean dissociate(Note note, NoteTag tag){
-        return false;
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + " = ? AND " + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID + " = ?";
+        String[] whereArgs = {String.valueOf(note.getId()), String.valueOf(tag.getId())};
+        return database.delete(DatabaseHelper.NOTE_TAG_TABLE_NAME, whereClause, whereArgs) == 1;
     }
 
     public void restore(long id) throws NotFoundException {

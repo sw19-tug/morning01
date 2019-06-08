@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
-import at.tugraz.ist.swe.note.database.TagDatabaseHelper;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -313,8 +312,8 @@ public class DatabaseInstrumentedTest {
         NoteTag tag2 = new NoteTag("tag2", 2);
         NoteTag tag3 = new NoteTag("tag3", 3);
         NoteTag[] noteTags = {tag1, tag2, tag3};
-        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
-        NoteTagStorage noteTagStorage = new NoteTagStorage(new TagDatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        final NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
         Util.fillNoteStorage(notes, noteStorage);
         Util.fillNoteTagStorage(noteTags, noteTagStorage);
 
@@ -325,9 +324,19 @@ public class DatabaseInstrumentedTest {
         NoteTag[][] notesTags = {note1Tags, note2Tags, note3Tags, note4Tags};
 
         // Associate first time
-        applyNotesTags(notesTags, notes, (note, tag) -> assertTrue(noteStorage.associate(note, tag)));
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertTrue(noteStorage.associate(note, tag));
+            }
+        });
         // Associate twice
-        applyNotesTags(notesTags, notes, (note, tag) -> assertFalse(noteStorage.associate(note, tag)));
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertFalse(noteStorage.associate(note, tag));
+            }
+        });
 
         for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
             NoteTag[] fetchedNoteTags = noteStorage.getAssociatedTags(notes[noteIndex]);
@@ -336,8 +345,18 @@ public class DatabaseInstrumentedTest {
         }
 
         // Dissociate first time
-        applyNotesTags(notesTags, notes, (note, tag) -> assertTrue(noteStorage.dissociate(note, tag)));
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertTrue(noteStorage.dissociate(note, tag));
+            }
+        });
         // Dissociate twice
-        applyNotesTags(notesTags, notes, (note, tag) -> assertFalse(noteStorage.dissociate(note, tag)));
+        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertFalse(noteStorage.dissociate(note, tag));
+            }
+        });
     }
 }

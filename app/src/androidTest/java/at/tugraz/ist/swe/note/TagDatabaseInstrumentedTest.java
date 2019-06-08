@@ -54,12 +54,11 @@ public class TagDatabaseInstrumentedTest {
         storage.insert(noteTag);
         assertNotNull(noteTag.getName());
         assertNotNull(noteTag.getColor());
-        assertEquals(0, noteTag.getNumberOfUsages());
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
-        String selection = databaseHelper.TAG_COLUMN_NAME + " = ? AND " + databaseHelper.TAG_COLUMN_COLOR + " = ? AND " + databaseHelper.TAG_COLUMN_NUMBER_OF_USAGES + " = ?";
+        String selection = databaseHelper.TAG_COLUMN_NAME + " = ? AND " + databaseHelper.TAG_COLUMN_COLOR + " = ?";
 
-        String[] selectionArgs = {"name", "2", "0"};
+        String[] selectionArgs = {"name", "2"};
 
         Cursor cursor = database.query(
                 databaseHelper.TAG_TABLE_NAME,

@@ -53,13 +53,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dataBase.execSQL("CREATE TABLE " + TAG_TABLE_NAME + " (" +
                 TAG_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TAG_COLUMN_COLOR + " INTEGER NOT NULL, " +
-                TAG_COLUMN_NAME + " TEXT NOT NULL" + ")");
+                TAG_COLUMN_NAME + " TEXT NOT NULL," +
+                "CONSTRAINT unique_name UNIQUE( " + TAG_COLUMN_NAME + "))");
 
         dataBase.execSQL("CREATE TABLE " + NOTE_TAG_TABLE_NAME + " (" +
                 NOTE_TAG_COLUMN_NOTE_ID + " INTEGER NOT NULL, " +
-                NOTE_TAG_COLUMN_TAG_ID + " INTEGER NOT NULL " + ")");
-
-
+                NOTE_TAG_COLUMN_TAG_ID + " INTEGER NOT NULL, " +
+                "PRIMARY KEY(" + NOTE_TAG_COLUMN_NOTE_ID + "," + NOTE_TAG_COLUMN_TAG_ID + ")," +
+                "FOREIGN KEY(" + NOTE_TAG_COLUMN_NOTE_ID + ") REFERENCES " + NOTE_TABLE_NAME + "(" + NOTE_COLUMN_ID + ")," +
+                "FOREIGN KEY(" + NOTE_TAG_COLUMN_TAG_ID + ") REFERENCES " + TAG_TABLE_NAME + "(" + TAG_COLUMN_ID + ")" +
+                ")");
     }
 
     @Override
