@@ -150,11 +150,13 @@ public class MainActivity extends AppCompatActivity {
                 switch (flag) {
                     case SAVE:
                         noteStorage.insert(note);
+                        noteStorage.associateAll(note);
                         refreshNoteList();
                         break;
                     case EDIT:
                         try {
                             noteStorage.update(note);
+                            noteStorage.associateAll(note);
                             refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
@@ -170,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case REMOVE:
                         try {
+                            noteStorage.dissociateAll(note);
                             noteStorage.delete(note.getId());
                             refreshNoteList();
                         } catch (NotFoundException e) {

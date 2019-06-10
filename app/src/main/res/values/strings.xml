@@ -34,4 +34,5 @@
     <string name="import_successfully">notes were successfully imported</string>
     <string name="import_failed">Import failed</string>
     <string name="no_notes_selected">No notes selected</string>
+    <string name="add_a_tag">Add tags...</string>
 </resources>

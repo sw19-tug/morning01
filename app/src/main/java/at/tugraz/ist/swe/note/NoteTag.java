@@ -46,4 +46,14 @@ public class NoteTag implements Serializable {
 
         return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color;
     }
+
+    public static String formatAsHtml(String name, int color) {
+        String backgroundColor = String.format("#%06X", 0xFFFFFF & color);
+        return "<span style=\"background-color: " + backgroundColor + "\">" + name + "</span>";
+    }
+
+    @Override
+    public String toString() {
+        return name + " "; // Additional space for the autocompletion in NoteActivity.
+    }
 }

@@ -35,16 +35,35 @@ public class NoteTagStorage {
         return database.query(DatabaseHelper.TAG_TABLE_NAME, null, selection, selectionArgs, null, null, null);
     }
 
-    public NoteTag findTagById(long id) throws NotFoundException {
-        Cursor cursor = getTagCursor(id);
-        if(cursor.getCount() != 1) {
-            throw new NotFoundException(id);
-        }
+    private Cursor getTagCursor(String name) {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        String selection = DatabaseHelper.TAG_COLUMN_NAME + " = ?";
+        String[] selectionArgs = {name};
+        return database.query(DatabaseHelper.TAG_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+    }
+
+    private NoteTag convertCursorToNoteTag(Cursor cursor) {
         cursor.moveToFirst();
         NoteTag noteTag = new NoteTag();
         setValues(noteTag, cursor);
         cursor.close();
         return noteTag;
+    }
+
+    public NoteTag findTagById(long id) throws NotFoundException {
+        Cursor cursor = getTagCursor(id);
+        if(cursor.getCount() != 1) {
+            throw new NotFoundException(id);
+        }
+        return convertCursorToNoteTag(cursor);
+    }
+
+    public NoteTag findByName(String name) {
+        Cursor cursor = getTagCursor(name);
+        if(cursor.getCount() != 1) {
+            return null;
+        }
+        return convertCursorToNoteTag(cursor);
     }
 
     private ContentValues getTagContentValues(NoteTag noteTag) {

@@ -216,6 +216,19 @@ public class NoteStorage {
         return database.delete(DatabaseHelper.NOTE_TAG_TABLE_NAME, whereClause, whereArgs) == 1;
     }
 
+    public void dissociateAll(Note note) {
+        for (NoteTag noteTag : getAssociatedTags(note)) {
+            dissociate(note, noteTag);
+        }
+    }
+
+    public void associateAll(Note note) {
+        // note has to be already inserted to database.
+        for (NoteTag noteTag : note.getTags()) {
+            associate(note, noteTag);
+        }
+    }
+
     public void restore(long id) throws NotFoundException {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
         String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";

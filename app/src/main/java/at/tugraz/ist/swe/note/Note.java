@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -19,6 +20,7 @@ public class Note implements Serializable {
     private boolean removed = false;
     private int pinned = DEFAULT_PINNED;
     private Date changedDate = null;
+    private ArrayList<NoteTag> tags = new ArrayList<>();
 
     public Note(){
     }
@@ -63,6 +65,9 @@ public class Note implements Serializable {
     public Date getChangedDate(){
         return changedDate;
     }
+    public ArrayList<NoteTag> getTags(){
+        return tags;
+    }
 
     public void setId(long id) {
         this.id = id;
@@ -90,6 +95,10 @@ public class Note implements Serializable {
 
     public void setChangedDate(Date changedDate) {
         this.changedDate = changedDate;
+    }
+
+    public void addTag(NoteTag tag) {
+        this.tags.add(tag);
     }
 
     @Override

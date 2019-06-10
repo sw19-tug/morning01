@@ -10,14 +10,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 
 public class TagAdapter extends ArrayAdapter<NoteTag> {
 
 
-    public TagAdapter(@NonNull Context context, @NonNull ArrayList<NoteTag> noteTagList) {
+    public TagAdapter(@NonNull Context context, @NonNull List<NoteTag> noteTagList) {
 
         super(context,0, noteTagList);
+    }
+
+    public TagAdapter(@NonNull Context context, NoteTag[] allTags) {
+        this(context, Arrays.asList(allTags));
     }
 
     @NonNull
