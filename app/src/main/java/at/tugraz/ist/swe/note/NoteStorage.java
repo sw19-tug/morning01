@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -103,7 +104,15 @@ public class NoteStorage {
         return getAll(sortByCreatedDate, removedOnly, "");
     }
 
-    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String patten) {
+    private static String[] arrayListToArray(ArrayList<String> arrayList) {
+        String[] array = new String[arrayList.size()];
+        for(int i = 0; i < arrayList.size(); i++) {
+            array[i] = arrayList.get(i);
+        }
+        return array;
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
         if(sortByCreatedDate) {
@@ -111,15 +120,29 @@ public class NoteStorage {
         } else {
             orderBy += DatabaseHelper.NOTE_COLUMN_TITLE + " ASC";
         }
-        String whereClause = "";
+        StringBuilder whereClause = new StringBuilder();
         if(removedOnly) {
-            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
+            whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1");
         } else {
-            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
+            whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0");
         }
-        String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
-        whereClause += " AND (title LIKE ? OR content LIKE ?)";
-        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, selectionArgs, null ,null, orderBy);
+        ArrayList<String> selectionArgs = new ArrayList<>();
+        String[] patternParts = pattern.split("\\s+");
+        for(String patternPart : patternParts) {
+            if(patternPart.startsWith("#")) {
+                whereClause.append(" AND (SELECT count(*) FROM " +
+                        DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME +
+                        " WHERE " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID  +
+                        "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
+                        " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME + " LIKE ?) > 0");
+                selectionArgs.add("%" + patternPart.substring(1) + "%");
+            } else {
+                whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_TITLE + " LIKE ? OR " + DatabaseHelper.NOTE_COLUMN_CONTENT + " LIKE ?)");
+                selectionArgs.add("%" + patternPart + "%");
+                selectionArgs.add("%" + patternPart + "%");
+            }
+        }
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause.toString(), arrayListToArray(selectionArgs), null ,null, orderBy);
 
         Note[] allNotes = new Note[allNotesCursor.getCount()];
         int arrayIndex = 0;

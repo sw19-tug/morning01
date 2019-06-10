@@ -310,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
 
         MenuItem menuItem = this.menu.findItem(R.id.search);
         SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_title));
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem menuItem) {
