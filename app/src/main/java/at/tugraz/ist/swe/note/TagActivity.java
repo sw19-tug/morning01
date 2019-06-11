@@ -1,5 +1,4 @@
 package at.tugraz.ist.swe.note;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,7 +61,7 @@ public class TagActivity extends AppCompatActivity {
                 StringBuilder sb = new StringBuilder(end - start);
                 for (int i = start; i < end; i++) {
                     char c = source.charAt(i);
-                    if (isCharAllowed(c)) // put your condition here
+                    if (isCharAllowed(c))
                         sb.append(c);
                     else
                         keepOriginal = false;
