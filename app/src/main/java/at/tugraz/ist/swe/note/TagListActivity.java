@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import java.util.ArrayList;
 
@@ -27,6 +28,9 @@ public class TagListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tags_list);
         Toolbar toolbar = findViewById(R.id.tagsActivityToolbar);
         setSupportActionBar(toolbar);
+        setTitle(R.string.tags_activity_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         FloatingActionButton fab = findViewById(R.id.createTagButton);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int NOTE_REQUEST_CODE = 1;
+    private static final int NO_REQUEST_CODE = -1;
     public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
     public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
     public static final String ZIP_ENTRY_EXTENSION = ".morning01.note";
@@ -369,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent = new Intent(getApplicationContext(), TagListActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, NO_REQUEST_CODE);
                 return true;
             }
         });

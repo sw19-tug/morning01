@@ -16,7 +16,8 @@
         <activity
             android:name=".TagListActivity"
             android:label="@string/title_activity_tags_list"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:parentActivityName=".MainActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -9,10 +9,12 @@ public class NoteTag implements Serializable {
     public static long ILLEGAL_ID = -1;
 
     private long id = ILLEGAL_ID;
-    private int color = Color.BLACK;
-    private String name = "";
+    private int color;
+    private String name;
 
     public NoteTag(){
+        this.color = Color.BLACK;
+        this.name = "";
     }
 
     public NoteTag(String name, int color){
