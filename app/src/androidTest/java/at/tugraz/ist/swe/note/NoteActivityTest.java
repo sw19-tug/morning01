@@ -10,12 +10,15 @@ import org.junit.Test;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -36,24 +39,34 @@ public class NoteActivityTest {
 
     @Test
     public void checkDisplayLogicPinUnpinButtons() {
-        onView(withId(R.id.action_pinning)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_unpinning)).check(doesNotExist());
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 
-        onView(withId(R.id.action_pinning)).perform(click());
+        onView(withText(R.string.action_pinning)).check(matches(isDisplayed()));
+        onView(withText(R.string.action_unpinning)).check(doesNotExist());
 
-        onView(withId(R.id.action_pinning)).check(doesNotExist());
-        onView(withId(R.id.action_unpinning)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.action_unpinning)).perform(click());
+        onView(withText(R.string.action_pinning)).perform(click());
 
-        onView(withId(R.id.action_pinning)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_unpinning)).check(doesNotExist());
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
+        onView(withText(R.string.action_pinning)).check(doesNotExist());
+        onView(withText(R.string.action_unpinning)).check(matches(isDisplayed()));
+
+
+        onView(withText(R.string.action_unpinning)).perform(click());
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
+        onView(withText(R.string.action_pinning)).check(matches(isDisplayed()));
+        onView(withText(R.string.action_unpinning)).check(doesNotExist());
     }
 
     @Test
     public void checkShareButtonVisibility() {
-        onView(withId(R.id.action_share)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_share)).check(matches(isClickable()));
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
+        onView(withText(R.string.action_share)).check(matches(isDisplayed()));
+        onView(withText(R.string.action_share)).check(matches(isEnabled()));
     }
 
     @Test

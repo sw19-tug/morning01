@@ -19,7 +19,7 @@ public class ProtectedActivity  extends AppCompatActivity {
     ArrayList<Note> noteList = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     ListView noteListView;
-    public static final int NOTE_RESTORE_CODE = 2;
+    public static final int NOTE_PROTECT_CODE = 1;
     public static final String NOTE_KEY = "note";
     public static final String REQUEST_CODE_KEY = "request_code";
     NoteStorage noteStorage;
@@ -41,8 +41,8 @@ public class ProtectedActivity  extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
                 intent.putExtra(NOTE_KEY, noteList.get(position));
-                intent.putExtra(REQUEST_CODE_KEY, NOTE_RESTORE_CODE);
-                startActivityForResult(intent, NOTE_RESTORE_CODE);
+                intent.putExtra(REQUEST_CODE_KEY, NOTE_PROTECT_CODE);
+                startActivityForResult(intent, NOTE_PROTECT_CODE);
             }
         });
         noteListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -56,7 +56,7 @@ public class ProtectedActivity  extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NOTE_RESTORE_CODE) {
+        if (requestCode == NOTE_PROTECT_CODE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
                 if (note.getTitle().isEmpty() && note.getContent().isEmpty()) {
@@ -76,7 +76,7 @@ public class ProtectedActivity  extends AppCompatActivity {
                         break;
                     case UNPROTECT:
                         try {
-                            noteStorage.restore(note.getId());
+                            noteStorage.unprotect(note.getId());
                             refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
@@ -84,7 +84,6 @@ public class ProtectedActivity  extends AppCompatActivity {
                         break;
                     default:
                         refreshNoteList();
-
 
                 }
             }

@@ -2,9 +2,11 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.Manifest;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.widget.ListView;
@@ -46,6 +48,9 @@ public class MainActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> activityActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Before
     public void setUp() {
@@ -341,7 +346,8 @@ public class MainActivityTest {
         Note checkNote = (Note) noteListView.getAdapter().getItem(1);
 
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
-        onView(withId(R.id.action_pinning)).perform(click());
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.action_pinning)).perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
         Note pinnedNote = (Note) noteListView.getAdapter().getItem(0);

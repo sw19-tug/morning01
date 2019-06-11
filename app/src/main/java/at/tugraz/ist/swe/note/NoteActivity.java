@@ -21,6 +21,7 @@ public class NoteActivity extends AppCompatActivity {
     private Note note;
     NoteStorage storage;
     private int requestCode;
+    private int requestCodeProtectedActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class NoteActivity extends AppCompatActivity {
             note = new Note();
         }
         requestCode = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
+        requestCodeProtectedActivity = getIntent().getIntExtra(ProtectedActivity.REQUEST_CODE_KEY, 0);
 
         TextView tfTitle = findViewById(R.id.tfTitle);
         tfTitle.setText(note.getTitle());
@@ -152,6 +154,16 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+        MenuItem unprotectedNoteButton = this.menu.findItem(R.id.action_unprotect);
+        unprotectedNoteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                unprotectNote();
+                return true;
+            }
+        });
+
         MenuItem restoreButton = this.menu.findItem(R.id.action_restore);
         restoreButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -165,8 +177,19 @@ public class NoteActivity extends AppCompatActivity {
         if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             shareButton.setVisible(false);
             pinningButton.setVisible(false);
-        }else{
+            unprotectedNoteButton.setVisible(false);
+            setProtectedNoteButton.setVisible(false);
+        } else if (requestCodeProtectedActivity == ProtectedActivity.NOTE_PROTECT_CODE) {
+            shareButton.setVisible(false);
+            pinningButton.setVisible(false);
             restoreButton.setVisible(false);
+            removeButton.setVisible(false);
+            unprotectedNoteButton.setVisible(true);
+            setProtectedNoteButton.setVisible(false);
+        } else {
+            restoreButton.setVisible(false);
+            unprotectedNoteButton.setVisible(false);
+            setProtectedNoteButton.setVisible(true);
         }
 
         return true;
@@ -257,6 +280,28 @@ public class NoteActivity extends AppCompatActivity {
                     }
                 });
         confirmDeleteDialog.show();
+    }
+
+    private void unprotectNote(){
+        AlertDialog.Builder confirmUnprotectDialog = new AlertDialog.Builder(
+                NoteActivity.this);
+
+        confirmUnprotectDialog.setTitle("Confirm Unprotection");
+        confirmUnprotectDialog.setMessage("Are you sure you want move this note in unprotected area?");
+        confirmUnprotectDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startIntentMain(OptionFlag.UNPROTECT);
+                    }
+                });
+
+        confirmUnprotectDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmUnprotectDialog.show();
     }
 
     private void restoreNote(){
