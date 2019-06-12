@@ -46,7 +46,6 @@ import at.tugraz.ist.swe.note.database.NotFoundException;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Note> noteList = new ArrayList<>();
-    ArrayList<Note> protectedNoteList = new ArrayList<>();
     ArrayList<Note> notesListForExport = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     CheckBoxAdapter checkBoxAdapter;

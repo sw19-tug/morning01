@@ -17,6 +17,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_protect_disabled"
+        android:icon="@drawable/ic_lock_outline_black_opacity_down_24dp"
+        android:title="@string/action_protect"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_unprotect"
         android:icon="@drawable/ic_lock_open_black_24dp"
         android:title="@string/action_unprotect"

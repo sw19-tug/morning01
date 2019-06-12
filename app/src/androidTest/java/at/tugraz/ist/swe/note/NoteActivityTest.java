@@ -70,17 +70,11 @@ public class NoteActivityTest {
     }
 
     @Test
-    public void checkProtectButtonVisibility() {
-        onView(withId(R.id.action_protect)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_protect)).check(matches(isClickable()));
+    public void checkDisabledProtectButtonVisibility() {
+        onView(withId(R.id.action_protect_disabled)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_protect_disabled)).check(matches(isClickable()));
     }
 
-    @Test
-    public void checkNoteIsProtected() {
-        onView(withId(R.id.action_protect)).perform(click());
-        onView(withText(R.string.yes)).perform(click());
-        assertTrue(activityActivityTestRule.getActivity().getNote().getIsProtected());
-    }
 
     @Test
     public void checkBackButtonVisibility() {

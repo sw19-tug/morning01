@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -27,7 +29,6 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-
         storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
 
         note =  (Note) getIntent().getSerializableExtra(NOTE_KEY);
@@ -94,6 +95,16 @@ public class NoteActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
         this.menu = menu;
+        MenuItem disabledProtectButton = this.menu.findItem(R.id.action_protect_disabled);
+        MenuItem setProtectedNoteButton = this.menu.findItem(R.id.action_protect);
+        if( note.getTitle() == "" && note.getContent() == "")
+        {
+            setProtectedNoteButton.setVisible(false);
+            disabledProtectButton.setVisible(true);
+        }else{
+            disabledProtectButton.setVisible(false);
+            setProtectedNoteButton.setVisible(true);
+        }
         enableUnpinningButton(false);
 
         MenuItem removeButton = this.menu.findItem(R.id.action_remove);
@@ -144,7 +155,6 @@ public class NoteActivity extends AppCompatActivity {
         });
 
 
-        MenuItem setProtectedNoteButton = this.menu.findItem(R.id.action_protect);
         setProtectedNoteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -177,11 +187,13 @@ public class NoteActivity extends AppCompatActivity {
         if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             shareButton.setVisible(false);
             pinningButton.setVisible(false);
+            unpinningButton.setVisible(false);
             unprotectedNoteButton.setVisible(false);
             setProtectedNoteButton.setVisible(false);
         } else if (requestCodeProtectedActivity == ProtectedActivity.NOTE_PROTECT_CODE) {
             shareButton.setVisible(false);
             pinningButton.setVisible(false);
+            unpinningButton.setVisible(false);
             restoreButton.setVisible(false);
             removeButton.setVisible(false);
             unprotectedNoteButton.setVisible(true);
@@ -189,7 +201,6 @@ public class NoteActivity extends AppCompatActivity {
         } else {
             restoreButton.setVisible(false);
             unprotectedNoteButton.setVisible(false);
-            setProtectedNoteButton.setVisible(true);
         }
 
         return true;
