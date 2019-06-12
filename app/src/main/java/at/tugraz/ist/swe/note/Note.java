@@ -82,7 +82,7 @@ public class Note implements Serializable {
         this.changedDate = changedDate;
     }
 
-    public void setIsProtected(boolean isProtected) { this.isProtected = isProtected; }
+    public void setProtected(boolean isProtected) { this.isProtected = isProtected; }
 
     @Override
     public boolean equals(Object other){

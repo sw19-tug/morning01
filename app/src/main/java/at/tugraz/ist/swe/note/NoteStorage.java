@@ -49,7 +49,7 @@ public class NoteStorage {
         note.setChangedDate(convertStringToDate(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE))));
         note.setPinned(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)));
         note.setRemoved(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_REMOVED)) > 0);
-        note.setIsProtected(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PROTECTED)) > 0);
+        note.setProtected(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PROTECTED)) > 0);
     }
 
     private Cursor getCursor(long id) {
