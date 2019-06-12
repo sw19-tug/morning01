@@ -1,10 +1,13 @@
 package at.tugraz.ist.swe.note;
 
+import android.appwidget.AppWidgetProvider;
+import android.content.Context;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -46,6 +49,7 @@ import java.util.zip.ZipOutputStream;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
+import at.tugraz.ist.swe.widget.NoteWidget;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,7 +85,12 @@ public class MainActivity extends AppCompatActivity {
         initNoteView();
         showNotes();
         createToolbar();
+        IntentFilter intentFilter = new IntentFilter("at.tugraz.ist.swe.widget.NOTES_PULLED");
+        AppWidgetProvider appWidgetProvider = new AppWidgetProvider();
+
+        registerReceiver(appWidgetProvider, intentFilter);
     }
+
 
     @VisibleForTesting
     public void setNoteStorage(NoteStorage noteStorage) {
@@ -99,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
+
+        NoteWidget.sendRefreshBroadcast(getApplicationContext());
     }
 
     public void initAddNoteButton() {
@@ -187,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
     private void initNoteView() {
         Note[] allNotes = noteStorage.getAll();
 
+        NoteWidget.sendRefreshBroadcast(getApplicationContext());
+
         setNoteList(allNotes);
 
         customNoteAdapter = new NoteAdapter(this, noteList);
@@ -201,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
-                intent.putExtra("note", noteList.get(position));
+                intent.putExtra(NoteActivity.NOTE_KEY, noteList.get(position));
                 startActivityForResult(intent, NOTE_REQUEST_CODE);
             }
         });
@@ -341,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        final MenuItem importButton = this.menu.findItem(R.id.importButton);
+        MenuItem importButton = this.menu.findItem(R.id.importButton);
         importButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -353,6 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
         MenuItem exportButton = this.menu.findItem(R.id.exportButton);
         exportButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 return onExport();

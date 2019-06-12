@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 
 public class NoteActivity extends AppCompatActivity {
@@ -270,6 +271,17 @@ public class NoteActivity extends AppCompatActivity {
         Intent noteIntent = new Intent();
         noteIntent.putExtra(NOTE_KEY, note);
         noteIntent.putExtra(FLAG_KEY, flag);
+        boolean widgetCall = getIntent().getBooleanExtra("widget", false);
+        if (widgetCall){
+            try{
+                storage.update(note);
+            }
+            catch(NotFoundException e) {
+                e.printStackTrace();
+            }
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            return;
+        }
         setResult(RESULT_OK, noteIntent);
         finish();
     }
