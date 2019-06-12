@@ -13,6 +13,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="at.tugraz.ist.swe.widget.NOTES_PULLED" />
+                <action android:name="at.tugraz.ist.swe.widget.EXTRA_ITEM" />
             </intent-filter>
 
             <meta-data
@@ -20,9 +21,7 @@
                 android:resource="@xml/note_widget_info" />
         </receiver>
         <service android:name="at.tugraz.ist.swe.widget.NoteRemoteViewsService"
-
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <activity android:name=".TagActivity" />
         <activity
             android:name=".TagListActivity"

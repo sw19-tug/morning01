@@ -1,7 +1,9 @@
 package at.tugraz.ist.swe.note;
 
 import android.appwidget.AppWidgetProvider;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
@@ -46,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
         initNoteView();
         showNotes();
         createToolbar();
+        IntentFilter intentFilter = new IntentFilter("at.tugraz.ist.swe.widget.NOTES_PULLED");
+        AppWidgetProvider appWidgetProvider = new AppWidgetProvider();
+
+        registerReceiver(appWidgetProvider, intentFilter);
     }
+
 
     @VisibleForTesting
     public void setNoteStorage(NoteStorage noteStorage) {
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
-                intent.putExtra("note", noteList.get(position));
+                intent.putExtra(NoteActivity.NOTE_KEY, noteList.get(position));
                 startActivityForResult(intent, NOTE_REQUEST_CODE);
             }
         });
