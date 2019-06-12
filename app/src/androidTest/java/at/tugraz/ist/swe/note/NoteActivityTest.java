@@ -75,7 +75,6 @@ public class NoteActivityTest {
         onView(withId(R.id.action_protect_disabled)).check(matches(isClickable()));
     }
 
-
     @Test
     public void checkBackButtonVisibility() {
         onView(withContentDescription(R.string.abc_action_bar_up_description)).check(matches(isDisplayed()));

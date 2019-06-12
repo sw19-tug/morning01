@@ -515,27 +515,4 @@ public class MainActivityTest {
         onView(withId(R.id.action_protect)).check(matches(isClickable()));
     }
 
-    @Test
-    public void checkNoteIsProtected() {
-        MainActivity activity = activityActivityTestRule.getActivity();
-        Note note1 = new Note("A_Test_title", "blabla1", 1);
-        Note note2 = new Note("B_Test_title", "blabla2", 1);
-        Note note3 = new Note("C_Test_title", "blabla3", 2);
-        Note note4 = new Note("D_Test_title", "blabla4", 1);
-
-        Note[] notes = {
-                note1,
-                note2,
-                note3,
-                note4,
-        };
-        Util.fillNoteStorage(notes, activity);
-
-        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
-        onView(withId(R.id.action_protect)).perform(click());
-        onView(withText(R.string.yes)).perform(click());
-
-        ActivityTestRule<NoteActivity> noteActivityActivityTestRule = new ActivityTestRule<>(NoteActivity.class);
-        Assert.assertTrue(noteActivityActivityTestRule.getActivity().getNote().getIsProtected());
-    }
 }
