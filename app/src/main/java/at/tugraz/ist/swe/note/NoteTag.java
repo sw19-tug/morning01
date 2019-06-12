@@ -14,7 +14,7 @@ public class NoteTag implements Serializable {
     private String name;
 
     public NoteTag(){
-        this.color = Color.BLACK;
+        this.color = DEFAULT_COLOR;
         this.name = "";
     }
 

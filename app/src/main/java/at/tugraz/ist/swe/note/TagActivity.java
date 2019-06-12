@@ -183,41 +183,25 @@ public class TagActivity extends AppCompatActivity {
 
     public void showColourPicker(View view) {
         final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
-        colorPickerDialog.initialize(R.string.color_picker_default_title,
-                new int[]{
-                        getResources().getColor(R.color.Yellow),
-                        getResources().getColor(R.color.DarkOrange),
-                        getResources().getColor(R.color.Coral),
-                        getResources().getColor(R.color.HotPink),
-                        getResources().getColor(R.color.Tomato),
-                        getResources().getColor(R.color.PowderBlue),
-                        getResources().getColor(R.color.GreenYellow),
-                        getResources().getColor(R.color.LightBlue),
-                        getResources().getColor(R.color.DarkGray),
-                        getResources().getColor(R.color.Brown),
-                        getResources().getColor(R.color.Sienna),
-                        getResources().getColor(R.color.YellowGreen),
-                        getResources().getColor(R.color.DarkOrchid),
-                        getResources().getColor(R.color.PaleGreen),
-                        getResources().getColor(R.color.DarkViolet),
-                        getResources().getColor(R.color.MediumPurple),
-                        getResources().getColor(R.color.LightGreen),
-                        getResources().getColor(R.color.SaddleBrown),
-                        getResources().getColor(R.color.DarkMagenta),
-                        getResources().getColor(R.color.MediumSlateBlue),
-                        getResources().getColor(R.color.LightSlateGray),
-                        getResources().getColor(R.color.SlateGray),
-                        getResources().getColor(R.color.OliveDrab),
-                        getResources().getColor(R.color.Aqua),
-                        getResources().getColor(R.color.Cyan),
-                        getResources().getColor(R.color.SpringGreen),
-                        getResources().getColor(R.color.Lime),
-                        getResources().getColor(R.color.MediumSpringGreen),
-                        getResources().getColor(R.color.DarkTurquoise),
-                        getResources().getColor(R.color.DeepSkyBlue),
-                        getResources().getColor(R.color.DarkCyan),
-                        getResources().getColor(R.color.colorPrimaryDark),
-                }, getResources().getColor(R.color.DarkCyan), 4, 2);
+
+        int[] colors = new int[]{
+                getResources().getColor(R.color.LightGray),
+                getResources().getColor(R.color.Yellow),
+                getResources().getColor(R.color.DarkOrange),
+                getResources().getColor(R.color.Coral),
+                getResources().getColor(R.color.HotPink),
+                getResources().getColor(R.color.Tomato),
+                getResources().getColor(R.color.DarkGray),
+                getResources().getColor(R.color.Aqua),
+                getResources().getColor(R.color.DarkTurquoise),
+                getResources().getColor(R.color.DeepSkyBlue),
+                getResources().getColor(R.color.MediumPurple),
+                getResources().getColor(R.color.LightGreen),
+                getResources().getColor(R.color.YellowGreen),
+                getResources().getColor(R.color.OliveDrab),
+                getResources().getColor(R.color.SlateGray),
+        };
+        colorPickerDialog.initialize(R.string.color_picker_default_title, colors , colors[0], 3, 2);
 
         colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
             @Override

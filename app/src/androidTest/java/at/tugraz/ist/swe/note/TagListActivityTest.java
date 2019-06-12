@@ -42,9 +42,9 @@ public class TagListActivityTest {
     @Test
     public void checkIfTagsAreDisplayedInOverview(){
         NoteTag[] tags = {
-                new NoteTag("tag1", Color.BLACK),
-                new NoteTag("tag2", Color.BLACK),
-                new NoteTag("tag3", Color.BLACK),
+                new NoteTag("tag1", NoteTag.DEFAULT_COLOR),
+                new NoteTag("tag2", NoteTag.DEFAULT_COLOR),
+                new NoteTag("tag3", NoteTag.DEFAULT_COLOR),
         };
 
         activityActivityTestRule.getActivity().setTagList(tags);
@@ -107,7 +107,7 @@ public class TagListActivityTest {
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
-        NoteTag tag = new NoteTag(check_tag.getName() + updateString, Color.BLACK);
+        NoteTag tag = new NoteTag(check_tag.getName() + updateString, NoteTag.DEFAULT_COLOR);
 
         assertNotEquals(0, tagListView.getAdapter().getCount());
         boolean foundTag = false;
