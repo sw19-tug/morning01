@@ -111,4 +111,16 @@ public abstract class Util {
             }
         });
     }
+
+    public interface ApplyNotesTags {
+        void apply(Note note, NoteTag noteTag);
+    }
+
+    public static void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
+        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+            for(NoteTag tag : notesTags[noteIndex]) {
+                callback.apply(notes[noteIndex], tag);
+            }
+        }
+    }
 }

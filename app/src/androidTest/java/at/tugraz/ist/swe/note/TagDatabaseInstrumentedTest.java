@@ -140,19 +140,6 @@ public class TagDatabaseInstrumentedTest {
         assertTrue(idNotFound);
     }
 
-
-    private interface ApplyNotesTags {
-        void apply(Note note, NoteTag noteTag);
-    }
-
-    private void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
-        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
-            for(NoteTag tag : notesTags[noteIndex]) {
-                callback.apply(notes[noteIndex], tag);
-            }
-        }
-    }
-
     @Test
     public void testTagNote() {
         Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
@@ -179,7 +166,7 @@ public class TagDatabaseInstrumentedTest {
         NoteTag[][] notesTags = {note1Tags, note2Tags, note3Tags, note4Tags};
 
         // Associate first time
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+        Util.applyNotesTags(notesTags, notes, new Util.ApplyNotesTags() {
             @Override
             public void apply(Note note, NoteTag tag) {
                 assertTrue(noteStorage.associate(note, tag));
@@ -190,7 +177,7 @@ public class TagDatabaseInstrumentedTest {
         assertTrue(noteTagStorage.getAllTags().length > 0);
 
         // Associate twice
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+        Util.applyNotesTags(notesTags, notes, new Util.ApplyNotesTags() {
             @Override
             public void apply(Note note, NoteTag tag) {
                 assertFalse(noteStorage.associate(note, tag));
@@ -207,14 +194,14 @@ public class TagDatabaseInstrumentedTest {
         }
 
         // Dissociate first time
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+        Util.applyNotesTags(notesTags, notes, new Util.ApplyNotesTags() {
             @Override
             public void apply(Note note, NoteTag tag) {
                 assertTrue(noteStorage.dissociate(note, tag));
             }
         });
         // Dissociate twice
-        applyNotesTags(notesTags, notes, new ApplyNotesTags() {
+        Util.applyNotesTags(notesTags, notes, new Util.ApplyNotesTags() {
             @Override
             public void apply(Note note, NoteTag tag) {
                 assertFalse(noteStorage.dissociate(note, tag));

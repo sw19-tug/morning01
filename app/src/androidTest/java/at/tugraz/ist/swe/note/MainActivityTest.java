@@ -418,4 +418,45 @@ public class MainActivityTest {
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).perform(click());
         onView(withId(R.id.tag_edit_field)).check(matches(withText(tag1.getName() + " " + tag2.getName() + " " + tag3.getName() + " ")));
     }
+
+    @Test
+    public void checkFilteringTagsInNoteActivity() {
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
+        Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
+        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
+        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 0);
+        Note[] notes = {note1, note2, note3, note4};
+        NoteTag tag1 = new NoteTag("tag1", 1);
+        NoteTag tag2 = new NoteTag("tag2", 2);
+        NoteTag tag3 = new NoteTag("tag3", 3);
+        NoteTag[] noteTags = {tag1, tag2, tag3};
+        final NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Util.fillNoteStorage(notes, noteStorage);
+        Util.fillNoteTagStorage(noteTags, noteTagStorage);
+
+        NoteTag[] note1Tags = {tag1, tag2};
+        NoteTag[] note2Tags = {tag2, tag3};
+        NoteTag[] note3Tags = {};
+        NoteTag[] note4Tags = {tag1};
+        NoteTag[][] notesTags = {note1Tags, note2Tags, note3Tags, note4Tags};
+
+        Util.applyNotesTags(notesTags, notes, new Util.ApplyNotesTags() {
+            @Override
+            public void apply(Note note, NoteTag tag) {
+                assertTrue(noteStorage.associate(note, tag));
+            }
+        });
+
+        onView(withId(R.id.tagListButton)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(0).perform(click());
+
+        Note[] expectedNoteArray = {
+                note1,
+                note4,
+        };
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        Util.assertNoteArrayContains(noteListView.getAdapter(), expectedNoteArray);
+    }
 }
