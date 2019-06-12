@@ -104,6 +104,10 @@ public class NoteStorage {
         return getAll(sortByCreatedDate, removedOnly, "");
     }
 
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern) {
+        return getAll(sortByCreatedDate, removedOnly, pattern, null);
+    }
+
     private static String[] arrayListToArray(ArrayList<String> arrayList) {
         String[] array = new String[arrayList.size()];
         for(int i = 0; i < arrayList.size(); i++) {
@@ -112,7 +116,13 @@ public class NoteStorage {
         return array;
     }
 
-    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern) {
+    private static final String TAG_SUB_QUERY = "SELECT count(*) FROM " +
+            DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME +
+            " WHERE " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID  +
+            "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
+            " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME;
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern, NoteTag noteTag) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
         if(sortByCreatedDate) {
@@ -130,17 +140,17 @@ public class NoteStorage {
         String[] patternParts = pattern.split("\\s+");
         for(String patternPart : patternParts) {
             if(patternPart.startsWith("#")) {
-                whereClause.append(" AND (SELECT count(*) FROM " +
-                        DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME +
-                        " WHERE " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID  +
-                        "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
-                        " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME + " LIKE ?) > 0");
+                whereClause.append(" AND (" + TAG_SUB_QUERY + " LIKE ?) > 0");
                 selectionArgs.add("%" + patternPart.substring(1) + "%");
             } else {
                 whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_TITLE + " LIKE ? OR " + DatabaseHelper.NOTE_COLUMN_CONTENT + " LIKE ?)");
                 selectionArgs.add("%" + patternPart + "%");
                 selectionArgs.add("%" + patternPart + "%");
             }
+        }
+        if(noteTag != null) {
+            whereClause.append(" AND (" + TAG_SUB_QUERY + "= ?) > 0");
+            selectionArgs.add(noteTag.getName());
         }
         Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause.toString(), arrayListToArray(selectionArgs), null ,null, orderBy);
 
