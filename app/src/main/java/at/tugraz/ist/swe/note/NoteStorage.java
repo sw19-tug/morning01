@@ -120,6 +120,7 @@ public class NoteStorage {
             DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME +
             " WHERE " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID  +
             "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
+            " AND " + DatabaseHelper.NOTE_TABLE_NAME + "." + DatabaseHelper.NOTE_COLUMN_ID + " = " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID +
             " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME;
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern, NoteTag noteTag) {
@@ -140,7 +141,7 @@ public class NoteStorage {
         String[] patternParts = pattern.split("\\s+");
         for(String patternPart : patternParts) {
             if(patternPart.startsWith("#")) {
-                whereClause.append(" AND (" + TAG_SUB_QUERY + " LIKE ?) > 0");
+                whereClause.append(" AND (" + TAG_SUB_QUERY + " LIKE ? ) > 0");
                 selectionArgs.add("%" + patternPart.substring(1) + "%");
             } else {
                 whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_TITLE + " LIKE ? OR " + DatabaseHelper.NOTE_COLUMN_CONTENT + " LIKE ?)");

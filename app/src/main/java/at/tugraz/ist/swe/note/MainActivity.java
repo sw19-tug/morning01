@@ -63,11 +63,14 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Note> notesListForExport = new ArrayList<>();
     Activity mainActivity = this;
     boolean exporting = false;
+    private FloatingActionButton cancelFiltersButton;
+    private FloatingActionButton addNoteButton;
+    NoteTag filterTag;
 
 
 
     private static final int NOTE_REQUEST_CODE = 1;
-    private static final int NO_REQUEST_CODE = -1;
+    private static final int FILTER_REQUEST_CODE = 2;
     public static final String TMP_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmpNotes";
     public static final String OUTPUT_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Notes";
     public static final String ZIP_ENTRY_EXTENSION = ".morning01.note";
@@ -78,10 +81,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         noteStorage = new NoteStorage(new DatabaseHelper(this));
         initAddNoteButton();
-
+        initCancelFilterButton();
         initNoteView();
         showNotes();
         createToolbar();
+    }
+
+    private void initCancelFilterButton() {
+        cancelFiltersButton = findViewById(R.id.cancelFiltersButton);
+        cancelFiltersButton.setEnabled(false);
+        cancelFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                filterTag = null;
+                refreshNoteList();
+                cancelFiltersButton.setEnabled(false);
+                addNoteButton.setEnabled(true);
+            }
+        });
     }
 
     @VisibleForTesting
@@ -97,13 +114,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern, filterTag);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
 
     public void initAddNoteButton() {
-        FloatingActionButton addNoteButton = findViewById(R.id.createNoteButton);
+        addNoteButton = findViewById(R.id.createNoteButton);
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,6 +200,21 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         refreshNoteList();
                         break;
+                }
+            }
+        }else if(requestCode == FILTER_REQUEST_CODE){
+            if (resultCode == RESULT_OK) {
+                NoteTag tag = (NoteTag) data.getSerializableExtra(TagListActivity.TAG_KEY);
+                if (tag == null) {
+                    cancelFiltersButton.setEnabled(false);
+                    filterTag = null;
+                    addNoteButton.setEnabled(true);
+                }else{
+                    // TODO SORTING and SHOW CANCEL SORTING BUTTON
+                    cancelFiltersButton.setEnabled(true);
+                    addNoteButton.setEnabled(false);
+                    filterTag = tag;
+                    refreshNoteList();
                 }
             }
         }
@@ -370,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent = new Intent(getApplicationContext(), TagListActivity.class);
-                startActivityForResult(intent, NO_REQUEST_CODE);
+                startActivityForResult(intent, FILTER_REQUEST_CODE);
                 return true;
             }
         });
