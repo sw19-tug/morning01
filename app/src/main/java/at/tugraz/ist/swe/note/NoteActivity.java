@@ -42,7 +42,7 @@ public class NoteActivity extends AppCompatActivity {
             if(i == tagsAsStrings.size() - 1 && !onCreate) {
                 tagsStringBuilder.append(tagAsString);
             } else {
-                int color = Color.LTGRAY;
+                int color = NoteTag.DEFAULT_COLOR;
                 if(tagColors.containsKey(tagAsString)) {
                     color = tagColors.get(tagAsString);
                 }
@@ -261,7 +261,7 @@ public class NoteActivity extends AppCompatActivity {
             }
             NoteTag noteTag = tagStorage.findByName(tagAsString);
             if(noteTag == null) {
-                noteTag = new NoteTag(tagAsString, Color.LTGRAY);
+                noteTag = new NoteTag(tagAsString, NoteTag.DEFAULT_COLOR);
                 tagStorage.insert(noteTag);
             }
             note.addTag(noteTag);

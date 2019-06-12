@@ -6,6 +6,7 @@ import android.graphics.Color;
 import java.io.Serializable;
 
 public class NoteTag implements Serializable {
+    public static final int DEFAULT_COLOR = Color.LTGRAY;
     public static long ILLEGAL_ID = -1;
 
     private long id = ILLEGAL_ID;
