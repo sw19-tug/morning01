@@ -228,7 +228,8 @@ public class NoteStorage {
                 + "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID
                 + " AND " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + "=?";
         String[] selectionArgs = {String.valueOf(note.getId())};
-        Cursor cursor = database.query(DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME, null, whereClause, selectionArgs, null ,null, null);
+        Cursor cursor = database.query(DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME,
+                null, whereClause, selectionArgs, null ,null, DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME + " ASC");
         return NoteTagStorage.getAllTags(cursor);
     }
 

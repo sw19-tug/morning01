@@ -98,7 +98,7 @@ public class NoteTagStorage {
 
     public NoteTag[] getAllTags() {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        Cursor allNoteTagsCursor = database.query(databaseHelper.TAG_TABLE_NAME, null, null, null, null ,null, null);
+        Cursor allNoteTagsCursor = database.query(DatabaseHelper.TAG_TABLE_NAME, null, null, null, null ,null, DatabaseHelper.TAG_COLUMN_NAME + " ASC");
         return getAllTags(allNoteTagsCursor);
     }
 
@@ -114,7 +114,7 @@ public class NoteTagStorage {
         String whereClause = DatabaseHelper.TAG_COLUMN_ID + " = ?";
         String[] whereArgs = {String.valueOf(id)};
         ContentValues values = getTagContentValues(noteTag);
-        assertOneAffectedRow(database.update(databaseHelper.TAG_TABLE_NAME, getTagContentValues(noteTag), whereClause, whereArgs), id);
+        assertOneAffectedRow(database.update(DatabaseHelper.TAG_TABLE_NAME, getTagContentValues(noteTag), whereClause, whereArgs), id);
         Cursor cursor = getTagCursor(id);
         cursor.moveToNext();
         setValues(noteTag, cursor);
@@ -123,9 +123,9 @@ public class NoteTagStorage {
 
     public void delete(long id) throws NotFoundException {
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
-        String whereClause = databaseHelper.TAG_COLUMN_ID + " = ?";
+        String whereClause = DatabaseHelper.TAG_COLUMN_ID + " = ?";
         String[] whereArgs = {String.valueOf(id)};
-        assertOneAffectedRow(database.delete(databaseHelper.TAG_TABLE_NAME, whereClause, whereArgs), id);
+        assertOneAffectedRow(database.delete(DatabaseHelper.TAG_TABLE_NAME, whereClause, whereArgs), id);
     }
 }
 

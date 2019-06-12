@@ -397,4 +397,25 @@ public class MainActivityTest {
         String[] files = outputDirectory.list();
         assertFalse(files.length == 0);
     }
+
+    @Test
+    public void checkAddingTagsInNoteActivity() {
+        Note note = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 1);
+        NoteTag tag1 = new NoteTag("tag1", 1);
+        NoteTag tag2 = new NoteTag("tag2", 2);
+        NoteTag tag3 = new NoteTag("tag3", 3);
+        NoteTag[] noteTags = {tag1, tag3};
+        NoteTagStorage noteTagStorage = new NoteTagStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
+        Util.fillNoteTagStorage(noteTags, noteTagStorage);
+        onView(withId(R.id.createNoteButton)).perform(click());
+        onView(withId(R.id.tfTitle)).perform(typeText(note.getTitle()));
+        onView(withId(R.id.tfContent)).perform(typeText(note.getContent()));
+        onView(withId(R.id.tag_edit_field)).perform(typeText(tag1.getName() + " "));
+        onView(withId(R.id.tag_edit_field)).perform(typeText(tag1.getName() + " "));
+        onView(withId(R.id.tag_edit_field)).perform(typeText(tag2.getName() + " "));
+        onView(withId(R.id.tag_edit_field)).perform(typeText(tag3.getName() + " "));
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(0).perform(click());
+        onView(withId(R.id.tag_edit_field)).check(matches(withText(tag1.getName() + " " + tag2.getName() + " " + tag3.getName() + " ")));
+    }
 }
