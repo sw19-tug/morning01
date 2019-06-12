@@ -11,7 +11,7 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class NoteActivity extends AppCompatActivity {
     private int requestCode;
     private ArrayList<String> tagsAsStrings = new ArrayList<>();
     private final Map<String, Integer> tagColors = new HashMap<>();
-    private AutoCompleteTextView tagField;
+    private MultiAutoCompleteTextView tagField;
 
     private void updateTagField(boolean onCreate) {
         StringBuilder tagsStringBuilder = new StringBuilder();
@@ -111,6 +111,7 @@ public class NoteActivity extends AppCompatActivity {
             tagColors.put(noteTag.getName(), noteTag.getColor());
         }
         tagField.setAdapter(new TagAdapter(this, noteTags));
+        tagField.setTokenizer(new CharacterTokenizer(' '));
         updateTagField(true);
 
         tagField.addTextChangedListener(new TextWatcher() {
