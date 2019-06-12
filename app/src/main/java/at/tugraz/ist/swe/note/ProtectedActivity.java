@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-public class TrashActivity extends AppCompatActivity {
+public class ProtectedActivity  extends AppCompatActivity {
     ArrayList<Note> noteList = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     ListView noteListView;
-    public static final int NOTE_RESTORE_CODE = 2;
+    public static final int NOTE_PROTECT_CODE = 1;
     public static final String NOTE_KEY = "note";
     public static final String REQUEST_CODE_KEY = "request_code";
     NoteStorage noteStorage;
@@ -28,11 +28,11 @@ public class TrashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trash);
+        setContentView(R.layout.activity_protected);
 
         noteStorage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
 
-        setSupportActionBar((Toolbar) findViewById(R.id.TrashActivityToolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.ProtectedActivityToolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         initNoteView();
@@ -41,8 +41,8 @@ public class TrashActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), NoteActivity.class);
                 intent.putExtra(NOTE_KEY, noteList.get(position));
-                intent.putExtra(REQUEST_CODE_KEY, NOTE_RESTORE_CODE);
-                startActivityForResult(intent, NOTE_RESTORE_CODE);
+                intent.putExtra(REQUEST_CODE_KEY, NOTE_PROTECT_CODE);
+                startActivityForResult(intent, NOTE_PROTECT_CODE);
             }
         });
         noteListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -56,7 +56,7 @@ public class TrashActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NOTE_RESTORE_CODE) {
+        if (requestCode == NOTE_PROTECT_CODE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(NoteActivity.NOTE_KEY);
                 if (note.getTitle().isEmpty() && note.getContent().isEmpty()) {
@@ -65,7 +65,7 @@ public class TrashActivity extends AppCompatActivity {
                 OptionFlag flag = (OptionFlag) data.getSerializableExtra(NoteActivity.FLAG_KEY);
 
                 switch (flag) {
-                    case REMOVE:
+                    case PROTECT:
                         try {
                             noteStorage.delete(note.getId());
                             refreshNoteList();
@@ -74,9 +74,9 @@ public class TrashActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         break;
-                    case RESTORE:
+                    case UNPROTECT:
                         try {
-                            noteStorage.restore(note.getId());
+                            noteStorage.unprotect(note.getId());
                             refreshNoteList();
                         } catch (NotFoundException e) {
                             e.printStackTrace();
@@ -85,7 +85,6 @@ public class TrashActivity extends AppCompatActivity {
                     default:
                         refreshNoteList();
 
-
                 }
             }
         }
@@ -93,18 +92,18 @@ public class TrashActivity extends AppCompatActivity {
 
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(true, true, false);
+        Note[] allNotes = noteStorage.getAll(true, false, true);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
     }
 
     private void initNoteView() {
-        Note[] allNotes = noteStorage.getAll(true, true, false);
+        Note[] allNotes = noteStorage.getAll(true, false, true);
 
         setNoteList(allNotes);
 
         customNoteAdapter = new NoteAdapter(this, noteList);
-        noteListView = findViewById(R.id.trashList);
+        noteListView = findViewById(R.id.protectedList);
         noteListView.setAdapter(customNoteAdapter);
     }
 
@@ -124,10 +123,10 @@ public class TrashActivity extends AppCompatActivity {
 
     private void restoreNote(final int position){
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
-                TrashActivity.this);
+                ProtectedActivity.this);
 
-        confirmDeleteDialog.setTitle("Confirm Restore");
-        confirmDeleteDialog.setMessage("Are you sure you want restore this note?");
+        confirmDeleteDialog.setTitle("Confirm unprotection");
+        confirmDeleteDialog.setMessage("Are you sure you want move the note to the unprotected view?");
         confirmDeleteDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

@@ -74,6 +74,17 @@ public abstract class Util {
         });
     }
 
+    static public void fillNoteStorage(Note[] notes, final ProtectedActivity activity) {
+        fillNoteStorage(notes, activity.noteStorage);
+
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                activity.refreshNoteList();
+            }
+        });
+    }
+
     static public void resetDatabase(DatabaseHelper databaseHelper) {
         databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
     }

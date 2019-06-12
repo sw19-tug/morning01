@@ -42,6 +42,10 @@
             android:name=".TrashActivity"
             android:label="@string/trash_activity"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ProtectedActivity"
+            android:label="Protected"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

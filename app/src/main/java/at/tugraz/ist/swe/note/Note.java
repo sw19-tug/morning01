@@ -19,6 +19,7 @@ public class Note implements Serializable {
     private boolean removed = false;
     private int pinned = DEFAULT_PINNED;
     private Date changedDate = null;
+    private boolean isProtected = false;
 
     public Note(){
     }
@@ -64,6 +65,8 @@ public class Note implements Serializable {
         return changedDate;
     }
 
+    public boolean getIsProtected() { return isProtected; }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -91,6 +94,8 @@ public class Note implements Serializable {
     public void setChangedDate(Date changedDate) {
         this.changedDate = changedDate;
     }
+
+    public void setProtected(boolean isProtected) { this.isProtected = isProtected; }
 
     @Override
     public boolean equals(Object other){

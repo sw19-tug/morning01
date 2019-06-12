@@ -2,6 +2,7 @@ package at.tugraz.ist.swe.note;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -22,12 +24,12 @@ public class NoteActivity extends AppCompatActivity {
     private Note note;
     NoteStorage storage;
     private int requestCode;
+    private int requestCodeProtectedActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-
         storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
 
         note =  (Note) getIntent().getSerializableExtra(NOTE_KEY);
@@ -35,6 +37,7 @@ public class NoteActivity extends AppCompatActivity {
             note = new Note();
         }
         requestCode = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
+        requestCodeProtectedActivity = getIntent().getIntExtra(ProtectedActivity.REQUEST_CODE_KEY, 0);
 
         TextView tfTitle = findViewById(R.id.tfTitle);
         tfTitle.setText(note.getTitle());
@@ -93,6 +96,16 @@ public class NoteActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_new_note, menu);
         this.menu = menu;
+        MenuItem disabledProtectButton = this.menu.findItem(R.id.action_protect_disabled);
+        MenuItem setProtectedNoteButton = this.menu.findItem(R.id.action_protect);
+        if( note.getTitle() == "" && note.getContent() == "")
+        {
+            setProtectedNoteButton.setVisible(false);
+            disabledProtectButton.setVisible(true);
+        }else{
+            disabledProtectButton.setVisible(false);
+            setProtectedNoteButton.setVisible(true);
+        }
         enableUnpinningButton(false);
 
         MenuItem removeButton = this.menu.findItem(R.id.action_remove);
@@ -142,6 +155,26 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
+
+        setProtectedNoteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                setProtectedNote();
+                return true;
+            }
+        });
+
+        MenuItem unprotectedNoteButton = this.menu.findItem(R.id.action_unprotect);
+        unprotectedNoteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                unprotectNote();
+                return true;
+            }
+        });
+
         MenuItem restoreButton = this.menu.findItem(R.id.action_restore);
         restoreButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
@@ -155,8 +188,20 @@ public class NoteActivity extends AppCompatActivity {
         if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             shareButton.setVisible(false);
             pinningButton.setVisible(false);
-        }else{
+            unpinningButton.setVisible(false);
+            unprotectedNoteButton.setVisible(false);
+            setProtectedNoteButton.setVisible(false);
+        } else if (requestCodeProtectedActivity == ProtectedActivity.NOTE_PROTECT_CODE) {
+            shareButton.setVisible(false);
+            pinningButton.setVisible(false);
+            unpinningButton.setVisible(false);
             restoreButton.setVisible(false);
+            removeButton.setVisible(false);
+            unprotectedNoteButton.setVisible(true);
+            setProtectedNoteButton.setVisible(false);
+        } else {
+            restoreButton.setVisible(false);
+            unprotectedNoteButton.setVisible(false);
         }
 
         return true;
@@ -225,6 +270,52 @@ public class NoteActivity extends AppCompatActivity {
         confirmDeleteDialog.show();
     }
 
+    private void setProtectedNote() {
+        String title = "Confirm Protection";
+        String message = "Are you sure you want to move the note to the protected area?";
+        AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(NoteActivity.this);
+        confirmDeleteDialog.setTitle(title);
+        confirmDeleteDialog.setMessage(message);
+        confirmDeleteDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        note.setProtected(true);
+                        startIntentMain(OptionFlag.PROTECT);
+                    }
+                });
+
+        confirmDeleteDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmDeleteDialog.show();
+    }
+
+    private void unprotectNote(){
+        AlertDialog.Builder confirmUnprotectDialog = new AlertDialog.Builder(
+                NoteActivity.this);
+
+        confirmUnprotectDialog.setTitle("Confirm Unprotection");
+        confirmUnprotectDialog.setMessage("Are you sure you want move this note in unprotected area?");
+        confirmUnprotectDialog.setPositiveButton(R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startIntentMain(OptionFlag.UNPROTECT);
+                    }
+                });
+
+        confirmUnprotectDialog.setNegativeButton(R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        confirmUnprotectDialog.show();
+    }
+
     private void restoreNote(){
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 NoteActivity.this);
@@ -284,6 +375,10 @@ public class NoteActivity extends AppCompatActivity {
         }
         setResult(RESULT_OK, noteIntent);
         finish();
+    }
+
+    public Note getNote() {
+        return note;
     }
 
     int getCurrentPinningNumber(){

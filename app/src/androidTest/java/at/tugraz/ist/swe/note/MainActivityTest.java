@@ -2,13 +2,17 @@ package at.tugraz.ist.swe.note;
 
 
 
+import android.Manifest;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,6 +23,7 @@ import java.io.File;
 import java.util.Random;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
@@ -34,6 +39,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static junit.framework.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -45,6 +51,9 @@ public class MainActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> activityActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Before
     public void setUp() {
@@ -188,7 +197,6 @@ public class MainActivityTest {
         };
 
         Util.fillNoteStorage(notes, activity);
-        //click first element
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
@@ -210,6 +218,74 @@ public class MainActivityTest {
         }
         assertTrue(!foundNote);
     }
+
+
+    @Test
+    public void checkIfNoteIsNotVisibleAfterSettingToProtected() {
+
+        MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Note checkNote = new Note("note1", "blabla1", 1);
+        Note[] notes = {
+                checkNote
+        };
+
+        Util.fillNoteStorage(notes, activity);
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        onView(withId(R.id.tfTitle)).check(matches(withText(checkNote.getTitle())));
+
+        onView(withId(R.id.tfContent)).check(matches(withText(checkNote.getContent())));
+
+        onView(withContentDescription(R.string.action_protect)).perform(click());
+        onView(withText(R.string.yes)).perform(click());
+
+        boolean foundNote = false;
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i) {
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if (checkNote.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    checkNote.getContent().compareTo(fetchedNote.getContent()) == 0) {
+                foundNote = true;
+                break;
+            }
+        }
+        assertTrue(!foundNote);
+    }
+
+    @Test
+    public void checkIfNoteIsNotVisibleAfterSettingToUnprotected() {
+
+        MainActivity activity = activityActivityTestRule.getActivity();
+        activity.setNoteStorage(new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null)));
+        Note checkNote = new Note("note1", "blabla1", 1);
+        Note[] notes = {
+                checkNote
+        };
+
+        Util.fillNoteStorage(notes, activity);
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+
+        ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
+        onView(withId(R.id.tfTitle)).check(matches(withText(checkNote.getTitle())));
+
+        onView(withId(R.id.tfContent)).check(matches(withText(checkNote.getContent())));
+
+        onView(withContentDescription(R.string.action_protect)).perform(click());
+        onView(withText(R.string.yes)).perform(click());
+
+        boolean foundNote = false;
+        for (int i = 0; i < noteListView.getAdapter().getCount(); ++i) {
+            Note fetchedNote = (Note) noteListView.getAdapter().getItem(i);
+            if (checkNote.getTitle().compareTo(fetchedNote.getTitle()) == 0 &&
+                    checkNote.getContent().compareTo(fetchedNote.getContent()) == 0) {
+                foundNote = true;
+                break;
+            }
+        }
+        assertTrue(!foundNote);
+    }
+
     @Test
     public void checkIfSortButtonIsClickable() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -306,7 +382,8 @@ public class MainActivityTest {
         Note checkNote = (Note) noteListView.getAdapter().getItem(1);
 
         onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(1).perform(click());
-        onView(withId(R.id.action_pinning)).perform(click());
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.action_pinning)).perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
         Note pinnedNote = (Note) noteListView.getAdapter().getItem(0);
@@ -369,6 +446,25 @@ public class MainActivityTest {
     }
 
     @Test
+    public void checkProtectedNotesMenuItemVisibility(){
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.protected_notes)).check(matches(isDisplayed()));
+        onView(withText(R.string.protected_notes)).check(matches(isEnabled()));
+    }
+
+    @Test
+    public void checkAlertDialogVisibility(){
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.protected_notes)).perform(click());
+        try{
+            onView(withText(R.string.new_password_dialog_title)).check(matches(isDisplayed()));}
+        catch (Exception e){
+            onView(withText(R.string.password_dialog_title)).check(matches(isDisplayed()));
+        }
+        onView(withText(R.string.cancel)).perform(click());
+    }
+
+    @Test
     public void checkExporting(){
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("A_Test_title", "blabla1", 1);
@@ -397,4 +493,26 @@ public class MainActivityTest {
         String[] files = outputDirectory.list();
         assertFalse(files.length == 0);
     }
+
+    @Test
+    public void checkProtectButtonVisibility() {
+        MainActivity activity = activityActivityTestRule.getActivity();
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 2);
+        Note note4 = new Note("D_Test_title", "blabla4", 1);
+
+        Note[] notes = {
+                note1,
+                note2,
+                note3,
+                note4,
+        };
+        Util.fillNoteStorage(notes, activity);
+
+        onData(anything()).inAdapterView(withId(R.id.notesList)).atPosition(activityActivityTestRule.getActivity().noteList.size() - 1).perform(click());
+        onView(withId(R.id.action_protect)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_protect)).check(matches(isClickable()));
+    }
+
 }

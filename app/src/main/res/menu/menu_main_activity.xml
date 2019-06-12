@@ -56,4 +56,11 @@
         android:icon="@drawable/ic_remove"
         android:title="@string/trash_activity"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/protectedNotesButton"
+        android:icon="@drawable/ic_lock_outline_black_24dp"
+        android:title="@string/protected_notes"
+        app:showAsAction="never" />
+
 </menu>

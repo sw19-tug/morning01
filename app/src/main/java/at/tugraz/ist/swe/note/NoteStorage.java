@@ -49,6 +49,7 @@ public class NoteStorage {
         note.setChangedDate(convertStringToDate(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_CHANGED_DATE))));
         note.setPinned(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PINNED)));
         note.setRemoved(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_REMOVED)) > 0);
+        note.setProtected(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_PROTECTED)) > 0);
     }
 
     private Cursor getCursor(long id) {
@@ -78,6 +79,7 @@ public class NoteStorage {
         values.put(DatabaseHelper.NOTE_COLUMN_CONTENT, note.getContent());
         values.put(DatabaseHelper.NOTE_COLUMN_PINNED, note.getPinned());
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, note.isRemoved());
+        values.put(DatabaseHelper.NOTE_COLUMN_PROTECTED, note.getIsProtected());
         return values;
     }
 
@@ -95,11 +97,15 @@ public class NoteStorage {
     }
 
     public Note[] getAll(boolean sortByCreatedDate) {
-        return getAll(sortByCreatedDate, false);
+        return getAll(sortByCreatedDate, false, false);
     }
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly) {
         return getAll(sortByCreatedDate, removedOnly, "");
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly) {
+        return getAll(sortByCreatedDate, removedOnly, protectedOnly, "");
     }
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String patten) {
@@ -115,6 +121,44 @@ public class NoteStorage {
             whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
         } else {
             whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
+        }
+        String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
+        whereClause += " AND (title LIKE ? OR content LIKE ?)";
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, selectionArgs, null ,null, orderBy);
+
+        Note[] allNotes = new Note[allNotesCursor.getCount()];
+        int arrayIndex = 0;
+
+        try {
+            while (allNotesCursor.moveToNext()) {
+                allNotes[arrayIndex++] = convertNoteCursorToNote(allNotesCursor);
+            }
+        } finally {
+            allNotesCursor.close();
+        }
+
+
+        return allNotes;
+    }
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly, String patten) {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
+        if(sortByCreatedDate) {
+            orderBy += DatabaseHelper.NOTE_COLUMN_CREATED_DATE + " DESC";
+        } else {
+            orderBy += DatabaseHelper.NOTE_COLUMN_TITLE + " ASC";
+        }
+        String whereClause = "";
+        if(protectedOnly) {
+            whereClause = DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 1";
+        } else {
+            whereClause = DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 0";
+        }
+        if(removedOnly) {
+            whereClause = whereClause +" and "+ DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
+        } else {
+            whereClause =  whereClause +" and "+ DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
         }
         String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
         whereClause += " AND (title LIKE ? OR content LIKE ?)";
@@ -181,6 +225,24 @@ public class NoteStorage {
         String[] whereArgs = {String.valueOf(id)};
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.NOTE_COLUMN_REMOVED, true);
+        assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
+    }
+
+    public void protectNote(long id) throws NotFoundException {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_COLUMN_PROTECTED, true);
+        assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
+    }
+
+    public void unprotect(long id) throws NotFoundException {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_COLUMN_PROTECTED, false);
         assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
     }
 
