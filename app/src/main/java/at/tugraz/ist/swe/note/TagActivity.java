@@ -1,23 +1,23 @@
 package at.tugraz.ist.swe.note;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import at.tugraz.ist.swe.note.NoteTag;
-import at.tugraz.ist.swe.note.NoteTagStorage;
-import at.tugraz.ist.swe.note.OptionFlag;
-import at.tugraz.ist.swe.note.R;
+import com.android.colorpicker.ColorPickerDialog;
+import com.android.colorpicker.ColorPickerSwatch;
 
 public class TagActivity extends AppCompatActivity {
     public final static String TAG_KEY = "tag";
@@ -26,6 +26,7 @@ public class TagActivity extends AppCompatActivity {
     private NoteTag tag;
     boolean editFlag = false;
     NoteTagStorage storage;
+    ImageView colorView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,8 @@ public class TagActivity extends AppCompatActivity {
         if(tag == null){
             tag = new NoteTag();
         }
+
+        setTitle(R.string.tags_activity_title);
 
         TextView tagNameTextView = findViewById(R.id.tagNameEditText);
         tagNameTextView.setText(tag.getName());
@@ -51,6 +54,45 @@ public class TagActivity extends AppCompatActivity {
             }
         });
 
+        InputFilter filter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                boolean keepOriginal = true;
+                StringBuilder sb = new StringBuilder(end - start);
+                for (int i = start; i < end; i++) {
+                    char c = source.charAt(i);
+                    if (isCharAllowed(c))
+                        sb.append(c);
+                    else
+                        keepOriginal = false;
+                }
+                if (keepOriginal)
+                    return null;
+                else {
+                    if (source instanceof Spanned) {
+                        SpannableString sp = new SpannableString(sb);
+                        TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
+                        return sp;
+                    } else {
+                        return sb;
+                    }
+                }
+            }
+
+            private boolean isCharAllowed(char c) {
+                return !Character.isWhitespace(c);
+            }
+        };
+        tagNameTextView.setFilters(new InputFilter[] { filter });
+
+        colorView = findViewById(R.id.colorTagSelector);
+        colorView.setBackgroundColor(tag.getColor());
+        colorView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showColourPicker(view);
+            }
+        });
         createToolbar();
     }
 
@@ -101,7 +143,6 @@ public class TagActivity extends AppCompatActivity {
         String name = tagNameEditText.getText().toString();
 
         if (tag.getId() == NoteTag.ILLEGAL_ID) {
-            tag = new NoteTag(name, Color.BLACK);
             return OptionFlag.SAVE;
         } else {
             tag.setName(name);
@@ -138,5 +179,39 @@ public class TagActivity extends AppCompatActivity {
                     }
                 });
         confirmDeleteDialog.show();
+    }
+
+    public void showColourPicker(View view) {
+        final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+
+        int[] colors = new int[]{
+                getResources().getColor(R.color.LightGray),
+                getResources().getColor(R.color.Yellow),
+                getResources().getColor(R.color.DarkOrange),
+                getResources().getColor(R.color.Coral),
+                getResources().getColor(R.color.HotPink),
+                getResources().getColor(R.color.Tomato),
+                getResources().getColor(R.color.DarkGray),
+                getResources().getColor(R.color.Aqua),
+                getResources().getColor(R.color.DarkTurquoise),
+                getResources().getColor(R.color.DeepSkyBlue),
+                getResources().getColor(R.color.MediumPurple),
+                getResources().getColor(R.color.LightGreen),
+                getResources().getColor(R.color.YellowGreen),
+                getResources().getColor(R.color.OliveDrab),
+                getResources().getColor(R.color.SlateGray),
+        };
+        colorPickerDialog.initialize(R.string.color_picker_default_title, colors , colors[0], 3, 2);
+
+        colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                tag.setColor(color);
+                colorView.setBackgroundColor(color);
+            }
+        });
+
+        android.app.FragmentManager fm = this.getFragmentManager();
+        colorPickerDialog.show(fm, getString(R.string.color_picker));
     }
 }

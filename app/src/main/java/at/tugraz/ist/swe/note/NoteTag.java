@@ -6,14 +6,16 @@ import android.graphics.Color;
 import java.io.Serializable;
 
 public class NoteTag implements Serializable {
+    public static final int DEFAULT_COLOR = Color.LTGRAY;
     public static long ILLEGAL_ID = -1;
 
     private long id = ILLEGAL_ID;
-    private int color = Color.BLACK;
-    private int numberOfUsages = 0;
-    private String name = "";
+    private int color;
+    private String name;
 
     public NoteTag(){
+        this.color = DEFAULT_COLOR;
+        this.name = "";
     }
 
     public NoteTag(String name, int color){
@@ -28,9 +30,6 @@ public class NoteTag implements Serializable {
         return color;
     }
     public String getName() { return name; }
-    public int getNumberOfUsages() {
-        return numberOfUsages;
-    }
 
     public void setId(long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -48,7 +47,16 @@ public class NoteTag implements Serializable {
 
         NoteTag otherNoteTag = (NoteTag)o;
 
-        return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color &&
-                (this.numberOfUsages == otherNoteTag.numberOfUsages);
+        return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color;
+    }
+
+    public static String formatAsHtml(String name, int color) {
+        String backgroundColor = String.format("#%06X", 0xFFFFFF & color);
+        return "<span style=\"background-color: " + backgroundColor + "\">" + name + "</span>";
+    }
+
+    @Override
+    public String toString() {
+        return name + " "; // Additional space for the autocompletion in NoteActivity.
     }
 }

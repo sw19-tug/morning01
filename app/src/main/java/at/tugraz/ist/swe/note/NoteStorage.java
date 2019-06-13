@@ -2,8 +2,10 @@ package at.tugraz.ist.swe.note;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -108,7 +110,27 @@ public class NoteStorage {
         return getAll(sortByCreatedDate, removedOnly, protectedOnly, "");
     }
 
-    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String patten) {
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern) {
+        return getAll(sortByCreatedDate, removedOnly, pattern, null);
+    }
+
+    private static String[] arrayListToArray(ArrayList<String> arrayList) {
+        String[] array = new String[arrayList.size()];
+        for(int i = 0; i < arrayList.size(); i++) {
+            array[i] = arrayList.get(i);
+        }
+        return array;
+    }
+
+    private static final String TAG_SUB_QUERY = "SELECT count(*) FROM " +
+            DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME +
+            " WHERE " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID  +
+            "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID +
+            " AND " + DatabaseHelper.NOTE_TABLE_NAME + "." + DatabaseHelper.NOTE_COLUMN_ID + " = " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID +
+            " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME;
+
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern, NoteTag noteTag) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
         if(sortByCreatedDate) {
@@ -116,15 +138,29 @@ public class NoteStorage {
         } else {
             orderBy += DatabaseHelper.NOTE_COLUMN_TITLE + " ASC";
         }
-        String whereClause = "";
+        StringBuilder whereClause = new StringBuilder();
         if(removedOnly) {
-            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
+            whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1");
         } else {
-            whereClause = DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
+            whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0");
         }
-        String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
-        whereClause += " AND (title LIKE ? OR content LIKE ?)";
-        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, selectionArgs, null ,null, orderBy);
+        ArrayList<String> selectionArgs = new ArrayList<>();
+        String[] patternParts = pattern.split("\\s+");
+        for(String patternPart : patternParts) {
+            if(patternPart.startsWith("#")) {
+                whereClause.append(" AND (" + TAG_SUB_QUERY + " LIKE ? ) > 0");
+                selectionArgs.add("%" + patternPart.substring(1) + "%");
+            } else {
+                whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_TITLE + " LIKE ? OR " + DatabaseHelper.NOTE_COLUMN_CONTENT + " LIKE ?)");
+                selectionArgs.add("%" + patternPart + "%");
+                selectionArgs.add("%" + patternPart + "%");
+            }
+        }
+        if(noteTag != null) {
+            whereClause.append(" AND (" + TAG_SUB_QUERY + "= ?) > 0");
+            selectionArgs.add(noteTag.getName());
+        }
+        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause.toString(), arrayListToArray(selectionArgs), null ,null, orderBy);
 
         Note[] allNotes = new Note[allNotesCursor.getCount()];
         int arrayIndex = 0;
@@ -244,6 +280,51 @@ public class NoteStorage {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.NOTE_COLUMN_PROTECTED, false);
         assertOneAffectedRow(database.update(DatabaseHelper.NOTE_TABLE_NAME, values, whereClause, whereArgs), id);
+    }
+
+    public boolean associate(Note note, NoteTag tag){
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID, note.getId());
+        values.put(DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID, tag.getId());
+
+        try {
+            SQLiteDatabase database = databaseHelper.getWritableDatabase();
+            database.insertOrThrow(DatabaseHelper.NOTE_TAG_TABLE_NAME, null, values);
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public NoteTag[] getAssociatedTags(Note note){
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+        String whereClause = DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_ID
+                + "=" + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID
+                + " AND " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + "=?";
+        String[] selectionArgs = {String.valueOf(note.getId())};
+        Cursor cursor = database.query(DatabaseHelper.TAG_TABLE_NAME + "," + DatabaseHelper.NOTE_TAG_TABLE_NAME,
+                null, whereClause, selectionArgs, null ,null, DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME + " ASC");
+        return NoteTagStorage.getAllTags(cursor);
+    }
+
+    public boolean dissociate(Note note, NoteTag tag){
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID + " = ? AND " + DatabaseHelper.NOTE_TAG_COLUMN_TAG_ID + " = ?";
+        String[] whereArgs = {String.valueOf(note.getId()), String.valueOf(tag.getId())};
+        return database.delete(DatabaseHelper.NOTE_TAG_TABLE_NAME, whereClause, whereArgs) == 1;
+    }
+
+    public void dissociateAll(Note note) {
+        for (NoteTag noteTag : getAssociatedTags(note)) {
+            dissociate(note, noteTag);
+        }
+    }
+
+    public void associateAll(Note note) {
+        // note has to be already inserted to database.
+        for (NoteTag noteTag : note.getTags()) {
+            associate(note, noteTag);
+        }
     }
 
     public void restore(long id) throws NotFoundException {

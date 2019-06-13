@@ -45,4 +45,10 @@
     <string name="new_password_dialog_title">Set up new password</string>
     <string name="wrong_password">Wrong password!</string>
     <string name="logged_in">Logged in!</string>
+    <string name="add_a_tag">Add tags...</string>
+    <string name="tags_activity_title">Tags</string>
+    <string name="color_picker">color_picker</string>
+    <string name="content_description_tag_color_image_view">Represents the color of a tag</string>
+    <string name="sorting_mode">Sorting mode</string>
+    <string name="edit_mode">Edit mode</string>
 </resources>

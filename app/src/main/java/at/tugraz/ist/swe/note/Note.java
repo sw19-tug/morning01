@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -20,6 +21,7 @@ public class Note implements Serializable {
     private int pinned = DEFAULT_PINNED;
     private Date changedDate = null;
     private boolean isProtected = false;
+    private ArrayList<NoteTag> tags = new ArrayList<>();
 
     public Note(){
     }
@@ -64,6 +66,9 @@ public class Note implements Serializable {
     public Date getChangedDate(){
         return changedDate;
     }
+    public ArrayList<NoteTag> getTags(){
+        return tags;
+    }
 
     public boolean getIsProtected() { return isProtected; }
 
@@ -96,6 +101,10 @@ public class Note implements Serializable {
     }
 
     public void setProtected(boolean isProtected) { this.isProtected = isProtected; }
+
+    public void addTag(NoteTag tag) {
+        this.tags.add(tag);
+    }
 
     @Override
     public boolean equals(Object other){

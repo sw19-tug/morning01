@@ -42,10 +42,12 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
+        android:id="@+id/contentInputLayout"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="140dp"
+        android:layout_marginBottom="75dp"
         app:hintEnabled="false"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
@@ -64,5 +66,26 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tagInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="10dp"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contentInputLayout">
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/tag_edit_field"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/add_a_tag"
+            android:inputType="text"
+            android:singleLine="true" />
+    </android.support.design.widget.TextInputLayout>
 
 </android.support.constraint.ConstraintLayout>

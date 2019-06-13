@@ -7,11 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import static java.lang.Math.min;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
@@ -23,14 +31,38 @@ public class NoteActivity extends AppCompatActivity {
     private Menu menu;
     private Note note;
     NoteStorage storage;
+    NoteTagStorage tagStorage;
     private int requestCode;
     private int requestCodeProtectedActivity;
+    private ArrayList<String> tagsAsStrings = new ArrayList<>();
+    private final Map<String, Integer> tagColors = new HashMap<>();
+    private MultiAutoCompleteTextView tagField;
+
+    private void updateTagField(boolean onCreate) {
+        StringBuilder tagsStringBuilder = new StringBuilder();
+        for (int i = 0; i < tagsAsStrings.size(); i++) {
+            String tagAsString = tagsAsStrings.get(i);
+            if(i == tagsAsStrings.size() - 1 && !onCreate) {
+                tagsStringBuilder.append(tagAsString);
+            } else {
+                int color = NoteTag.DEFAULT_COLOR;
+                if(tagColors.containsKey(tagAsString)) {
+                    color = tagColors.get(tagAsString);
+                }
+                tagsStringBuilder.append(NoteTag.formatAsHtml(tagAsString, color));
+                tagsStringBuilder.append(' ');
+            }
+
+        }
+        tagField.setText(Html.fromHtml(tagsStringBuilder.toString()));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
+        tagStorage = new NoteTagStorage(new DatabaseHelper(getApplicationContext()));
 
         note =  (Note) getIntent().getSerializableExtra(NOTE_KEY);
         if(note == null){
@@ -72,6 +104,45 @@ public class NoteActivity extends AppCompatActivity {
             tfTitle.setEnabled(false);
             tfContent.setEnabled(false);
         }
+        for(NoteTag noteTag : storage.getAssociatedTags(note)) {
+            tagsAsStrings.add(noteTag.getName());
+        }
+        tagField = findViewById(R.id.tag_edit_field);
+        tagField.setThreshold(1);
+        NoteTag[] noteTags = tagStorage.getAllTags();
+        for(NoteTag noteTag : noteTags) {
+            tagColors.put(noteTag.getName(), noteTag.getColor());
+        }
+        tagField.setAdapter(new TagAdapter(this, noteTags));
+        tagField.setTokenizer(new CharacterTokenizer(' '));
+        updateTagField(true);
+
+        tagField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence sequence, int start, int before, int count) {
+                int selectionStart = tagField.getSelectionStart();
+                String input = String.valueOf(sequence);
+                ArrayList<String> parts = new ArrayList<>(Arrays.asList(input.split("\\s", -1)));
+                for(int i = tagsAsStrings.size() - 2; i >= 0; i--) { // Skip the last entered tag.
+                    if(parts.get(i).length() < tagsAsStrings.get(i).length()) {
+                        parts.remove(i);
+                        selectionStart = Integer.MAX_VALUE;
+                    }
+                }
+                boolean changeInTagFields = tagsAsStrings.size() != parts.size();
+                tagsAsStrings = parts;
+                if(changeInTagFields) {
+                    updateTagField(false);
+                    tagField.setSelection(min(selectionStart, tagField.getText().length()));
+                }
+            }
+        });
         createToolbar();
     }
 
@@ -226,13 +297,23 @@ public class NoteActivity extends AppCompatActivity {
         String title = tfTitle.getText().toString();
         String content = tfContent.getText().toString();
 
+        note.setContent(content);
+        note.setTitle(title);
+        storage.dissociateAll(note);
+        for(String tagAsString : tagsAsStrings) {
+            if(tagAsString.length() == 0) {
+                continue;
+            }
+            NoteTag noteTag = tagStorage.findByName(tagAsString);
+            if(noteTag == null) {
+                noteTag = new NoteTag(tagAsString, NoteTag.DEFAULT_COLOR);
+                tagStorage.insert(noteTag);
+            }
+            note.addTag(noteTag);
+        }
         if (note.getId() == Note.ILLEGAL_ID) {
-            note.setContent(content);
-            note.setTitle(title);
             return OptionFlag.SAVE;
         } else {
-            note.setContent(content);
-            note.setTitle(title);
             return OptionFlag.EDIT;
         }
     }

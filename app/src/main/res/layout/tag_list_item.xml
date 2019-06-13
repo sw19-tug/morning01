@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <TextView
         android:id="@+id/titleTagView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerInParent="true"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAppearance="?android:attr/textAppearanceListItem"
         android:textSize="20dp"
-        android:layout_centerVertical="true"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
-        />
+        android:layout_marginLeft="20dp"/>
 
     <ImageView
         android:id="@+id/colorTag"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/ic_round_color_tag"
+        android:contentDescription="@string/content_description_tag_color_image_view"
         android:minWidth="20dp"
-        android:minHeight="20dp" />
-</RelativeLayout>
+        android:minHeight="20dp"
+        android:layout_marginRight="20dp"/>
+</android.support.constraint.ConstraintLayout>

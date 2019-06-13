@@ -22,6 +22,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String NOTE_COLUMN_PINNED = "pinned";
     public static final String NOTE_COLUMN_PROTECTED = "protected";
 
+    public static final String TAG_TABLE_NAME = "tag";
+    public static final String TAG_COLUMN_NAME = "name";
+    public static final String TAG_COLUMN_COLOR = "color";
+    public static final String TAG_COLUMN_ID = "id";
+
+    public static final String NOTE_TAG_TABLE_NAME = "note_tag";
+    public static final String NOTE_TAG_COLUMN_NOTE_ID = "note_id";
+    public static final String NOTE_TAG_COLUMN_TAG_ID = "tag_id";
+
     public DatabaseHelper(@Nullable Context context) {
         super(context, NOTE_DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -42,6 +51,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NOTE_COLUMN_PINNED + " INTEGER DEFAULT " + Note.DEFAULT_PINNED + " NOT NULL, " +
                 NOTE_COLUMN_REMOVED + " BOOLEAN DEFAULT 0 NOT NULL," +
                 NOTE_COLUMN_PROTECTED + " BOOLEAN DEFAULT 0 NOT NULL" +")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
+
+        dataBase.execSQL("CREATE TABLE " + TAG_TABLE_NAME + " (" +
+                TAG_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TAG_COLUMN_COLOR + " INTEGER NOT NULL, " +
+                TAG_COLUMN_NAME + " TEXT NOT NULL," +
+                "CONSTRAINT unique_name UNIQUE( " + TAG_COLUMN_NAME + "))");
+
+        dataBase.execSQL("CREATE TABLE " + NOTE_TAG_TABLE_NAME + " (" +
+                NOTE_TAG_COLUMN_NOTE_ID + " INTEGER NOT NULL, " +
+                NOTE_TAG_COLUMN_TAG_ID + " INTEGER NOT NULL, " +
+                "PRIMARY KEY(" + NOTE_TAG_COLUMN_NOTE_ID + "," + NOTE_TAG_COLUMN_TAG_ID + ")," +
+                "FOREIGN KEY(" + NOTE_TAG_COLUMN_NOTE_ID + ") REFERENCES " + NOTE_TABLE_NAME + "(" + NOTE_COLUMN_ID + ")," +
+                "FOREIGN KEY(" + NOTE_TAG_COLUMN_TAG_ID + ") REFERENCES " + TAG_TABLE_NAME + "(" + TAG_COLUMN_ID + ")" +
+                ")");
     }
 
     @Override

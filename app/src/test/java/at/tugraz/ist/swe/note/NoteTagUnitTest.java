@@ -6,39 +6,35 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class NoteTagUnitTest {
 
-    private NoteTag mTag;
-    private NoteTag mTagWithParams;
+    private NoteTag noteTag;
+    private NoteTag noteTagWithParams;
     String tagName = "Tag name";
     int tagColor = Color.RED;
 
     @Before
     public void setUp() {
-        mTag = new NoteTag();
-        mTagWithParams = new NoteTag(tagName, tagColor);
+        noteTag = new NoteTag();
+        noteTagWithParams = new NoteTag(tagName, tagColor);
     }
 
     @Test
     public void testInitialState() {
-        assertNotNull(mTag);
-        assertEquals("", mTag.getName());
-        assertEquals(Color.BLACK, mTag.getColor());
-        assertEquals(0, mTag.getNumberOfUsages());
-        assertEquals(-1, mTag.getId());
+        assertNotNull(noteTag);
+        assertEquals("", noteTag.getName());
+        assertEquals(NoteTag.DEFAULT_COLOR, noteTag.getColor());
+        assertEquals(-1, noteTag.getId());
     }
 
     @Test
     public void testInitialStateWithParams() {
-        assertNotNull(mTagWithParams);
-        assertEquals(tagName, mTagWithParams.getName());
-        assertEquals(tagColor, mTagWithParams.getColor());
-        assertEquals(0, mTagWithParams.getNumberOfUsages());
-        assertEquals(-1, mTagWithParams.getId());
+        assertNotNull(noteTagWithParams);
+        assertEquals(tagName, noteTagWithParams.getName());
+        assertEquals(tagColor, noteTagWithParams.getColor());
+        assertEquals(-1, noteTagWithParams.getId());
     }
 
 }

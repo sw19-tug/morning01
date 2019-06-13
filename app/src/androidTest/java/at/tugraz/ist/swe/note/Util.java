@@ -45,6 +45,21 @@ public abstract class Util {
         }
     }
 
+    static public void assertNoteTagsContains(NoteTag[] foundNoteTags, NoteTag[] expectedNoteTags) {
+        int foundCounter = 0;
+        for (NoteTag expectedNoteTag: expectedNoteTags){
+            boolean found = false;
+            for(NoteTag foundNoteTag: foundNoteTags){
+                if (expectedNoteTag.equals(foundNoteTag)){
+                    found = true;
+                    foundCounter++;
+                }
+            }
+            assertTrue(found);
+        }
+        assertEquals(foundCounter, foundNoteTags.length);
+    }
+
     static public Note[] convertAdapterToNoteArray(ListAdapter adapter) {
         Note[] result = new Note[adapter.getCount()];
         for (int i = 0; i < adapter.getCount(); ++i){
@@ -60,6 +75,12 @@ public abstract class Util {
             note.setCreatedDate(date);
             note.setChangedDate(date);
             noteStorage.insert(note);
+        }
+    }
+
+    static public void fillNoteTagStorage(NoteTag[] noteTags, NoteTagStorage noteTagStorage) {
+        for (int i = 0; i < noteTags.length; ++i){
+            noteTagStorage.insert(noteTags[i]);
         }
     }
 
@@ -87,6 +108,8 @@ public abstract class Util {
 
     static public void resetDatabase(DatabaseHelper databaseHelper) {
         databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.TAG_TABLE_NAME);
+        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TAG_TABLE_NAME);
     }
 
     static public void fillNoteStorage(Note[] notes, final TrashActivity activity) {
@@ -98,5 +121,17 @@ public abstract class Util {
                 activity.refreshNoteList();
             }
         });
+    }
+
+    public interface ApplyNotesTags {
+        void apply(Note note, NoteTag noteTag);
+    }
+
+    public static void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
+        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+            for(NoteTag tag : notesTags[noteIndex]) {
+                callback.apply(notes[noteIndex], tag);
+            }
+        }
     }
 }
