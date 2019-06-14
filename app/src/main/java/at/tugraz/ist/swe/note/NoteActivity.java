@@ -2,7 +2,6 @@ package at.tugraz.ist.swe.note;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,16 +10,13 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import static java.lang.Math.min;
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
@@ -100,10 +96,7 @@ public class NoteActivity extends AppCompatActivity {
                 note.setContent(s.toString());
             }
         });
-        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
-            tfTitle.setEnabled(false);
-            tfContent.setEnabled(false);
-        }
+
         for(NoteTag noteTag : storage.getAssociatedTags(note)) {
             tagsAsStrings.add(noteTag.getName());
         }
@@ -143,6 +136,11 @@ public class NoteActivity extends AppCompatActivity {
                 }
             }
         });
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+            tfTitle.setEnabled(false);
+            tfContent.setEnabled(false);
+            tagField.setEnabled(false);
+        }
         createToolbar();
     }
 
