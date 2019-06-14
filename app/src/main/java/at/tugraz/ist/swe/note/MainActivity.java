@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private Menu menu;
     private boolean sortByCreatedDate = true;
     private boolean removedOnly = false;
+    private boolean protectedOnly = false;
     private String pattern = "";
     Context context = this;
     Activity mainActivity = this;
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, pattern, filterTag);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, protectedOnly, pattern);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
 
