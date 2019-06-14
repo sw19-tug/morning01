@@ -6,8 +6,8 @@
     <string name="action_share">Share</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
-    <string name="action_pinning">Pinning</string>
-    <string name="action_unpinning">Unpinning</string>
+    <string name="action_pinning">Pin note</string>
+    <string name="action_unpinning">Unpin note</string>
     <string name="text_new_note">New note</string>
     <string name="text_new_tag">New tag</string>
     <string name="text_edit_tag">Edit tag</string>

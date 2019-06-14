@@ -6,8 +6,8 @@
     <string name="action_share">Share</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
-    <string name="action_pinning">Pinning</string>
-    <string name="action_unpinning">Unpinning</string>
+    <string name="action_pinning">Pin note</string>
+    <string name="action_unpinning">Unpin note</string>
     <string name="action_protect">Protect note</string>
     <string name="action_unprotect">Unprotect note</string>
     <string name="text_new_note">New note</string>
@@ -46,8 +46,10 @@
     <string name="logged_in">Logged in!</string>
     <string name="add_a_tag">Add tags...</string>
     <string name="tags_activity_title">Tags</string>
+    <string name="title_activity_tags_list">TagsListActivity</string>
     <string name="color_picker">color_picker</string>
     <string name="content_description_tag_color_image_view">Represents the color of a tag</string>
     <string name="sorting_mode">Sorting mode</string>
     <string name="edit_mode">Edit mode</string>
+    <string name="select_tag_color">Select tag color:</string>
 </resources>
