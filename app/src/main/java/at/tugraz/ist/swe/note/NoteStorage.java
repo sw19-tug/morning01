@@ -107,12 +107,12 @@ public class NoteStorage {
     }
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly) {
-        return getAll(sortByCreatedDate, removedOnly, protectedOnly, "");
+        return getAll(sortByCreatedDate, removedOnly, protectedOnly, "", null);
     }
 
 
     public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern) {
-        return getAll(sortByCreatedDate, removedOnly, pattern, null);
+        return getAll(sortByCreatedDate, removedOnly, false, pattern, null);
     }
 
     private static String[] arrayListToArray(ArrayList<String> arrayList) {
@@ -130,7 +130,7 @@ public class NoteStorage {
             " AND " + DatabaseHelper.NOTE_TABLE_NAME + "." + DatabaseHelper.NOTE_COLUMN_ID + " = " + DatabaseHelper.NOTE_TAG_TABLE_NAME + "." + DatabaseHelper.NOTE_TAG_COLUMN_NOTE_ID +
             " AND " + DatabaseHelper.TAG_TABLE_NAME + "." + DatabaseHelper.TAG_COLUMN_NAME;
 
-    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, String pattern, NoteTag noteTag) {
+    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly, String pattern, NoteTag noteTag) {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
         if(sortByCreatedDate) {
@@ -143,6 +143,11 @@ public class NoteStorage {
             whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1");
         } else {
             whereClause.append(DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0");
+        }
+        if(protectedOnly) {
+            whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 1)");
+        } else {
+            whereClause.append(" AND (" + DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 0)");
         }
         ArrayList<String> selectionArgs = new ArrayList<>();
         String[] patternParts = pattern.split("\\s+");
@@ -161,44 +166,6 @@ public class NoteStorage {
             selectionArgs.add(noteTag.getName());
         }
         Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause.toString(), arrayListToArray(selectionArgs), null ,null, orderBy);
-
-        Note[] allNotes = new Note[allNotesCursor.getCount()];
-        int arrayIndex = 0;
-
-        try {
-            while (allNotesCursor.moveToNext()) {
-                allNotes[arrayIndex++] = convertNoteCursorToNote(allNotesCursor);
-            }
-        } finally {
-            allNotesCursor.close();
-        }
-
-
-        return allNotes;
-    }
-
-    public Note[] getAll(boolean sortByCreatedDate, boolean removedOnly, boolean protectedOnly, String patten) {
-        SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        String orderBy = DatabaseHelper.NOTE_COLUMN_PINNED + " DESC, ";
-        if(sortByCreatedDate) {
-            orderBy += DatabaseHelper.NOTE_COLUMN_CREATED_DATE + " DESC";
-        } else {
-            orderBy += DatabaseHelper.NOTE_COLUMN_TITLE + " ASC";
-        }
-        String whereClause = "";
-        if(protectedOnly) {
-            whereClause = DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 1";
-        } else {
-            whereClause = DatabaseHelper.NOTE_COLUMN_PROTECTED + " = 0";
-        }
-        if(removedOnly) {
-            whereClause = whereClause +" and "+ DatabaseHelper.NOTE_COLUMN_REMOVED + " = 1";
-        } else {
-            whereClause =  whereClause +" and "+ DatabaseHelper.NOTE_COLUMN_REMOVED + " = 0";
-        }
-        String[] selectionArgs = {"%" + patten + "%", "%" + patten + "%"};
-        whereClause += " AND (title LIKE ? OR content LIKE ?)";
-        Cursor allNotesCursor = database.query(DatabaseHelper.NOTE_TABLE_NAME, null, whereClause, selectionArgs, null ,null, orderBy);
 
         Note[] allNotes = new Note[allNotesCursor.getCount()];
         int arrayIndex = 0;

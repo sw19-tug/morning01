@@ -94,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
         initNoteView();
         showNotes();
         createToolbar();
-        IntentFilter intentFilter = new IntentFilter("at.tugraz.ist.swe.widget.NOTES_PULLED");
-        AppWidgetProvider appWidgetProvider = new AppWidgetProvider();
-        registerReceiver(appWidgetProvider, intentFilter);
         applyLastSelectedTheme();
     }
 
@@ -127,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshNoteList() {
-        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, protectedOnly, pattern);
+        Note[] allNotes = noteStorage.getAll(sortByCreatedDate, removedOnly, protectedOnly, pattern, filterTag);
         setNoteList(allNotes);
         customNoteAdapter.notifyDataSetChanged();
 
@@ -233,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
                     filterTag = null;
                     addNoteButton.setEnabled(true);
                 }else{
-                    // TODO SORTING and SHOW CANCEL SORTING BUTTON
                     cancelFiltersButton.setEnabled(true);
                     addNoteButton.setEnabled(false);
                     filterTag = tag;
