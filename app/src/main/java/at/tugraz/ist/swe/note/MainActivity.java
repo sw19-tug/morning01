@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.VisibleForTesting;
@@ -31,28 +32,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import org.json.JSONException;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 import at.tugraz.ist.swe.widget.NoteWidget;
@@ -60,6 +54,7 @@ import at.tugraz.ist.swe.widget.NoteWidget;
 public class MainActivity extends AppCompatActivity {
 
     private static final int READ_REQUEST_CODE = 42;
+    private static final String LAST_THEME_SELECTED_KEY = "theme_setting";
     ArrayList<Note> noteList = new ArrayList<>();
     ArrayList<Note> notesListForExport = new ArrayList<>();
     NoteAdapter customNoteAdapter;
@@ -70,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean sortByCreatedDate = true;
     private boolean removedOnly = false;
     private boolean protectedOnly = false;
+    private boolean lightThemeSet = true;
     private String pattern = "";
     Context context = this;
     Activity mainActivity = this;
@@ -100,10 +96,9 @@ public class MainActivity extends AppCompatActivity {
         createToolbar();
         IntentFilter intentFilter = new IntentFilter("at.tugraz.ist.swe.widget.NOTES_PULLED");
         AppWidgetProvider appWidgetProvider = new AppWidgetProvider();
-
         registerReceiver(appWidgetProvider, intentFilter);
+        applyLastSelectedTheme();
     }
-
 
     private void initCancelFilterButton() {
         cancelFiltersButton = findViewById(R.id.cancelFiltersButton);
@@ -463,17 +458,42 @@ public class MainActivity extends AppCompatActivity {
         return AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
     }
 
+    private void applyLastSelectedTheme() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        lightThemeSet = preferences.getBoolean(LAST_THEME_SELECTED_KEY, true);
+        applyTheme();
+    }
+
+    private void applyTheme(){
+        if(lightThemeSet){
+            if(isNightModeEnabled()) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                recreate();
+            }
+        }else{
+            if(!isNightModeEnabled()) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                recreate();
+            }
+        }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (lightThemeSet != preferences.getBoolean(LAST_THEME_SELECTED_KEY, true)) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(LAST_THEME_SELECTED_KEY, lightThemeSet);
+            editor.apply();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.changeTheme:
                 if (!isNightModeEnabled()) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    recreate();
+                    lightThemeSet = false;
                 } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    recreate();
+                    lightThemeSet = true;
                 }
+                applyTheme();
                 return true;
             case R.id.action_trash:
                 Intent intent = new Intent(getApplicationContext(), TrashActivity.class);
@@ -507,10 +527,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return result == PackageManager.PERMISSION_GRANTED;
     }
+
     public static boolean zipFolder(String inputFolderPath, String outZipPath) {
         Log.d("Zip", "zipFolder function");
         File srcFile = new File(inputFolderPath);
