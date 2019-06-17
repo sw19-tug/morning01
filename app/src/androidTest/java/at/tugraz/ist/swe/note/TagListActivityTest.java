@@ -3,6 +3,7 @@ package at.tugraz.ist.swe.note;
 import android.graphics.Color;
 import android.support.test.rule.ActivityTestRule;
 import android.widget.ListView;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class TagListActivityTest {
     }
 
     @Test
-    public void checkIfTagsAreDisplayedInOverview(){
+    public void checkIfTagsAreDisplayedInOverview() {
         NoteTag[] tags = {
                 new NoteTag("tag1", NoteTag.DEFAULT_COLOR),
                 new NoteTag("tag2", NoteTag.DEFAULT_COLOR),
@@ -52,7 +53,7 @@ public class TagListActivityTest {
         ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
 
         assertEquals(tags.length, tagListView.getAdapter().getCount());
-        for (int i = 0; i < tags.length; ++i){
+        for (int i = 0; i < tags.length; ++i) {
             assertTrue(tags[i].equals(tagListView.getAdapter().getItem(i)));
         }
     }
@@ -72,10 +73,9 @@ public class TagListActivityTest {
 
         assertNotEquals(0, tagListView.getAdapter().getCount());
         boolean foundTag = false;
-        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i) {
             NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
-            if(tag.getName().compareTo(fetchedTag.getName()) == 0)
-            {
+            if (tag.getName().compareTo(fetchedTag.getName()) == 0) {
                 foundTag = true;
                 break;
             }
@@ -96,7 +96,7 @@ public class TagListActivityTest {
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
         onView(withId(R.id.tagEditToggleSwitch)).perform(click());
 
-        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size() - 1).perform(click());
 
         ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
         NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
@@ -112,10 +112,9 @@ public class TagListActivityTest {
 
         assertNotEquals(0, tagListView.getAdapter().getCount());
         boolean foundTag = false;
-        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i) {
             NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
-            if(tag.getName().compareTo(fetchedTag.getName()) == 0)
-            {
+            if (tag.getName().compareTo(fetchedTag.getName()) == 0) {
                 foundTag = true;
                 break;
             }
@@ -125,9 +124,8 @@ public class TagListActivityTest {
     }
 
 
-
     @Test
-    public void checkTagDelete(){
+    public void checkTagDelete() {
 
         onView(withId(R.id.createTagButton)).perform(click());
 
@@ -138,7 +136,7 @@ public class TagListActivityTest {
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
         onView(withId(R.id.tagEditToggleSwitch)).perform(click());
 
-        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size()-1).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size() - 1).perform(click());
 
         ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
         NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
@@ -150,10 +148,9 @@ public class TagListActivityTest {
         onView(withText("YES")).perform(click());
 
         boolean foundTag = false;
-        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i){
+        for (int i = 0; i < tagListView.getAdapter().getCount(); ++i) {
             NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
-            if(check_tag.getName().compareTo(fetchedTag.getName()) == 0)
-            {
+            if (check_tag.getName().compareTo(fetchedTag.getName()) == 0) {
                 foundTag = true;
                 break;
             }

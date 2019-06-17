@@ -29,8 +29,7 @@ public class NoteRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
         noteStorage = new NoteStorage(new DatabaseHelper(context));
     }
 
-    private void updateWidgetListView()
-    {
+    private void updateWidgetListView() {
         Note[] notes = noteStorage.getAll();
         ArrayList<Note> convertedToList = new ArrayList<>(Arrays.asList(notes));
         this.notes = convertedToList;

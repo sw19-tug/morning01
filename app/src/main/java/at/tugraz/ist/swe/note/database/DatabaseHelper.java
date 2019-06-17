@@ -50,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NOTE_COLUMN_CHANGED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON CONFLICT REPLACE, " +
                 NOTE_COLUMN_PINNED + " INTEGER DEFAULT " + Note.DEFAULT_PINNED + " NOT NULL, " +
                 NOTE_COLUMN_REMOVED + " BOOLEAN DEFAULT 0 NOT NULL," +
-                NOTE_COLUMN_PROTECTED + " BOOLEAN DEFAULT 0 NOT NULL" +")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
+                NOTE_COLUMN_PROTECTED + " BOOLEAN DEFAULT 0 NOT NULL" + ")");  // BOOLEAN is a shortcut for INTEGER in sqlite3
 
         dataBase.execSQL("CREATE TABLE " + TAG_TABLE_NAME + " (" +
                 TAG_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +

@@ -1,7 +1,6 @@
 package at.tugraz.ist.swe.note;
 
 
-
 import android.Manifest;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
@@ -305,7 +304,7 @@ public class MainActivityTest {
         onView(withText(resourceButtonId)).perform(click());
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
         assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
-        for (int i = 0; i < expectedNoteArray.length; ++i){
+        for (int i = 0; i < expectedNoteArray.length; ++i) {
             assertEquals(expectedNoteArray[i], noteListView.getAdapter().getItem(i));
         }
     }
@@ -365,8 +364,8 @@ public class MainActivityTest {
         };
         activityActivityTestRule.getActivity().setNoteList(notes);
 
-        try{
-            runOnUiThread(new Runnable(){
+        try {
+            runOnUiThread(new Runnable() {
                 public void run() {
                     NoteAdapter customNoteAdapter = new NoteAdapter(
                             activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
@@ -374,8 +373,9 @@ public class MainActivityTest {
                     activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
                 }
             });
+        } catch (Throwable e) {
+            throw new RuntimeException();
         }
-        catch(Throwable e){throw new RuntimeException();}
 
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
@@ -429,7 +429,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void checkForLimitedContentBox(){
+    public void checkForLimitedContentBox() {
         Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 1);
         Note[] notes = {
                 note1,
@@ -440,32 +440,32 @@ public class MainActivityTest {
         TextView textView;
         do {
             textView = activityActivityTestRule.getActivity().findViewById(R.id.contentTextView);
-        } while(textView == null);
+        } while (textView == null);
         assertTrue((textView.getMaxLines() == 1) && (textView.getEllipsize() == TextUtils.TruncateAt.END));
 
     }
 
     @Test
-    public void checkProtectedNotesMenuItemVisibility(){
+    public void checkProtectedNotesMenuItemVisibility() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.protected_notes)).check(matches(isDisplayed()));
         onView(withText(R.string.protected_notes)).check(matches(isEnabled()));
     }
 
     @Test
-    public void checkAlertDialogVisibility(){
+    public void checkAlertDialogVisibility() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.protected_notes)).perform(click());
-        try{
-            onView(withText(R.string.new_password_dialog_title)).check(matches(isDisplayed()));}
-        catch (Exception e){
+        try {
+            onView(withText(R.string.new_password_dialog_title)).check(matches(isDisplayed()));
+        } catch (Exception e) {
             onView(withText(R.string.password_dialog_title)).check(matches(isDisplayed()));
         }
         onView(withText(R.string.cancel)).perform(click());
     }
 
     @Test
-    public void checkExporting(){
+    public void checkExporting() {
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("A_Test_title", "blabla1", 1);
         Note note2 = new Note("B_Test_title", "blabla2", 1);
@@ -487,7 +487,7 @@ public class MainActivityTest {
         onView(withId(R.id.confirmExportButton)).check(matches(isDisplayed()));
         onView(withId(R.id.confirmExportButton)).perform(click());
         File root = Environment.getExternalStorageDirectory();
-        File outputDirectory = new File (root.getAbsolutePath() + "/Notes");
+        File outputDirectory = new File(root.getAbsolutePath() + "/Notes");
 
         assertTrue(outputDirectory.isDirectory());
         String[] files = outputDirectory.list();

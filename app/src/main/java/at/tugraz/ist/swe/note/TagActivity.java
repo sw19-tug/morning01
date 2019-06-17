@@ -1,4 +1,5 @@
 package at.tugraz.ist.swe.note;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
 
@@ -27,13 +29,13 @@ public class TagActivity extends AppCompatActivity {
     boolean editFlag = false;
     NoteTagStorage storage;
     ImageView colorView;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag);
         tag = (NoteTag) getIntent().getSerializableExtra(TAG_KEY);
-        if(tag == null){
+        if (tag == null) {
             tag = new NoteTag();
         }
 
@@ -43,10 +45,12 @@ public class TagActivity extends AppCompatActivity {
         tagNameTextView.setText(tag.getName());
         tagNameTextView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -83,7 +87,7 @@ public class TagActivity extends AppCompatActivity {
                 return !Character.isWhitespace(c);
             }
         };
-        tagNameTextView.setFilters(new InputFilter[] { filter });
+        tagNameTextView.setFilters(new InputFilter[]{filter});
 
         colorView = findViewById(R.id.colorTagSelector);
         colorView.setBackgroundColor(tag.getColor());
@@ -96,10 +100,10 @@ public class TagActivity extends AppCompatActivity {
         createToolbar();
     }
 
-    private  void  createToolbar(){
+    private void createToolbar() {
         setSupportActionBar((Toolbar) findViewById(R.id.add_new_tag_toolbar));
-        if(getSupportActionBar() != null) {
-            if(tag.getName().equals(""))
+        if (getSupportActionBar() != null) {
+            if (tag.getName().equals(""))
                 getSupportActionBar().setTitle(R.string.text_new_tag);
             else
                 getSupportActionBar().setTitle(R.string.text_edit_tag);
@@ -138,8 +142,8 @@ public class TagActivity extends AppCompatActivity {
         return true;
     }
 
-    private OptionFlag saveNoteTag(){
-        TextView tagNameEditText = (TextView)findViewById(R.id.tagNameEditText);
+    private OptionFlag saveNoteTag() {
+        TextView tagNameEditText = (TextView) findViewById(R.id.tagNameEditText);
         String name = tagNameEditText.getText().toString();
 
         if (tag.getId() == NoteTag.ILLEGAL_ID) {
@@ -150,8 +154,7 @@ public class TagActivity extends AppCompatActivity {
         }
     }
 
-    private void startIntentMain(OptionFlag flag)
-    {
+    private void startIntentMain(OptionFlag flag) {
         Intent tagIntent = new Intent();
         tagIntent.putExtra(TAG_KEY, tag);
         tagIntent.putExtra(FLAG_KEY, flag);
@@ -159,7 +162,7 @@ public class TagActivity extends AppCompatActivity {
         finish();
     }
 
-    private void deleteNoteTag(){
+    private void deleteNoteTag() {
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 TagActivity.this);
 
@@ -201,7 +204,7 @@ public class TagActivity extends AppCompatActivity {
                 getResources().getColor(R.color.OliveDrab),
                 getResources().getColor(R.color.SlateGray),
         };
-        colorPickerDialog.initialize(R.string.color_picker_default_title, colors , colors[0], 3, 2);
+        colorPickerDialog.initialize(R.string.color_picker_default_title, colors, colors[0], 3, 2);
 
         colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
             @Override

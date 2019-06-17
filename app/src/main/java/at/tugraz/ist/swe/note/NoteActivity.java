@@ -1,4 +1,5 @@
 package at.tugraz.ist.swe.note;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,11 +13,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import static java.lang.Math.min;
+
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
@@ -38,11 +42,11 @@ public class NoteActivity extends AppCompatActivity {
         StringBuilder tagsStringBuilder = new StringBuilder();
         for (int i = 0; i < tagsAsStrings.size(); i++) {
             String tagAsString = tagsAsStrings.get(i);
-            if(i == tagsAsStrings.size() - 1 && !onCreate) {
+            if (i == tagsAsStrings.size() - 1 && !onCreate) {
                 tagsStringBuilder.append(tagAsString);
             } else {
                 int color = NoteTag.DEFAULT_COLOR;
-                if(tagColors.containsKey(tagAsString)) {
+                if (tagColors.containsKey(tagAsString)) {
                     color = tagColors.get(tagAsString);
                 }
                 tagsStringBuilder.append(NoteTag.formatAsHtml(tagAsString, color));
@@ -60,8 +64,8 @@ public class NoteActivity extends AppCompatActivity {
         storage = new NoteStorage(new DatabaseHelper(getApplicationContext()));
         tagStorage = new NoteTagStorage(new DatabaseHelper(getApplicationContext()));
 
-        note =  (Note) getIntent().getSerializableExtra(NOTE_KEY);
-        if(note == null){
+        note = (Note) getIntent().getSerializableExtra(NOTE_KEY);
+        if (note == null) {
             note = new Note();
         }
         requestCode = getIntent().getIntExtra(TrashActivity.REQUEST_CODE_KEY, 0);
@@ -71,10 +75,12 @@ public class NoteActivity extends AppCompatActivity {
         tfTitle.setText(note.getTitle());
         tfTitle.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -86,10 +92,12 @@ public class NoteActivity extends AppCompatActivity {
         tfContent.setText(note.getContent());
         tfContent.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -97,13 +105,13 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        for(NoteTag noteTag : storage.getAssociatedTags(note)) {
+        for (NoteTag noteTag : storage.getAssociatedTags(note)) {
             tagsAsStrings.add(noteTag.getName());
         }
         tagField = findViewById(R.id.tag_edit_field);
         tagField.setThreshold(1);
         NoteTag[] noteTags = tagStorage.getAllTags();
-        for(NoteTag noteTag : noteTags) {
+        for (NoteTag noteTag : noteTags) {
             tagColors.put(noteTag.getName(), noteTag.getColor());
         }
         tagField.setAdapter(new TagAdapter(this, noteTags));
@@ -112,31 +120,33 @@ public class NoteActivity extends AppCompatActivity {
 
         tagField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence sequence, int start, int before, int count) {
                 int selectionStart = tagField.getSelectionStart();
                 String input = String.valueOf(sequence);
                 ArrayList<String> parts = new ArrayList<>(Arrays.asList(input.split("\\s", -1)));
-                for(int i = tagsAsStrings.size() - 2; i >= 0; i--) { // Skip the last entered tag.
-                    if(parts.get(i).length() < tagsAsStrings.get(i).length()) {
+                for (int i = tagsAsStrings.size() - 2; i >= 0; i--) { // Skip the last entered tag.
+                    if (parts.get(i).length() < tagsAsStrings.get(i).length()) {
                         parts.remove(i);
                         selectionStart = Integer.MAX_VALUE;
                     }
                 }
                 boolean changeInTagFields = tagsAsStrings.size() != parts.size();
                 tagsAsStrings = parts;
-                if(changeInTagFields) {
+                if (changeInTagFields) {
                     updateTagField(false);
                     tagField.setSelection(min(selectionStart, tagField.getText().length()));
                 }
             }
         });
-        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             tfTitle.setEnabled(false);
             tfContent.setEnabled(false);
             tagField.setEnabled(false);
@@ -144,10 +154,10 @@ public class NoteActivity extends AppCompatActivity {
         createToolbar();
     }
 
-    private  void  createToolbar(){
+    private void createToolbar() {
         setSupportActionBar((Toolbar) findViewById(R.id.add_new_note_toolbar));
-        if(getSupportActionBar() != null) {
-            if(note.getTitle().equals(""))
+        if (getSupportActionBar() != null) {
+            if (note.getTitle().equals(""))
                 getSupportActionBar().setTitle(R.string.text_new_note);
             else
                 getSupportActionBar().setTitle(note.getTitle());
@@ -156,7 +166,7 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    private  void enableUnpinningButton(boolean enabled){
+    private void enableUnpinningButton(boolean enabled) {
         menu.findItem(R.id.action_pinning).setVisible(!enabled);
         menu.findItem(R.id.action_unpinning).setVisible(enabled);
     }
@@ -167,11 +177,10 @@ public class NoteActivity extends AppCompatActivity {
         this.menu = menu;
         MenuItem disabledProtectButton = this.menu.findItem(R.id.action_protect_disabled);
         MenuItem setProtectedNoteButton = this.menu.findItem(R.id.action_protect);
-        if( note.getTitle() == "" && note.getContent() == "")
-        {
+        if (note.getTitle() == "" && note.getContent() == "") {
             setProtectedNoteButton.setVisible(false);
             disabledProtectButton.setVisible(true);
-        }else{
+        } else {
             disabledProtectButton.setVisible(false);
             setProtectedNoteButton.setVisible(true);
         }
@@ -207,10 +216,9 @@ public class NoteActivity extends AppCompatActivity {
             }
         });
 
-        if (note.getPinned() > 0){
+        if (note.getPinned() > 0) {
             enableUnpinningButton(true);
-        }
-        else {
+        } else {
             enableUnpinningButton(false);
         }
 
@@ -289,7 +297,7 @@ public class NoteActivity extends AppCompatActivity {
         return true;
     }
 
-    private OptionFlag saveNote(){
+    private OptionFlag saveNote() {
         TextView tfTitle = findViewById(R.id.tfTitle);
         TextView tfContent = findViewById(R.id.tfContent);
         String title = tfTitle.getText().toString();
@@ -298,12 +306,12 @@ public class NoteActivity extends AppCompatActivity {
         note.setContent(content);
         note.setTitle(title);
         storage.dissociateAll(note);
-        for(String tagAsString : tagsAsStrings) {
-            if(tagAsString.length() == 0) {
+        for (String tagAsString : tagsAsStrings) {
+            if (tagAsString.length() == 0) {
                 continue;
             }
             NoteTag noteTag = tagStorage.findByName(tagAsString);
-            if(noteTag == null) {
+            if (noteTag == null) {
                 noteTag = new NoteTag(tagAsString, NoteTag.DEFAULT_COLOR);
                 tagStorage.insert(noteTag);
             }
@@ -316,14 +324,14 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteNote(){
+    private void deleteNote() {
         String title = "Confirm Delete";
         String message;
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 NoteActivity.this);
-        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+        if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
             message = "Are you sure you want permanently delete this note?";
-        }else{
+        } else {
             message = "Are you sure you want send this note to trash?";
         }
         confirmDeleteDialog.setTitle(title);
@@ -331,9 +339,9 @@ public class NoteActivity extends AppCompatActivity {
         confirmDeleteDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if (requestCode == TrashActivity.NOTE_RESTORE_CODE){
+                        if (requestCode == TrashActivity.NOTE_RESTORE_CODE) {
                             startIntentMain(OptionFlag.REMOVE);
-                        }else{
+                        } else {
                             startIntentMain(OptionFlag.SOFT_REMOVE);
                         }
 
@@ -373,7 +381,7 @@ public class NoteActivity extends AppCompatActivity {
         confirmDeleteDialog.show();
     }
 
-    private void unprotectNote(){
+    private void unprotectNote() {
         AlertDialog.Builder confirmUnprotectDialog = new AlertDialog.Builder(
                 NoteActivity.this);
 
@@ -395,7 +403,7 @@ public class NoteActivity extends AppCompatActivity {
         confirmUnprotectDialog.show();
     }
 
-    private void restoreNote(){
+    private void restoreNote() {
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 NoteActivity.this);
 
@@ -418,17 +426,17 @@ public class NoteActivity extends AppCompatActivity {
         confirmDeleteDialog.show();
     }
 
-    private void pinningNote(){
+    private void pinningNote() {
         note.setPinned(getCurrentPinningNumber());
         enableUnpinningButton(true);
     }
 
-    private void unpinningNote(){
+    private void unpinningNote() {
         note.setPinned(0);
         enableUnpinningButton(false);
     }
 
-    private void callShare(){
+    private void callShare() {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, note.getTitle());
@@ -436,17 +444,15 @@ public class NoteActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_via)));
     }
 
-    private void startIntentMain(OptionFlag flag)
-    {
+    private void startIntentMain(OptionFlag flag) {
         Intent noteIntent = new Intent();
         noteIntent.putExtra(NOTE_KEY, note);
         noteIntent.putExtra(FLAG_KEY, flag);
         boolean widgetCall = getIntent().getBooleanExtra("widget", false);
-        if (widgetCall){
-            try{
+        if (widgetCall) {
+            try {
                 storage.update(note);
-            }
-            catch(NotFoundException e) {
+            } catch (NotFoundException e) {
                 e.printStackTrace();
             }
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -460,7 +466,7 @@ public class NoteActivity extends AppCompatActivity {
         return note;
     }
 
-    int getCurrentPinningNumber(){
+    int getCurrentPinningNumber() {
         return storage.getNewPinningNumber();
     }
 }

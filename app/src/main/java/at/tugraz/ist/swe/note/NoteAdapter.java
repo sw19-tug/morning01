@@ -14,14 +14,14 @@ import java.util.ArrayList;
 public class NoteAdapter extends ArrayAdapter<Note> {
 
     public NoteAdapter(@NonNull Context context, @NonNull ArrayList<Note> notesList) {
-        super(context,0, notesList);
+        super(context, 0, notesList);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        if(convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.note_list_item, parent, false);
         }
 
@@ -29,8 +29,8 @@ public class NoteAdapter extends ArrayAdapter<Note> {
         TextView contentTextView = convertView.findViewById(R.id.contentTextView);
 
         Note note = getItem(position);
-        if(note == null) {
-            return  convertView;
+        if (note == null) {
+            return convertView;
         }
         titleTextView.setText(note.getTitle());
         contentTextView.setText(note.getContent());

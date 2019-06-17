@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class MainActivityImportTest {
     private static final File TMP_DIRECTORY = new File(MainActivity.TMP_DIRECTORY);
     private static final File OUTPUT_DIRECTORY = new File(MainActivity.OUTPUT_DIRECTORY);
-    private static final String ZIP_OUTPUT_PATH = OUTPUT_DIRECTORY.toString()  + "/NotesTest.zip";
+    private static final String ZIP_OUTPUT_PATH = OUTPUT_DIRECTORY.toString() + "/NotesTest.zip";
     private static final File ZIP_OUTPUT_FILE = new File(ZIP_OUTPUT_PATH);
 
     @Rule

@@ -13,12 +13,12 @@ public class NoteTag implements Serializable {
     private int color;
     private String name;
 
-    public NoteTag(){
+    public NoteTag() {
         this.color = DEFAULT_COLOR;
         this.name = "";
     }
 
-    public NoteTag(String name, int color){
+    public NoteTag(String name, int color) {
         this.color = color;
         this.name = name;
     }
@@ -26,17 +26,29 @@ public class NoteTag implements Serializable {
     public long getId() {
         return id;
     }
+
     public int getColor() {
         return color;
     }
-    public String getName() { return name; }
 
-    public void setId(long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setColor(int color) { this.color = color; }
+    public String getName() {
+        return name;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -45,7 +57,7 @@ public class NoteTag implements Serializable {
             return false;
         }
 
-        NoteTag otherNoteTag = (NoteTag)o;
+        NoteTag otherNoteTag = (NoteTag) o;
 
         return this.name.equals(otherNoteTag.name) && this.color == otherNoteTag.color;
     }

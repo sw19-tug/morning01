@@ -36,7 +36,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import org.json.JSONException;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 import at.tugraz.ist.swe.widget.NoteWidget;
@@ -75,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton cancelFiltersButton;
     private FloatingActionButton addNoteButton;
     NoteTag filterTag;
-
 
 
     private static final int NOTE_REQUEST_CODE = 1;
@@ -156,15 +158,15 @@ public class MainActivity extends AppCompatActivity {
                     for (Note note : notes) {
                         try {
                             noteStorage.update(note);
-                        } catch(NotFoundException e) {
+                        } catch (NotFoundException e) {
                             noteStorage.insert(note);
                         }
                     }
-                    Toast.makeText(getApplicationContext(), notes.length + " " + getString(R.string.import_successfully) , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), notes.length + " " + getString(R.string.import_successfully), Toast.LENGTH_SHORT).show();
                     refreshNoteList();
-                }  catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), getString(R.string.import_failed) , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.import_failed), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -222,14 +224,14 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-        }else if(requestCode == FILTER_REQUEST_CODE){
+        } else if (requestCode == FILTER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 NoteTag tag = (NoteTag) data.getSerializableExtra(TagListActivity.TAG_KEY);
                 if (tag == null) {
                     cancelFiltersButton.setEnabled(false);
                     filterTag = null;
                     addNoteButton.setEnabled(true);
-                }else{
+                } else {
                     cancelFiltersButton.setEnabled(true);
                     addNoteButton.setEnabled(false);
                     filterTag = tag;
@@ -294,11 +296,11 @@ public class MainActivity extends AppCompatActivity {
         noteListView.setItemsCanFocus(true);
         noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick( AdapterView<?> parent, View item,
-                                     int position, long id) {
-                Note note = checkBoxAdapter.getItem( position );
+            public void onItemClick(AdapterView<?> parent, View item,
+                                    int position, long id) {
+                Note note = checkBoxAdapter.getItem(position);
                 Log.d("added note", note.getTitle());
-                if(notesListForExport.contains(note)){
+                if (notesListForExport.contains(note)) {
                     Log.d("removed note", note.getTitle());
                     notesListForExport.remove(note);
                     noteListView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
@@ -317,10 +319,10 @@ public class MainActivity extends AppCompatActivity {
         confirmExportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File tmpDirectory = new File (TMP_DIRECTORY);
-                File outputDirectory = new File (OUTPUT_DIRECTORY);
+                File tmpDirectory = new File(TMP_DIRECTORY);
+                File outputDirectory = new File(OUTPUT_DIRECTORY);
                 outputDirectory.mkdirs();
-                File zipFile = new File (outputDirectory.toString() + "/Notes.zip");
+                File zipFile = new File(outputDirectory.toString() + "/Notes.zip");
                 String zipOutputPath = zipFile.toString();
                 long exportId = 0;
                 for (Note note : notesListForExport) {
@@ -328,20 +330,20 @@ public class MainActivity extends AppCompatActivity {
                     exportId++;
                 }
                 int counter = 1;
-                while(zipFile.exists()) {
-                    zipOutputPath = outputDirectory.toString()  + "/Notes" + counter + ".zip";
-                    zipFile = new File (zipOutputPath);
+                while (zipFile.exists()) {
+                    zipOutputPath = outputDirectory.toString() + "/Notes" + counter + ".zip";
+                    zipFile = new File(zipOutputPath);
                     counter++;
                 }
                 boolean zipped = zipFolder(tmpDirectory.toString(), zipOutputPath);
                 notesListForExport.clear();
                 deleteRecursive(tmpDirectory);
                 if (zipped) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.export_successfully) + " " + zipOutputPath , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.export_successfully) + " " + zipOutputPath, Toast.LENGTH_SHORT).show();
                     exporting = false;
                     recreate();
                 } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.no_notes_selected) , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.no_notes_selected), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -363,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         MenuItem menuItem = this.menu.findItem(R.id.search);
-        SearchView searchView = (SearchView)menuItem.getActionView();
+        SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setQueryHint(getString(R.string.search_title));
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
@@ -382,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newPattern) {
                 pattern = newPattern;
@@ -440,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         MenuItem changeThemeButton = this.menu.findItem(R.id.changeTheme);
-        if(isNightModeEnabled()){
+        if (isNightModeEnabled()) {
             changeThemeButton.setTitle(R.string.change_light_theme);
         } else {
             changeThemeButton.setTitle(R.string.change_dark_theme);
@@ -460,14 +463,14 @@ public class MainActivity extends AppCompatActivity {
         applyTheme();
     }
 
-    private void applyTheme(){
-        if(lightThemeSet){
-            if(isNightModeEnabled()) {
+    private void applyTheme() {
+        if (lightThemeSet) {
+            if (isNightModeEnabled()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 recreate();
             }
-        }else{
-            if(!isNightModeEnabled()) {
+        } else {
+            if (!isNightModeEnabled()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 recreate();
             }
@@ -501,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(exporting){
+        if (exporting) {
             recreate();
             return;
         }
@@ -517,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
                 try (PrintWriter pw = new PrintWriter(new FileOutputStream(file))) {
                     pw.print(note.getJsonString());
                     pw.flush();
-                } catch (IOException|JSONException e) {
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -559,7 +562,7 @@ public class MainActivity extends AppCompatActivity {
     public static boolean deleteRecursive(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i=0; i<children.length; i++) {
+            for (int i = 0; i < children.length; i++) {
                 boolean success = deleteRecursive(new File(dir, children[i]));
                 if (!success) {
                     return false;
@@ -569,23 +572,23 @@ public class MainActivity extends AppCompatActivity {
         return dir.delete();
     }
 
-    public String getFilePath(Uri uri){
+    public String getFilePath(Uri uri) {
         final String id = DocumentsContract.getDocumentId(uri);
         try {
             final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            String[] projection = { MediaStore.Images.Media.DATA };
+            String[] projection = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
             int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             return cursor.getString(columnIndex);
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return id.replace("primary:", Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
         }
     }
 
-    public static  Note[] unzip(String zipFile) throws IOException {
+    public static Note[] unzip(String zipFile) throws IOException {
         ArrayList<Note> newNotes = new ArrayList<>();
-        try(ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
+        try (ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String fileName = ze.getName();
@@ -622,17 +625,17 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
-    private void showProtectedNotes(){
+    private void showProtectedNotes() {
         SharedPreferences settings = getSharedPreferences(getString(R.string.protected_notes), MODE_PRIVATE);
-        userPassword = settings.getString(getString(R.string.protected_notes_password),"");
-        if(userPassword.isEmpty()){
+        userPassword = settings.getString(getString(R.string.protected_notes_password), "");
+        if (userPassword.isEmpty()) {
             showPasswordDialog(getString(R.string.new_password_dialog_title), true);
-        }else {
+        } else {
             showPasswordDialog(getString(R.string.password_dialog_title), false);
         }
     }
 
-    private void showPasswordDialog(String dialogTitle, final boolean newPassword){
+    private void showPasswordDialog(String dialogTitle, final boolean newPassword) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(dialogTitle);
         final EditText input = new EditText(this);
@@ -644,7 +647,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 inputPassword = input.getText().toString();
 
-                if(!newPassword) {
+                if (!newPassword) {
                     if (userPassword.equals(inputPassword)) {
                         dialogInterface.cancel();
                         Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT).show();
@@ -654,10 +657,10 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.wrong_password, Toast.LENGTH_SHORT).show();
                     }
-                }else{
+                } else {
                     userPassword = input.getText().toString();
                     SharedPreferences settings = getSharedPreferences(getString(R.string.protected_notes), MODE_PRIVATE);
-                    settings.edit().putString(getString(R.string.protected_notes_password),userPassword).apply();
+                    settings.edit().putString(getString(R.string.protected_notes_password), userPassword).apply();
                     dialogInterface.cancel();
                 }
             }

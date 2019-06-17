@@ -18,7 +18,7 @@ public class TagAdapter extends ArrayAdapter<NoteTag> {
 
     public TagAdapter(@NonNull Context context, @NonNull List<NoteTag> noteTagList) {
 
-        super(context,0, noteTagList);
+        super(context, 0, noteTagList);
     }
 
     public TagAdapter(@NonNull Context context, NoteTag[] allTags) {
@@ -29,7 +29,7 @@ public class TagAdapter extends ArrayAdapter<NoteTag> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        if(convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.tag_list_item, parent, false);
         }
 
@@ -37,8 +37,8 @@ public class TagAdapter extends ArrayAdapter<NoteTag> {
         ImageView colorImageView = convertView.findViewById(R.id.colorTag);
 
         NoteTag tag = getItem(position);
-        if(tag == null) {
-            return  convertView;
+        if (tag == null) {
+            return convertView;
         }
         titleTextView.setText(tag.getName());
         colorImageView.setBackgroundColor(tag.getColor());

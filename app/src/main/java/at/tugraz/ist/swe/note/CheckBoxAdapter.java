@@ -14,14 +14,14 @@ import java.util.ArrayList;
 public class CheckBoxAdapter extends ArrayAdapter<Note> {
 
     public CheckBoxAdapter(@NonNull Context context, @NonNull ArrayList<Note> notesList) {
-        super(context,0, notesList);
+        super(context, 0, notesList);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        if(convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.note_list_item_checkbox, parent, false);
         }
 
@@ -30,8 +30,8 @@ public class CheckBoxAdapter extends ArrayAdapter<Note> {
         //CheckBox checkBox =  convertView.findViewById(R.id.checkBox);
 
         Note note = getItem(position);
-        if(note == null) {
-            return  convertView;
+        if (note == null) {
+            return convertView;
         }
         titleTextView.setText(note.getTitle());
         contentTextView.setText(note.getContent());

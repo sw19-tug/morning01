@@ -31,7 +31,7 @@ public class NoteWidget extends AppWidgetProvider {
     public static final String EXTRA_ITEM = "at.tugraz.ist.swe.widget.EXTRA_ITEM";
 
     public static void sendRefreshBroadcast(Context context) {
-        Intent intent = new Intent(context,NoteWidget.class);
+        Intent intent = new Intent(context, NoteWidget.class);
         intent.setAction(NoteWidget.ACTION_NOTES_PULLED);
         context.sendBroadcast(intent);
     }

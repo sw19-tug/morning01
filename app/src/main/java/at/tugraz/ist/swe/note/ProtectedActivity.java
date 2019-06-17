@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-public class ProtectedActivity  extends AppCompatActivity {
+public class ProtectedActivity extends AppCompatActivity {
     ArrayList<Note> noteList = new ArrayList<>();
     NoteAdapter customNoteAdapter;
     ListView noteListView;
@@ -69,8 +69,7 @@ public class ProtectedActivity  extends AppCompatActivity {
                         try {
                             noteStorage.delete(note.getId());
                             refreshNoteList();
-                        }
-                        catch (NotFoundException e){
+                        } catch (NotFoundException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -115,13 +114,12 @@ public class ProtectedActivity  extends AppCompatActivity {
     }
 
 
-
     public void setNoteStorage(NoteStorage noteStorage) {
         this.noteStorage = noteStorage;
     }
 
 
-    private void restoreNote(final int position){
+    private void restoreNote(final int position) {
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 ProtectedActivity.this);
 

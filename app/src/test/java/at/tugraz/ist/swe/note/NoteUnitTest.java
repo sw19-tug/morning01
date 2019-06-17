@@ -31,7 +31,7 @@ public class NoteUnitTest {
     }
 
     @Test
-    public void testInitialStateWithParams(){
+    public void testInitialStateWithParams() {
         assertNotNull(noteWithParams);
         assertEquals("School", noteWithParams.getTitle());
         assertEquals("Lorum Ipsum", noteWithParams.getContent());
