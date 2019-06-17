@@ -3,7 +3,6 @@ package at.tugraz.ist.swe.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -29,8 +28,7 @@ public class NoteRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
         noteStorage = new NoteStorage(new DatabaseHelper(context));
     }
 
-    private void updateWidgetListView()
-    {
+    private void updateWidgetListView() {
         Note[] notes = noteStorage.getAll();
         ArrayList<Note> convertedToList = new ArrayList<>(Arrays.asList(notes));
         this.notes = convertedToList;

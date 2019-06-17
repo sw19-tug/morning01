@@ -12,10 +12,9 @@ import org.junit.runner.RunWith;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -44,7 +43,7 @@ public class TagDatabaseInstrumentedTest {
     @Test
     public void testTagTable() {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        database.query("tag",null, null, new String[]{}, null, null, null);
+        database.query("tag", null, null, new String[]{}, null, null, null);
     }
 
 
@@ -76,7 +75,6 @@ public class TagDatabaseInstrumentedTest {
     }
 
 
-
     @Test
     public void testGetAllTags() {
         boolean found = false;
@@ -92,10 +90,9 @@ public class TagDatabaseInstrumentedTest {
         NoteTag[] allStoredNoteTags = noteTagStorage.getAllTags();
 
         assertEquals(3, allStoredNoteTags.length);
-        for (int i = 0; i < noteTags.length; i++){
+        for (int i = 0; i < noteTags.length; i++) {
             for (int j = 0; j < allStoredNoteTags.length; j++) {
-                if( noteTags[i].equals(allStoredNoteTags[j]))
-                {
+                if (noteTags[i].equals(allStoredNoteTags[j])) {
                     found = true;
                 }
             }
@@ -118,7 +115,7 @@ public class TagDatabaseInstrumentedTest {
             storage.update(noteTag);
             NoteTag fetchedTag = storage.findTagById(noteTag.getId());
             assertEquals(noteTag, fetchedTag);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -133,8 +130,7 @@ public class TagDatabaseInstrumentedTest {
         try {
             storage.delete(noteTag.getId());
             storage.findTagById(noteTag.getId());
-        }
-        catch (NotFoundException ex) {
+        } catch (NotFoundException ex) {
             idNotFound = true;
         }
         assertTrue(idNotFound);
@@ -187,7 +183,7 @@ public class TagDatabaseInstrumentedTest {
         assertTrue(noteStorage.getAll().length > 0);
         assertTrue(noteTagStorage.getAllTags().length > 0);
 
-        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+        for (int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
             NoteTag[] fetchedNoteTags = noteStorage.getAssociatedTags(notes[noteIndex]);
             NoteTag[] expectedNoteTags = notesTags[noteIndex];
             Util.assertNoteTagsContains(fetchedNoteTags, expectedNoteTags);

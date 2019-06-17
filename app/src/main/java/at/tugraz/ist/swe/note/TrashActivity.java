@@ -69,8 +69,7 @@ public class TrashActivity extends AppCompatActivity {
                         try {
                             noteStorage.delete(note.getId());
                             refreshNoteList();
-                        }
-                        catch (NotFoundException e){
+                        } catch (NotFoundException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -116,13 +115,12 @@ public class TrashActivity extends AppCompatActivity {
     }
 
 
-
     public void setNoteStorage(NoteStorage noteStorage) {
         this.noteStorage = noteStorage;
     }
 
 
-    private void restoreNote(final int position){
+    private void restoreNote(final int position) {
         AlertDialog.Builder confirmDeleteDialog = new AlertDialog.Builder(
                 TrashActivity.this);
 

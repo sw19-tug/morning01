@@ -3,23 +3,14 @@ package at.tugraz.ist.swe.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
-import java.util.ArrayList;
-
-import at.tugraz.ist.swe.note.MainActivity;
-import at.tugraz.ist.swe.note.Note;
 import at.tugraz.ist.swe.note.NoteActivity;
 import at.tugraz.ist.swe.note.R;
-import at.tugraz.ist.swe.note.TrashActivity;
-
-import static android.support.v4.content.ContextCompat.startActivity;
 
 
 /**
@@ -31,7 +22,7 @@ public class NoteWidget extends AppWidgetProvider {
     public static final String EXTRA_ITEM = "at.tugraz.ist.swe.widget.EXTRA_ITEM";
 
     public static void sendRefreshBroadcast(Context context) {
-        Intent intent = new Intent(context,NoteWidget.class);
+        Intent intent = new Intent(context, NoteWidget.class);
         intent.setAction(NoteWidget.ACTION_NOTES_PULLED);
         context.sendBroadcast(intent);
     }

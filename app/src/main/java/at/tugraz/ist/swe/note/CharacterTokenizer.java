@@ -54,7 +54,7 @@ public class CharacterTokenizer implements MultiAutoCompleteTextView.Tokenizer {
             return text;
         } else {
             if (text instanceof Spanned) {
-                SpannableString sp = new SpannableString(text +  String.valueOf(this.character));
+                SpannableString sp = new SpannableString(text + String.valueOf(this.character));
                 TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
                         Object.class, sp, 0);
                 return sp;

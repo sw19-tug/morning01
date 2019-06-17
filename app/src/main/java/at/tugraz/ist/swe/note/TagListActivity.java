@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import java.util.ArrayList;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
@@ -53,12 +54,12 @@ public class TagListActivity extends AppCompatActivity {
         setTagList(tagStorage.getAllTags());
         tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(editMode) {
+                if (editMode) {
                     Intent intent = new Intent(view.getContext(), TagActivity.class);
                     intent.putExtra(TagActivity.TAG_KEY, tags.get(position));
                     startActivityForResult(intent, TAG_REQUEST_CODE);
                     currentSelectedTag = position;
-                }else{
+                } else {
                     Intent noteIntent = new Intent();
                     noteIntent.putExtra(TAG_KEY, tags.get(position));
                     setResult(RESULT_OK, noteIntent);
@@ -67,9 +68,10 @@ public class TagListActivity extends AppCompatActivity {
             }
         });
     }
+
     public void setTagList(NoteTag[] tagsList) {
         tags.clear();
-        for(NoteTag tag : tagsList){
+        for (NoteTag tag : tagsList) {
             tags.add(tag);
         }
     }
@@ -85,14 +87,14 @@ public class TagListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.tagEditToggleSwitch:
-                if(editMode){
+                if (editMode) {
                     editMode = false;
                     item.setIcon(R.drawable.ic_sort_black_24dp);
-                }else{
+                } else {
                     editMode = true;
                     item.setIcon(R.drawable.ic_mode_edit_black_24dp);
                 }
-            break;
+                break;
             default:
                 return false;
         }
@@ -104,14 +106,12 @@ public class TagListActivity extends AppCompatActivity {
         if (requestCode == TAG_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 NoteTag tag = (NoteTag) data.getSerializableExtra(TagActivity.TAG_KEY);
-                if (tag.getName().isEmpty())
-                {
+                if (tag.getName().isEmpty()) {
                     return;
                 }
                 OptionFlag flag = (OptionFlag) data.getSerializableExtra(TagActivity.FLAG_KEY);
 
-                switch (flag)
-                {
+                switch (flag) {
                     case SAVE:
                         tags.add(tag);
                         tagStorage.insert(tag);

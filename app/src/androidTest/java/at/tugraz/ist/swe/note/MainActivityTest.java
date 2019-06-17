@@ -1,7 +1,6 @@
 package at.tugraz.ist.swe.note;
 
 
-
 import android.Manifest;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
@@ -12,8 +11,6 @@ import android.text.TextUtils;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,11 +20,11 @@ import java.io.File;
 import java.util.Random;
 
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
-import at.tugraz.ist.swe.note.database.NotFoundException;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -39,12 +36,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static junit.framework.Assert.assertFalse;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -305,7 +300,7 @@ public class MainActivityTest {
         onView(withText(resourceButtonId)).perform(click());
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
         assertEquals(expectedNoteArray.length, noteListView.getAdapter().getCount());
-        for (int i = 0; i < expectedNoteArray.length; ++i){
+        for (int i = 0; i < expectedNoteArray.length; ++i) {
             assertEquals(expectedNoteArray[i], noteListView.getAdapter().getItem(i));
         }
     }
@@ -365,8 +360,8 @@ public class MainActivityTest {
         };
         activityActivityTestRule.getActivity().setNoteList(notes);
 
-        try{
-            runOnUiThread(new Runnable(){
+        try {
+            runOnUiThread(new Runnable() {
                 public void run() {
                     NoteAdapter customNoteAdapter = new NoteAdapter(
                             activityActivityTestRule.getActivity(), activityActivityTestRule.getActivity().noteList);
@@ -374,8 +369,9 @@ public class MainActivityTest {
                     activityActivityTestRule.getActivity().noteListView.setAdapter(customNoteAdapter);
                 }
             });
+        } catch (Throwable e) {
+            throw new RuntimeException();
         }
-        catch(Throwable e){throw new RuntimeException();}
 
 
         ListView noteListView = activityActivityTestRule.getActivity().findViewById(R.id.notesList);
@@ -429,7 +425,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void checkForLimitedContentBox(){
+    public void checkForLimitedContentBox() {
         Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 1);
         Note[] notes = {
                 note1,
@@ -440,32 +436,32 @@ public class MainActivityTest {
         TextView textView;
         do {
             textView = activityActivityTestRule.getActivity().findViewById(R.id.contentTextView);
-        } while(textView == null);
+        } while (textView == null);
         assertTrue((textView.getMaxLines() == 1) && (textView.getEllipsize() == TextUtils.TruncateAt.END));
 
     }
 
     @Test
-    public void checkProtectedNotesMenuItemVisibility(){
+    public void checkProtectedNotesMenuItemVisibility() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.protected_notes)).check(matches(isDisplayed()));
         onView(withText(R.string.protected_notes)).check(matches(isEnabled()));
     }
 
     @Test
-    public void checkAlertDialogVisibility(){
+    public void checkAlertDialogVisibility() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.protected_notes)).perform(click());
-        try{
-            onView(withText(R.string.new_password_dialog_title)).check(matches(isDisplayed()));}
-        catch (Exception e){
+        try {
+            onView(withText(R.string.new_password_dialog_title)).check(matches(isDisplayed()));
+        } catch (Exception e) {
             onView(withText(R.string.password_dialog_title)).check(matches(isDisplayed()));
         }
         onView(withText(R.string.cancel)).perform(click());
     }
 
     @Test
-    public void checkExporting(){
+    public void checkExporting() {
         MainActivity activity = activityActivityTestRule.getActivity();
         Note note1 = new Note("A_Test_title", "blabla1", 1);
         Note note2 = new Note("B_Test_title", "blabla2", 1);
@@ -487,7 +483,7 @@ public class MainActivityTest {
         onView(withId(R.id.confirmExportButton)).check(matches(isDisplayed()));
         onView(withId(R.id.confirmExportButton)).perform(click());
         File root = Environment.getExternalStorageDirectory();
-        File outputDirectory = new File (root.getAbsolutePath() + "/Notes");
+        File outputDirectory = new File(root.getAbsolutePath() + "/Notes");
 
         assertTrue(outputDirectory.isDirectory());
         String[] files = outputDirectory.list();

@@ -20,10 +20,10 @@ public abstract class Util {
         return date;
     }
 
-    static public void assertNoteArrayEquals(Note[] allStoredNotes, Note[] expectedArray){
+    static public void assertNoteArrayEquals(Note[] allStoredNotes, Note[] expectedArray) {
 
         assertEquals(expectedArray.length, allStoredNotes.length);
-        for (int i = 0; i < allStoredNotes.length; ++i){
+        for (int i = 0; i < allStoredNotes.length; ++i) {
             assertTrue(expectedArray[i].equals(allStoredNotes[i]));
         }
 
@@ -34,10 +34,10 @@ public abstract class Util {
     }
 
     static public void assertNoteArrayContains(Note[] foundNotes, Note[] expectedNotes) {
-        for (Note eNote: expectedNotes){
+        for (Note eNote : expectedNotes) {
             boolean found = false;
-            for(Note fNote: foundNotes){
-                if (eNote.equals(fNote)){
+            for (Note fNote : foundNotes) {
+                if (eNote.equals(fNote)) {
                     found = true;
                 }
             }
@@ -47,10 +47,10 @@ public abstract class Util {
 
     static public void assertNoteTagsContains(NoteTag[] foundNoteTags, NoteTag[] expectedNoteTags) {
         int foundCounter = 0;
-        for (NoteTag expectedNoteTag: expectedNoteTags){
+        for (NoteTag expectedNoteTag : expectedNoteTags) {
             boolean found = false;
-            for(NoteTag foundNoteTag: foundNoteTags){
-                if (expectedNoteTag.equals(foundNoteTag)){
+            for (NoteTag foundNoteTag : foundNoteTags) {
+                if (expectedNoteTag.equals(foundNoteTag)) {
                     found = true;
                     foundCounter++;
                 }
@@ -62,8 +62,8 @@ public abstract class Util {
 
     static public Note[] convertAdapterToNoteArray(ListAdapter adapter) {
         Note[] result = new Note[adapter.getCount()];
-        for (int i = 0; i < adapter.getCount(); ++i){
-            result[i] = (Note)adapter.getItem(i);
+        for (int i = 0; i < adapter.getCount(); ++i) {
+            result[i] = (Note) adapter.getItem(i);
         }
         return result;
     }
@@ -79,7 +79,7 @@ public abstract class Util {
     }
 
     static public void fillNoteTagStorage(NoteTag[] noteTags, NoteTagStorage noteTagStorage) {
-        for (int i = 0; i < noteTags.length; ++i){
+        for (int i = 0; i < noteTags.length; ++i) {
             noteTagStorage.insert(noteTags[i]);
         }
     }
@@ -128,8 +128,8 @@ public abstract class Util {
     }
 
     public static void applyNotesTags(NoteTag[][] notesTags, Note[] notes, ApplyNotesTags callback) {
-        for(int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
-            for(NoteTag tag : notesTags[noteIndex]) {
+        for (int noteIndex = 0; noteIndex < notesTags.length; noteIndex++) {
+            for (NoteTag tag : notesTags[noteIndex]) {
                 callback.apply(notes[noteIndex], tag);
             }
         }

@@ -3,9 +3,9 @@ package at.tugraz.ist.swe.note;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class NoteUnitTest {
@@ -31,7 +31,7 @@ public class NoteUnitTest {
     }
 
     @Test
-    public void testInitialStateWithParams(){
+    public void testInitialStateWithParams() {
         assertNotNull(noteWithParams);
         assertEquals("School", noteWithParams.getTitle());
         assertEquals("Lorum Ipsum", noteWithParams.getContent());

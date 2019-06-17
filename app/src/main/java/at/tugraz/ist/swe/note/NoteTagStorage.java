@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import at.tugraz.ist.swe.note.database.NotFoundException;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
+import at.tugraz.ist.swe.note.database.NotFoundException;
 
 public class NoteTagStorage {
 
@@ -17,7 +17,7 @@ public class NoteTagStorage {
 
 
     static private void assertOneAffectedRow(int affectedRow, long id) throws NotFoundException {
-        if(affectedRow != 1)  {
+        if (affectedRow != 1) {
             throw new NotFoundException(id);
         }
     }
@@ -52,7 +52,7 @@ public class NoteTagStorage {
 
     public NoteTag findTagById(long id) throws NotFoundException {
         Cursor cursor = getTagCursor(id);
-        if(cursor.getCount() != 1) {
+        if (cursor.getCount() != 1) {
             throw new NotFoundException(id);
         }
         return convertCursorToNoteTag(cursor);
@@ -60,7 +60,7 @@ public class NoteTagStorage {
 
     public NoteTag findByName(String name) {
         Cursor cursor = getTagCursor(name);
-        if(cursor.getCount() != 1) {
+        if (cursor.getCount() != 1) {
             return null;
         }
         return convertCursorToNoteTag(cursor);
@@ -82,7 +82,7 @@ public class NoteTagStorage {
         cursor.close();
     }
 
-    public static NoteTag[] getAllTags(Cursor allNoteTagsCursor){
+    public static NoteTag[] getAllTags(Cursor allNoteTagsCursor) {
         NoteTag[] allNoteTags = new NoteTag[allNoteTagsCursor.getCount()];
         int arrayIndex = 0;
 
@@ -98,11 +98,11 @@ public class NoteTagStorage {
 
     public NoteTag[] getAllTags() {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
-        Cursor allNoteTagsCursor = database.query(DatabaseHelper.TAG_TABLE_NAME, null, null, null, null ,null, DatabaseHelper.TAG_COLUMN_NAME + " ASC");
+        Cursor allNoteTagsCursor = database.query(DatabaseHelper.TAG_TABLE_NAME, null, null, null, null, null, DatabaseHelper.TAG_COLUMN_NAME + " ASC");
         return getAllTags(allNoteTagsCursor);
     }
 
-    private static NoteTag convertNoteTagCursorToNoteTag(Cursor noteTagsCursor){
+    private static NoteTag convertNoteTagCursorToNoteTag(Cursor noteTagsCursor) {
         NoteTag noteTag = new NoteTag();
         setValues(noteTag, noteTagsCursor);
         return noteTag;

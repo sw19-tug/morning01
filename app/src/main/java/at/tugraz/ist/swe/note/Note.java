@@ -23,7 +23,7 @@ public class Note implements Serializable {
     private boolean isProtected = false;
     private ArrayList<NoteTag> tags = new ArrayList<>();
 
-    public Note(){
+    public Note() {
     }
 
     public Note(String title, String content, int pinned) {
@@ -32,7 +32,7 @@ public class Note implements Serializable {
         this.pinned = pinned;
     }
 
-    public Note(String title, String content){
+    public Note(String title, String content) {
         this.title = title;
         this.content = content;
     }
@@ -48,29 +48,38 @@ public class Note implements Serializable {
     public long getId() {
         return id;
     }
+
     public String getTitle() {
         return title;
     }
-    public String getContent(){
+
+    public String getContent() {
         return content;
     }
-    public Date getCreatedDate(){
+
+    public Date getCreatedDate() {
         return createdDate;
     }
-    public boolean isRemoved(){
+
+    public boolean isRemoved() {
         return removed;
     }
-    public int getPinned(){
+
+    public int getPinned() {
         return pinned;
     }
-    public Date getChangedDate(){
+
+    public Date getChangedDate() {
         return changedDate;
     }
-    public ArrayList<NoteTag> getTags(){
+
+    public ArrayList<NoteTag> getTags() {
         return tags;
     }
 
-    public boolean getIsProtected() { return isProtected; }
+    public boolean getIsProtected() {
+        return isProtected;
+    }
 
     public void setId(long id) {
         this.id = id;
@@ -100,14 +109,16 @@ public class Note implements Serializable {
         this.changedDate = changedDate;
     }
 
-    public void setProtected(boolean isProtected) { this.isProtected = isProtected; }
+    public void setProtected(boolean isProtected) {
+        this.isProtected = isProtected;
+    }
 
     public void addTag(NoteTag tag) {
         this.tags.add(tag);
     }
 
     @Override
-    public boolean equals(Object other){
+    public boolean equals(Object other) {
         if (other == this) {
             return true;
         }
@@ -116,7 +127,7 @@ public class Note implements Serializable {
             return false;
         }
 
-        Note otherNote = (Note)other;
+        Note otherNote = (Note) other;
 
         return this.title.equals(otherNote.title) && this.content.equals(otherNote.content) &&
                 (this.pinned == otherNote.pinned);
