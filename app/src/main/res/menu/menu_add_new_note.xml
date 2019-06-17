@@ -3,16 +3,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_add"
-        android:icon="@drawable/ic_checkmark"
-        android:title="@string/action_add"
-        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_remove"
         android:icon="@drawable/ic_remove"
         android:title="@string/action_remove"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_protect"
+        android:icon="@drawable/ic_lock_outline_black_24dp"
+        android:title="@string/action_protect"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_protect_disabled"
+        android:icon="@drawable/ic_lock_outline_black_opacity_down_24dp"
+        android:title="@string/action_protect"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_unprotect"
+        android:icon="@drawable/ic_lock_open_black_24dp"
+        android:title="@string/action_unprotect"
         app:showAsAction="ifRoom" />
 
     <item
@@ -32,4 +45,11 @@
         android:icon="?attr/actionModeShareDrawable"
         android:title="@string/action_share"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_restore"
+        android:icon="@drawable/ic_restore_black_24dp"
+        android:title="@string/action_restore"
+        app:showAsAction="ifRoom" />
+
 </menu>

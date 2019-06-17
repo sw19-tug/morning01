@@ -3,7 +3,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/list_item_frame">
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
@@ -25,5 +26,7 @@
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:layout_marginTop="-20dp"
+        android:maxLines="1"
+        android:ellipsize="end"
         />
 </LinearLayout>

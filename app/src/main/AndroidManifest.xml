@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="at.tugraz.ist.swe.note" >
+    package="at.tugraz.ist.swe.note">
+
+    <uses-permission android:name = "android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name = "android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:icon="@mipmap/note_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/note_icon_circle"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/NoActionBar">
+        <receiver android:name="at.tugraz.ist.swe.widget.NoteWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="at.tugraz.ist.swe.widget.NOTES_PULLED" />
+                <action android:name="at.tugraz.ist.swe.widget.EXTRA_ITEM" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/note_widget_info" />
+        </receiver>
+        <service android:name="at.tugraz.ist.swe.widget.NoteRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <activity android:name=".TagActivity" />
+        <activity
+            android:name=".TagListActivity"
+            android:label="@string/title_activity_tags_list"
+            android:theme="@style/NoActionBar"
+            android:parentActivityName=".MainActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,7 +38,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NoteActivity"/>
+        <activity android:name=".NoteActivity" />
+        <activity
+            android:name=".TrashActivity"
+            android:label="@string/trash_activity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ProtectedActivity"
+            android:label="Protected"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

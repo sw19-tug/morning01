@@ -12,9 +12,9 @@ import org.junit.runner.RunWith;
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -29,7 +29,7 @@ public class DatabaseInstrumentedTest {
     @Before
     public void setUp() {
         databaseHelper = new DatabaseHelper(InstrumentationRegistry.getTargetContext());
-        databaseHelper.getWritableDatabase().execSQL("DELETE FROM " + DatabaseHelper.NOTE_TABLE_NAME);
+        Util.resetDatabase(databaseHelper);
     }
 
     @Test
@@ -46,11 +46,11 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public  void testGetNewPinningNumber() throws NotFoundException{
+    public void testGetNewPinningNumber() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
         assertEquals(NoteStorage.INITIAL_PINNING_NUMBER, storage.getNewPinningNumber());
         int nodePinningNumber = 3;
-        Note note = new Note ("title1", "content1", nodePinningNumber);
+        Note note = new Note("title1", "content1", nodePinningNumber);
         storage.insert(note);
         assertEquals(NoteStorage.INITIAL_PINNING_NUMBER + nodePinningNumber, storage.getNewPinningNumber());
     }
@@ -88,10 +88,10 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void testDeleteNote() throws NotFoundException{
+    public void testDeleteNote() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
-        Note note = new Note ("some title", "some content", 1);
+        Note note = new Note("some title", "some content", 1);
         storage.insert(note);
 
         storage.delete(note.getId());
@@ -99,8 +99,7 @@ public class DatabaseInstrumentedTest {
         boolean idNotFound = false;
         try {
             storage.findById(note.getId());
-        }
-        catch (NotFoundException ex) {
+        } catch (NotFoundException ex) {
             idNotFound = true;
         }
 
@@ -114,19 +113,19 @@ public class DatabaseInstrumentedTest {
         String title = "title1";
         String content = "content1";
         int pinned = 1;
-        Note note = new Note (title, content, pinned);
+        Note note = new Note(title, content, pinned);
         storage.insert(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),title);
-        assertEquals(foundNote.getContent(),content);
-        assertEquals(foundNote.getPinned(),pinned);
+        assertEquals(foundNote.getTitle(), title);
+        assertEquals(foundNote.getContent(), content);
+        assertEquals(foundNote.getPinned(), pinned);
     }
 
 
     @Test
-    public void testNoteUpdate() throws NotFoundException{
+    public void testNoteUpdate() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
-        Note note = new Note ("title1", "content1", 1);
+        Note note = new Note("title1", "content1", 1);
         storage.insert(note);
         String title = "title2";
         String content = "content2";
@@ -136,41 +135,153 @@ public class DatabaseInstrumentedTest {
         note.setPinned(pinned);
         storage.update(note);
         Note foundNote = storage.findById(note.getId());
-        assertEquals(foundNote.getTitle(),title);
-        assertEquals(foundNote.getContent(),content);
-        assertEquals(foundNote.getPinned(),pinned);
+        assertEquals(foundNote.getTitle(), title);
+        assertEquals(foundNote.getContent(), content);
+        assertEquals(foundNote.getPinned(), pinned);
     }
 
-    @Test
-    public void testGetAllNotes() {
+
+    public void testGetAllNotesSortedByTitle() {
+
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 2);
+        boolean sortByCreatedDate = false;
         Note[] notes = {
-                new Note("note1", "blabla1", 1),
-                new Note("note2", "blabla2", 2),
-                new Note("note3", "blabla3", 3)
+                note1,
+                note3,
+                note4,
+                note2,
+        };
+        Note[] expectedNoteArray = {
+                note4,
+                note1,
+                note2,
+                note3,
         };
 
         NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
 
-        for (int i = 0; i < notes.length; ++i){
-            noteStorage.insert(notes[i]);
-        }
+        Util.fillNoteStorage(notes, noteStorage);
 
-        Note[] allStoredNotes = noteStorage.getAll();
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
 
-        assertEquals(notes.length, allStoredNotes.length);
-        for (int i = 0; i < notes.length; ++i){
-            assertTrue(notes[i].equals(allStoredNotes[i]));
-        }
+        Util.assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
+    }
+
+    @Test
+    public void testGetAllNotesSortedByDate() {
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        Note note4 = new Note("D_Test_title", "blabla4", 2);
+        boolean sortByCreatedDate = true;
+        Note[] notes = {
+                note3,
+                note2,
+                note4,
+                note1,
+        };
+        Note[] expectedNoteArray = {
+                note4,
+                note1,
+                note2,
+                note3,
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+
+        Util.fillNoteStorage(notes, noteStorage);
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate);
+
+        Util.assertNoteArrayEquals(allStoredNotes, expectedNoteArray);
+    }
+
+    @Test
+    public void testGetAllRemovedNotesSortedByDate() throws NotFoundException {
+
+        Note note1 = new Note("A_Test_title", "blabla1", 1);
+        Note note2 = new Note("B_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        boolean sortByCreatedDate = true;
+        boolean removedOnly = true;
+        Note[] notes = {
+                note1,
+                note3,
+                note2,
+        };
+        Note[] expectedArray = {
+                note2,
+                note1,
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        Util.fillNoteStorage(notes, noteStorage);
+        noteStorage.softDelete(note1.getId());
+        noteStorage.softDelete(note2.getId());
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
+
+        Util.assertNoteArrayEquals(allStoredNotes, expectedArray);
+    }
+
+    @Test
+    public void testGetAllRemovedNotesSortedByTitle() throws NotFoundException {
+
+        Note note1 = new Note("B_Test_title", "blabla1", 1);
+        Note note2 = new Note("A_Test_title", "blabla2", 1);
+        Note note3 = new Note("C_Test_title", "blabla3", 1);
+        boolean sortByCreatedDate = false;
+        boolean removedOnly = true;
+        Note[] notes = {
+                note1,
+                note3,
+                note2
+        };
+        Note[] expecterArray = {
+                note2,
+                note1,
+        };
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        Util.fillNoteStorage(notes, noteStorage);
+        noteStorage.softDelete(note1.getId());
+        noteStorage.softDelete(note2.getId());
+
+        Note[] allStoredNotes = noteStorage.getAll(sortByCreatedDate, removedOnly);
+
+        Util.assertNoteArrayEquals(allStoredNotes, expecterArray);
     }
 
     @Test
     public void testSoftDeleteNote() throws NotFoundException {
         NoteStorage storage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext()));
 
-        Note note = new Note ("some title", "some content", 1);
+        Note note = new Note("some title", "some content", 1);
         storage.insert(note);
         storage.softDelete(note.getId());
         note = storage.findById(note.getId());
         assertTrue(note.isRemoved());
+    }
+
+    @Test
+    public void testSearchNote() {
+        Note note1 = new Note("Adkdhe", "Ajdnh diekdn ekde eie", 0);
+        Note note2 = new Note("Khdhdgrgrg", "Jdkdh dhgnd udef rtr", 0);
+        Note note3 = new Note("Odjeuzd", "Kduejd efdf ef dferfef", 0);
+        Note note4 = new Note("Ldjehd", "Ldf dfe dgrgrg fgtujtge", 0);
+
+        Note[] notes = {note1, note2, note3, note4};
+
+        NoteStorage noteStorage = new NoteStorage(new DatabaseHelper(InstrumentationRegistry.getTargetContext(), null));
+        Util.fillNoteStorage(notes, noteStorage);
+
+        String pattern = "grgrg";
+        Note[] expectedNotes = {note2, note4};
+        Note[] foundNotes = noteStorage.getAll(true, false, pattern);
+        assertTrue(expectedNotes.length == foundNotes.length);
+        Util.assertNoteArrayContains(foundNotes, expectedNotes);
     }
 }

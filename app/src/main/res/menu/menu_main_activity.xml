@@ -1,0 +1,66 @@
+
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/tagListButton"
+        android:icon="@drawable/ic_main_tag_list"
+        android:title="@string/main_tags_list"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/sortButton"
+        android:icon="@drawable/ic_main_sort"
+        android:title="@string/main_sort"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/sortByTitleAscButton"
+                android:title="@string/main_sort_by_title_asc"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/sortByCreatedDateDescButton"
+                android:title="@string/main_sort_by_created_date_desc"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+
+    <item android:id="@+id/search"
+        android:title="@string/search_title"
+        android:icon="@drawable/ic_main_search"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item
+        android:id="@+id/importButton"
+        android:icon="@drawable/ic_main_import"
+        android:title="@string/main_import"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/exportButton"
+        android:icon="@drawable/ic_main_export"
+        android:title="@string/main_export"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/changeTheme"
+        android:icon="@drawable/ic_change_theme_black_24dp"
+        android:title="@string/change_dark_theme"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_trash"
+        android:icon="@drawable/ic_remove"
+        android:title="@string/trash_activity"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/protectedNotesButton"
+        android:icon="@drawable/ic_lock_outline_black_24dp"
+        android:title="@string/protected_notes"
+        app:showAsAction="never" />
+
+</menu>
