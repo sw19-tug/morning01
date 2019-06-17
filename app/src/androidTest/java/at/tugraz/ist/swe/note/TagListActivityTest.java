@@ -99,16 +99,16 @@ public class TagListActivityTest {
         onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size() - 1).perform(click());
 
         ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
-        NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
+        NoteTag checkTag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
         onView(withId(R.id.tagNameEditText))
-                .check(matches(withText(check_tag.getName())));
+                .check(matches(withText(checkTag.getName())));
 
         String updateString = "update";
         onView(withId(R.id.tagNameEditText)).perform(typeText(updateString));
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
 
-        NoteTag tag = new NoteTag(check_tag.getName() + updateString, NoteTag.DEFAULT_COLOR);
+        NoteTag tag = new NoteTag(checkTag.getName() + updateString, NoteTag.DEFAULT_COLOR);
 
         assertNotEquals(0, tagListView.getAdapter().getCount());
         boolean foundTag = false;
@@ -139,9 +139,9 @@ public class TagListActivityTest {
         onData(anything()).inAdapterView(withId(R.id.tagListView)).atPosition(activityActivityTestRule.getActivity().tags.size() - 1).perform(click());
 
         ListView tagListView = activityActivityTestRule.getActivity().findViewById(R.id.tagListView);
-        NoteTag check_tag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
+        NoteTag checkTag = (NoteTag) tagListView.getAdapter().getItem(activityActivityTestRule.getActivity().currentSelectedTag);
         onView(withId(R.id.tagNameEditText))
-                .check(matches(withText(check_tag.getName())));
+                .check(matches(withText(checkTag.getName())));
 
 
         onView(withId(R.id.action_tag_remove)).perform(click());
@@ -150,7 +150,7 @@ public class TagListActivityTest {
         boolean foundTag = false;
         for (int i = 0; i < tagListView.getAdapter().getCount(); ++i) {
             NoteTag fetchedTag = (NoteTag) tagListView.getAdapter().getItem(i);
-            if (check_tag.getName().compareTo(fetchedTag.getName()) == 0) {
+            if (checkTag.getName().compareTo(fetchedTag.getName()) == 0) {
                 foundTag = true;
                 break;
             }
