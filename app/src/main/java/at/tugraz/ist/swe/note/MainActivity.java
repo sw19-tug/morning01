@@ -1,14 +1,12 @@
 package at.tugraz.ist.swe.note;
 
-import android.appwidget.AppWidgetProvider;
-import android.content.Context;
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentUris;
 import android.app.AlertDialog;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;

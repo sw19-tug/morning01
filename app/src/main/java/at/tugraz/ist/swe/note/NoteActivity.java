@@ -3,8 +3,8 @@ package at.tugraz.ist.swe.note;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Math.min;
-
 import at.tugraz.ist.swe.note.database.DatabaseHelper;
 import at.tugraz.ist.swe.note.database.NotFoundException;
+
+import static java.lang.Math.min;
 
 
 public class NoteActivity extends AppCompatActivity {
